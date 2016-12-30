@@ -107,7 +107,7 @@ public:
 	virtual void ReleaseVertexLayout(int id) = 0;
 	virtual void BindVertexLayout(int id) = 0;
 
-	virtual void ReadPixels(const void* pixels, int width, int height) = 0;
+	virtual void ReadPixels(const void* pixels, int x, int y, int w, int h) = 0;
 
 }; // RenderContext
 
