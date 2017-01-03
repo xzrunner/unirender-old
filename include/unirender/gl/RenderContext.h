@@ -116,7 +116,7 @@ public:
 	virtual void ReleaseVertexLayout(int id);
 	virtual void BindVertexLayout(int id);
 
-	virtual void ReadPixels(const void* pixels, int x, int y, int w, int h);
+	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h);
 
 private:
 	static const int MAX_TEXTURE_CHANNEL = 8;

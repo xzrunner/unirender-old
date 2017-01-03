@@ -438,9 +438,13 @@ void RenderContext::BindVertexLayout(int id)
 	render_set(m_render, EJ_VERTEXLAYOUT, id, 0);
 }
 
-void RenderContext::ReadPixels(const void* pixels, int x, int y, int w, int h)
+void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, int w, int h)
 {
-	glReadPixels(x, y, w, h, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
+	if (channels == 4) {
+		glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
+	} else if (channels = 3) {
+		glReadPixels(x, y, w, h, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
+	}
 }
 
 }
