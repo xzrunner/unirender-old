@@ -18,7 +18,11 @@ public:
 	void Bind();
 	void Unbind();
 
-	const Texture* GetTexture() const { return m_texture; }
+	int Width() const;
+	int Height() const;
+	int TexID() const;
+
+	void Resize(int width, int height);
 	
 private:
 	RenderContext* m_rc;

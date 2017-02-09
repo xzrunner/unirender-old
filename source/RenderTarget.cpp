@@ -29,4 +29,29 @@ void RenderTarget::Unbind()
 	m_rc->UnbindRenderTarget();
 }
 
+int RenderTarget::Width() const
+{
+	return m_texture->Width();
+}
+
+int RenderTarget::Height() const
+{
+	return m_texture->Height();
+}
+
+int RenderTarget::TexID() const
+{
+	return m_texture->ID();
+}
+
+void RenderTarget::Resize(int width, int height)
+{
+	if (m_texture->Width() == width && m_texture->Height() == height) {
+		return;
+	}
+
+	delete m_texture;
+	m_texture = new Texture(m_rc, width, height);
+}
+
 }
