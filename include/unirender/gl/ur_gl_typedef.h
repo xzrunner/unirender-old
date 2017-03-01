@@ -12,4 +12,4 @@ static const int MAX_SHADER  = 64;
 }
 }
 
-#endif _UNIRENDER_GL_TYPEDEF_H_
+#endif // _UNIRENDER_GL_TYPEDEF_H_
