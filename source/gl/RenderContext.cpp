@@ -1,5 +1,5 @@
 #include "gl/RenderContext.h"
-#include "gl/typedef.h"
+#include "gl/ur_gl_typedef.h"
 
 #include <ejoy2d/render.h>
 #include <ejoy2d/opengl.h>

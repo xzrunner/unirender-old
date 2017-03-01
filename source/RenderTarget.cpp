@@ -1,6 +1,6 @@
 #include "RenderTarget.h"
 #include "RenderContext.h"
-#include "Texture.h"
+#include "UR_Texture.h"
 
 namespace ur
 {

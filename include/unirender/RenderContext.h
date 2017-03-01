@@ -2,7 +2,7 @@
 #define _UNIRENDER_RENDER_CONTEXT_H_
 
 #include "VertexAttrib.h"
-#include "typedef.h"
+#include "ur_typedef.h"
 
 #include <vector>
 
