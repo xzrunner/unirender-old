@@ -173,7 +173,7 @@ int  RenderContext::CheckRenderTargetStatus()
 	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
 		LOGW("%s", "Framebuffer incomplete: No image is attached to FBO.\n");
 		return 0;
-#if !defined(_WIN32) && !defined(__MACOSX)
+#if !defined(_WIN32) && !defined(__MACH__)
 	case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
 		LOGW("%s", "Framebuffer incomplete: Attached images have different dimensions.\n");
 		return 0;
