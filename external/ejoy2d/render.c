@@ -93,8 +93,8 @@ struct shader {
 
 struct rstate {
 	RID target;
-	enum BLEND_FORMAT blend_src;
-	enum BLEND_FORMAT blend_dst;
+	enum EJ_BLEND_FORMAT blend_src;
+	enum EJ_BLEND_FORMAT blend_dst;
 	enum EJ_BLEND_FUNC blend_func;
 	enum EJ_DEPTH_FORMAT depth;
 	enum EJ_CULL_MODE cull;
@@ -830,7 +830,7 @@ render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, in
 
 // blend func
 void 
-render_set_blendfunc(struct render *R, enum BLEND_FORMAT src, enum BLEND_FORMAT dst) {
+render_set_blendfunc(struct render *R, enum EJ_BLEND_FORMAT src, enum EJ_BLEND_FORMAT dst) {
 	R->current.blend_src = src;
 	R->current.blend_dst = dst;
 	R->changeflag |= CHANGE_BLEND_FUNC;
@@ -990,8 +990,8 @@ render_state_commit(struct render *R) {
 				GL_SRC_ALPHA_SATURATE,
 			};
 
-			enum BLEND_FORMAT src = R->current.blend_src;
-			enum BLEND_FORMAT dst = R->current.blend_dst;
+			enum EJ_BLEND_FORMAT src = R->current.blend_src;
+			enum EJ_BLEND_FORMAT dst = R->current.blend_dst;
 			glBlendFunc(blend[src], blend[dst]);
 
 			R->last.blend_src = src;
