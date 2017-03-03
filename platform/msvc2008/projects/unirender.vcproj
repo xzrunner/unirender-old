@@ -197,19 +197,19 @@
 			Name="obj"
 			>
 			<File
-				RelativePath="..\..\..\source\RenderTarget.cpp"
+				RelativePath="..\..\..\source\UR_RenderTarget.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\include\unirender\RenderTarget.h"
+				RelativePath="..\..\..\include\unirender\UR_RenderTarget.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\Texture.cpp"
+				RelativePath="..\..\..\source\UR_Texture.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\include\unirender\Texture.h"
+				RelativePath="..\..\..\include\unirender\UR_Texture.h"
 				>
 			</File>
 		</Filter>
@@ -222,11 +222,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\..\include\unirender\RenderContext.h"
+			RelativePath="..\..\..\include\unirender\typedef.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\..\include\unirender\typedef.h"
+			RelativePath="..\..\..\include\unirender\UR_RenderContext.h"
 			>
 		</File>
 		<File
