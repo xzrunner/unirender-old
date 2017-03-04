@@ -2,6 +2,7 @@
 #include "UR_RenderContext.h"
 
 #include <stdint.h>
+#include <string.h>
 
 namespace ur
 {
