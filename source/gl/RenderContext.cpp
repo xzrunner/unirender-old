@@ -71,6 +71,17 @@ int  RenderContext::CreateTexture(const void* pixels, int width, int height, int
 	return id;
 }
 
+int RenderContext::CreateTextureID(int width, int height, int format)
+{
+	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, 0);
+	return id;		
+}
+
+void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int height, int format)
+{
+	render_texture_update(m_render, tex_id, width, height, pixels, 0, 0);
+}
+
 void RenderContext::ReleaseTexture(int id)
 {
 	BindTexture(id, 0);
