@@ -77,20 +77,15 @@ int RenderContext::CreateTextureID(int width, int height, int format)
 	return id;		
 }
 
-void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int height, int format)
-{
-	render_texture_update(m_render, tex_id, width, height, pixels, 0, 0);
-}
-
 void RenderContext::ReleaseTexture(int id)
 {
 	BindTexture(id, 0);
 	render_release(m_render, EJ_TEXTURE, id);
 }
 
-void RenderContext::UpdateTexture(const void* pixels, int w, int h, unsigned int id)
+void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int height)
 {
-	render_texture_update(m_render, id, w, h, pixels, 0, 0);
+	render_texture_update(m_render, tex_id, width, height, pixels, 0, 0);
 }
 
 void RenderContext::UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id)

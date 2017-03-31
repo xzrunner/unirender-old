@@ -31,10 +31,9 @@ public:
 
 	virtual int  CreateTexture(const void* pixels, int width, int height, int format);
 	virtual int  CreateTextureID(int width, int height, int format);
-	virtual void UpdateTexture(int tex_id, const void* pixels, int width, int height, int format);
 	virtual void ReleaseTexture(int id);
 
-	virtual void UpdateTexture(const void* pixels, int w, int h, unsigned int id);
+	virtual void UpdateTexture(int tex_id, const void* pixels, int width, int height);
 	virtual void UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id);
 
 	virtual void BindTexture(int id, int channel);
