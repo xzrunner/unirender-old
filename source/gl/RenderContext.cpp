@@ -79,7 +79,13 @@ int RenderContext::CreateTextureID(int width, int height, int format)
 
 void RenderContext::ReleaseTexture(int id)
 {
-	BindTexture(id, 0);
+	// clear texture curr
+	for (int i = 0; i < MAX_TEXTURE_CHANNEL; ++i) {
+		if (m_textures[i] == id) {
+			BindTexture(i, 0);
+		}
+	}
+
 	render_release(m_render, EJ_TEXTURE, id);
 }
 
