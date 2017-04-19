@@ -31,4 +31,11 @@ void ur_set_line_stripple(void* _rc, int pattern)
 	rc->SetLineStripple(pattern);
 }
 
+extern "C"
+void ur_check_error(void* _rc)
+{
+	RenderContext* rc = static_cast<RenderContext*>(_rc);
+	rc->CheckError();
+}
+
 }

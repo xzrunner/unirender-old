@@ -13,6 +13,8 @@ void ur_set_line_width(void* rc, float width);
 void ur_enable_line_stripple(void* rc, bool stripple);
 void ur_set_line_stripple(void* rc, int pattern);
 
+void ur_check_error(void* rc);
+
 #endif // _unirender_wrap_c_h_
 
 #ifdef __cplusplus

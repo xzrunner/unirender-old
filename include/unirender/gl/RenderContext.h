@@ -119,6 +119,12 @@ public:
 
 	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h);
 
+	/************************************************************************/
+	/* Debug                                                                */
+	/************************************************************************/
+
+	virtual void CheckError();
+
 private:
 	static const int MAX_TEXTURE_CHANNEL = 8;
 	static const int MAX_RENDER_TARGET_LAYER = 8;
