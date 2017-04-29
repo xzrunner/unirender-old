@@ -60,6 +60,11 @@ int RenderContext::RenderVersion() const
 	return render_version(m_render);
 }
 
+bool RenderContext::Init() const
+{
+	return glewInit() == GLEW_OK;
+}
+
 /************************************************************************/
 /* Texture                                                              */
 /************************************************************************/
