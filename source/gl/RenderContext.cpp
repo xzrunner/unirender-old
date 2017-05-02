@@ -62,7 +62,11 @@ int RenderContext::RenderVersion() const
 
 bool RenderContext::Init() const
 {
+#if OPENGLES < 2
 	return glewInit() == GLEW_OK;
+#else
+	return true;
+#endif
 }
 
 /************************************************************************/
