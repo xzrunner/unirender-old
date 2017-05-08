@@ -112,12 +112,6 @@ public:
 
 	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h) = 0;
 
-	/************************************************************************/
-	/* Debug                                                                */
-	/************************************************************************/
-
-	virtual void CheckError() = 0;
-
 }; // RenderContext
 
 }

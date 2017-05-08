@@ -469,17 +469,5 @@ void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, i
 	}
 }
 
-/************************************************************************/
-/* Debug                                                                */
-/************************************************************************/
-
-void RenderContext::CheckError()
-{
-	GLenum error = glGetError();
-	if (error != GL_NO_ERROR) {
-		fault("gl err %d\n", error);
-	}
-}
-
 }
 }
