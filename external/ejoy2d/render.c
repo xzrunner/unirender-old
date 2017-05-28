@@ -100,6 +100,7 @@ struct rstate {
 	enum EJ_CULL_MODE cull;
 	int depthmask;
 	int scissor;
+	int scissor_x, scissor_y, scissor_w, scissor_h;
 	RID texture[MAX_TEXTURE];
 };
 
@@ -568,8 +569,13 @@ render_setviewport(int x, int y, int width, int height) {
 }
 
 void 
-render_setscissor(int x, int y, int width, int height ) {
-	glScissor(x,y,width,height);
+render_setscissor(struct render *R, int x, int y, int width, int height ) {
+	R->current.scissor = 1;
+	R->current.scissor_x = x;
+	R->current.scissor_y = y;
+	R->current.scissor_w = width;
+	R->current.scissor_h = height;
+	R->changeflag |= CHANGE_SCISSOR;
 }
 
 static int
@@ -1059,10 +1065,26 @@ render_state_commit(struct render *R) {
 				glEnable(GL_SCISSOR_TEST);
 			} else {
 				glDisable(GL_SCISSOR_TEST);
+				R->current.scissor_x = R->last.scissor_x;
+				R->current.scissor_y = R->last.scissor_y;
+				R->current.scissor_w = R->last.scissor_w;
+				R->current.scissor_h = R->last.scissor_h;
 			}
+
 			R->last.scissor = R->current.scissor;
 		}
-	}
+		if (R->current.scissor &&
+			(R->last.scissor_x != R->current.scissor_x ||
+			 R->last.scissor_y != R->current.scissor_y ||
+			 R->last.scissor_w != R->current.scissor_w ||
+			 R->last.scissor_h != R->current.scissor_h)) {
+			glScissor(R->current.scissor_x, R->current.scissor_y, R->current.scissor_w, R->current.scissor_h);
+			R->last.scissor_x = R->current.scissor_x;
+			R->last.scissor_y = R->current.scissor_y;
+			R->last.scissor_w = R->current.scissor_w;
+			R->last.scissor_h = R->current.scissor_h;
+		}
+	}	
 
 	R->changeflag = 0;
 
@@ -1131,6 +1153,7 @@ render_draw_elements(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int 
 		} else {
 			offset *= sizeof(short);
 		}
+
 		glDrawElements(draw_mode[mode], ni, type, (char *)0 + offset);
 		CHECK_GL_ERROR
 	}

@@ -158,7 +158,7 @@ int render_shader_locuniform(struct render *R, const char * name);
 void render_shader_setuniform(struct render *R, int loc, enum EJ_UNIFORM_FORMAT format, const float *v);
 
 void render_setviewport(int x, int y, int width, int height );
-void render_setscissor(int x, int y, int width, int height );
+void render_setscissor(struct render *R, int x, int y, int width, int height );
 
 void render_set_blendfunc(struct render *R, enum EJ_BLEND_FORMAT src, enum EJ_BLEND_FORMAT dst);
 void render_set_blendeq(struct render *R, enum EJ_BLEND_FUNC eq);

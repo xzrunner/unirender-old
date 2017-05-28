@@ -315,7 +315,8 @@ void RenderContext::EnableScissor(int enable)
 
 void RenderContext::SetScissor(int x, int y, int width, int height)
 {
-	render_setscissor(x, y, width, height);
+	assert(x >= 0 && y >= 0 && width >= 0 && height >= 0);
+	render_setscissor(m_render, x, y, width, height);
 }
 
 void RenderContext::SetViewport(int x, int y, int w, int h)
