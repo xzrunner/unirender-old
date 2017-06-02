@@ -436,7 +436,7 @@ int  RenderContext::CreateVertexLayout(const std::vector<VertexAttrib>& va_list)
 {
 	struct vertex_attrib va[MAX_LAYOUT];
 	int offset = 0;
-	for (int i = 0, n = va_list.size(); i < n; ++i) 
+	for (size_t i = 0, n = va_list.size(); i < n; ++i)
 	{
 		const VertexAttrib& src = va_list[i];
 		vertex_attrib& dst = va[i];
@@ -448,7 +448,7 @@ int  RenderContext::CreateVertexLayout(const std::vector<VertexAttrib>& va_list)
 		offset += src.tot_size;
 	}
 
-	return render_register_vertexlayout(m_render, va_list.size(), va);
+	return render_register_vertexlayout(m_render, (int)(va_list.size()), va);
 }
 
 void RenderContext::ReleaseVertexLayout(int id)
