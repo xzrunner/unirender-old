@@ -465,7 +465,7 @@ void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, i
 {
 	if (channels == 4) {
 		glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
-	} else if (channels = 3) {
+	} else if (channels == 3) {
 		glReadPixels(x, y, w, h, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
 	}
 }
