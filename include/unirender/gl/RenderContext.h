@@ -61,24 +61,6 @@ public:
 // 	virtual int  GetCurrRenderTarget() const;
 
 	/************************************************************************/
-	/* Stencil                                                              */
-	/************************************************************************/
-	
-	virtual void ClearAll();
-
-	virtual void EnableStencil(bool enable);
-	virtual void ClearStencil(int s);
-	virtual void StencilFunc(STENCIL_FUNC func, int ref, int mask);
-	virtual void StencilOp(STENCIL_OP fail, STENCIL_OP zfail, STENCIL_OP zpass);
-
-	/************************************************************************/
-	/* Alpha                                                                */
-	/************************************************************************/
-
-	virtual void EnableAlpha(bool enable);
-	virtual void AlphaFunc();
-
-	/************************************************************************/
 	/* Shader                                                               */
 	/************************************************************************/
 
@@ -120,8 +102,6 @@ public:
 
 	virtual void EnableLineStripple(bool stripple);
 	virtual void SetLineStripple(int pattern);
-
-	virtual void ColorMask(bool r, bool g, bool b, bool a);
 
 	/************************************************************************/
 	/* Draw                                                                 */

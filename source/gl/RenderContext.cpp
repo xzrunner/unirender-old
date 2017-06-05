@@ -222,122 +222,6 @@ int  RenderContext::CheckRenderTargetStatus()
 //}
 
 /************************************************************************/
-/* Stencil                                                              */
-/************************************************************************/
-
-void RenderContext::ClearAll()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-}
-
-void RenderContext::EnableStencil(bool enable)
-{
-	if (enable) {
-		glEnable(GL_STENCIL_TEST);
-	} else {
-		glDisable(GL_STENCIL_TEST);
-	}
-}
-
-void RenderContext::ClearStencil(int s)
-{
-	glClearStencil(0);
-	glClear(GL_STENCIL_BUFFER_BIT);
-}
-
-void RenderContext::StencilFunc(STENCIL_FUNC func, int ref, int mask)
-{
-	GLenum gl_func;
-	switch (func)
-	{
-	case ST_NEVER:
-		gl_func = GL_NEVER;
-		break;
-	case ST_ALWAYS:
-		gl_func = GL_ALWAYS;
-		break;
-	case ST_LESS:
-		gl_func = GL_LESS;
-		break;
-	case ST_LEQUAL:
-		gl_func = GL_LEQUAL;
-		break;
-	case ST_GEQUAL:
-		gl_func = GL_GEQUAL;
-		break;
-	case ST_NOTEQUAL:
-		gl_func = GL_NOTEQUAL;
-		break;
-	default:
-		assert(0);
-	}
-
-	glStencilFunc(gl_func, ref, mask);
-}
-
-static GLenum _get_gl_stencil_op(RenderContext::STENCIL_OP op)
-{
-	GLenum gl_op;
-	switch (op)
-	{
-	case RenderContext::ST_KEEP:
-		gl_op = GL_KEEP;
-		break;
-	case RenderContext::ST_ZERO:
-		gl_op = GL_ZERO;
-		break;
-	case RenderContext::ST_REPLACE:
-		gl_op = GL_REPLACE;
-		break;
-	case RenderContext::ST_INCR:
-		gl_op = GL_INCR;
-		break;
-	case RenderContext::ST_INCR_WRAP:
-		gl_op = GL_INCR_WRAP;
-		break;
-	case RenderContext::ST_DECR:
-		gl_op = GL_DECR;
-		break;
-	case RenderContext::ST_DECR_WRAP:
-		gl_op = GL_DECR_WRAP;
-		break;
-	case RenderContext::ST_INVERT:
-		gl_op = GL_INVERT;
-		break;
-	default:
-		assert(0);
-	}
-	return gl_op;
-}
-
-void RenderContext::StencilOp(STENCIL_OP fail, STENCIL_OP zfail, STENCIL_OP zpass)
-{
-	GLenum gl_fail = _get_gl_stencil_op(fail);
-	GLenum gl_zfail = _get_gl_stencil_op(zfail);
-	GLenum gl_zpass = _get_gl_stencil_op(zpass);
-
-	glStencilOp(gl_fail, gl_zfail, gl_zpass);
-}
-
-/************************************************************************/
-/* Alpha                                                                */
-/************************************************************************/
-
-void RenderContext::EnableAlpha(bool enable)
-{
-	if (enable) {
-		glEnable(GL_ALPHA_TEST);
-	} else {
-		glDisable(GL_ALPHA_TEST);
-	}
-}
-
-void RenderContext::AlphaFunc()
-{
-	glAlphaFunc(GL_GREATER, 0.05);
-}
-
-/************************************************************************/
 /* Shader                                                               */
 /************************************************************************/
 
@@ -512,11 +396,6 @@ void RenderContext::SetLineStripple(int pattern)
 #if OPENGLES < 2
 	glLineStipple(1, pattern);
 #endif
-}
-
-void RenderContext::ColorMask(bool r, bool g, bool b, bool a)
-{
-	glColorMask(r, g, b, a);
 }
 
 /************************************************************************/
