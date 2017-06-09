@@ -461,6 +461,15 @@ void RenderContext::BindVertexLayout(int id)
 	render_set(m_render, EJ_VERTEXLAYOUT, id, 0);
 }
 
+/************************************************************************/
+/* Other                                                                */
+/************************************************************************/
+
+void RenderContext::ReadBuffer()
+{
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+}
+
 void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, int w, int h)
 {
 	if (channels == 4) {

@@ -119,6 +119,11 @@ public:
 	virtual void ReleaseVertexLayout(int id);
 	virtual void BindVertexLayout(int id);
 
+	/************************************************************************/
+	/* Other                                                                */
+	/************************************************************************/
+
+	virtual void ReadBuffer();
 	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h);
 
 private:
