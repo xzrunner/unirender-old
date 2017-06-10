@@ -467,7 +467,9 @@ void RenderContext::BindVertexLayout(int id)
 
 void RenderContext::ReadBuffer()
 {
+#ifndef __APPLE__
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
+#endif // __APPLE__
 }
 
 void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, int w, int h)
