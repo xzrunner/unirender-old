@@ -760,12 +760,10 @@ texture_format(struct texture * tex, GLint *pf, GLenum *pt) {
 		compressed = 1;
 		break;
 #endif // GL_ETC1_RGB8_OES
-#ifdef __ANDROID__
 	case EJ_TEXTURE_ETC2:
 		format = 0x9278;	// GL_COMPRESSED_RGBA8_ETC2_EAC
 		compressed = 1;
 		break;
-#endif // __ANDROID__
 	default:
 		assert(0);
 		return -1;
