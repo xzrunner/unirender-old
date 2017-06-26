@@ -121,7 +121,7 @@ struct render {
 	struct array shader;
 };
 
-static void
+static inline void
 check_opengl_error_debug(struct render *R, const char *filename, int line) {
 	GLenum error = glGetError();
 	if (error != GL_NO_ERROR
