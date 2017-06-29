@@ -123,6 +123,8 @@ public:
 	virtual void ReadBuffer() = 0;
 	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h) = 0;
 
+	virtual bool IsSupportETC2() const = 0;
+
 }; // RenderContext
 
 }

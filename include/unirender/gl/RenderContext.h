@@ -132,6 +132,8 @@ public:
 	virtual void ReadBuffer();
 	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h);
 
+	virtual bool IsSupportETC2() const { return m_etc2; }
+
 private:
 	static const int MAX_TEXTURE_CHANNEL = 8;
 	static const int MAX_RENDER_TARGET_LAYER = 8;
@@ -165,6 +167,12 @@ private:
 	int          m_clear_mask;
 
 	int          m_vp_x, m_vp_y, m_vp_w, m_vp_h;
+
+	/************************************************************************/
+	/* Other                                                                */
+	/************************************************************************/
+
+	bool m_etc2;
 
 }; // RenderContext
 

@@ -47,6 +47,10 @@ RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
 	m_vp_x = m_vp_y = m_vp_w = m_vp_h = 0;
 	render_set_blendfunc(m_render, (EJ_BLEND_FORMAT)m_blend_src, (EJ_BLEND_FORMAT)m_blend_dst);
 	render_set_blendeq(m_render, (EJ_BLEND_FUNC)m_blend_func);
+
+	std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
+	m_etc2 = gl_ext.find("GL_ARB_ES3_compatibility") != std::string::npos;
+	m_etc2 = false;
 }
 
 RenderContext::~RenderContext()
