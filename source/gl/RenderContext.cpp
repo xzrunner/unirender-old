@@ -50,10 +50,21 @@ RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
 
 #ifdef _WIN32
 	std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
-	m_etc2 = gl_ext.find("GL_ARB_ES3_compatibility") != std::string::npos;		
+	m_etc2 = gl_ext.find("GL_ARB_ES3_compatibility") != std::string::npos;
 #else
-	m_etc2 = false;		
+	m_etc2 = false;
+	GLint num;
+	glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &num);
+	std::vector<GLint> fmt_list(num);
+	glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, &fmt_list[0]);
+	for (int i = 0, n = fmt_list.size(); i < n; ++i) {
+		if (fmt_list[i] == 0x9278) {
+			m_etc2 = true;
+			break;
+		}		
+	}
 #endif // _WIN32
+	LOGI("Support etc2 %d\n", m_etc2);	
 }
 
 RenderContext::~RenderContext()
