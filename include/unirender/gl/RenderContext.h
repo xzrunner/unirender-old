@@ -136,7 +136,9 @@ public:
 	virtual bool CheckAvailableMemory(int need_texture_area) const;
 
 private:
-	void CheckETC2Support();
+	static bool CheckETC2Support();
+	static bool CheckETC2SupportFast();
+	static bool CheckETC2SupportSlow();	
 
 private:
 	static const int MAX_TEXTURE_CHANNEL = 8;

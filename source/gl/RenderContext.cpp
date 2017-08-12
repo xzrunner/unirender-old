@@ -50,7 +50,7 @@ RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
 	render_set_blendfunc(m_render, (EJ_BLEND_FORMAT)m_blend_src, (EJ_BLEND_FORMAT)m_blend_dst);
 	render_set_blendeq(m_render, (EJ_BLEND_FUNC)m_blend_func);
 
-	CheckETC2Support();
+	m_etc2 = CheckETC2Support();
 	LOGI("Support etc2 %d\n", m_etc2);
 }
 
@@ -536,30 +536,42 @@ bool RenderContext::CheckAvailableMemory(int need_texture_area) const
 	return curr_area >= need_texture_area;
 }
 
-//void RenderContext::CheckETC2Support()
-//{
-//#if defined( __APPLE__ ) && !defined(__MACOSX)
-//	m_etc2 = true;
-//#elif defined _WIN32
-//	std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
-//	m_etc2 = gl_ext.find("GL_ARB_ES3_compatibility") != std::string::npos;
-//#else
-//	m_etc2 = false;
-//	GLint num;
-//	glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &num);
-//	std::vector<GLint> fmt_list(num);
-//	glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, &fmt_list[0]);
-//	for (int i = 0, n = fmt_list.size(); i < n; ++i) {
-//		if (fmt_list[i] == 0x9278) {
-//			m_etc2 = true;
-//			break;
-//		}		
-//	}
-//#endif
-//}
-
-void RenderContext::CheckETC2Support()
+bool RenderContext::CheckETC2Support()
 {
+	bool etc2 = CheckETC2SupportFast();
+	if (!etc2) {
+		etc2 = CheckETC2SupportSlow();
+	}
+	return etc2;
+}
+
+bool RenderContext::CheckETC2SupportFast()
+{
+	bool ret = false;
+#if defined( __APPLE__ ) && !defined(__MACOSX)
+	ret = true;
+#elif defined _WIN32
+	std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
+	ret = gl_ext.find("GL_ARB_ES3_compatibility") != std::string::npos;
+#else
+	GLint num;
+	glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &num);
+	std::vector<GLint> fmt_list(num);
+	glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, &fmt_list[0]);
+	for (int i = 0, n = fmt_list.size(); i < n; ++i) {
+		if (fmt_list[i] == 0x9278) {
+			m_etc2 = true;
+			break;
+		}		
+	}
+#endif
+	return ret;
+}
+
+bool RenderContext::CheckETC2SupportSlow()
+{
+	bool ret = false;
+
 	const int WIDTH = 4;
 	const int HEIGHT = 4;
 	const int BPP = 8;
@@ -575,10 +587,12 @@ void RenderContext::CheckETC2Support()
 	glGetError();
 	glCompressedTexImage2D(GL_TEXTURE_2D, 0, 0x9278, 4, 4, 0, SIZE, pixels);
 	GLenum error = glGetError();
-	m_etc2 = error == GL_NO_ERROR;
+	ret = error == GL_NO_ERROR;
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDeleteTextures(1, &tex_id);
+
+	return ret;
 }
 
 }
