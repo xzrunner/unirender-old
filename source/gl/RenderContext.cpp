@@ -560,7 +560,7 @@ bool RenderContext::CheckETC2SupportFast()
 	glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, &fmt_list[0]);
 	for (int i = 0, n = fmt_list.size(); i < n; ++i) {
 		if (fmt_list[i] == 0x9278) {
-			m_etc2 = true;
+			ret = true;
 			break;
 		}		
 	}
