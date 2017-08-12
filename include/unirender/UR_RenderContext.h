@@ -124,6 +124,7 @@ public:
 	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h) = 0;
 
 	virtual bool IsSupportETC2() const = 0;
+	virtual bool CheckAvailableMemory(int need_texture_area) const = 0;
 
 }; // RenderContext
 
