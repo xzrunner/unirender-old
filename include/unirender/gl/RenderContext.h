@@ -135,6 +135,9 @@ public:
 	virtual bool IsSupportETC2() const { return m_etc2; }
 
 private:
+	void CheckETC2Support();
+
+private:
 	static const int MAX_TEXTURE_CHANNEL = 8;
 	static const int MAX_RENDER_TARGET_LAYER = 8;
 

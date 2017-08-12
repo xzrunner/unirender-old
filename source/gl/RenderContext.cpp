@@ -48,25 +48,8 @@ RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
 	render_set_blendfunc(m_render, (EJ_BLEND_FORMAT)m_blend_src, (EJ_BLEND_FORMAT)m_blend_dst);
 	render_set_blendeq(m_render, (EJ_BLEND_FUNC)m_blend_func);
 
-#if defined( __APPLE__ ) && !defined(__MACOSX)
-	m_etc2 = true;
-#elif defined _WIN32
-	std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
-	m_etc2 = gl_ext.find("GL_ARB_ES3_compatibility") != std::string::npos;
-#else
-	m_etc2 = false;
-	GLint num;
-	glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &num);
-	std::vector<GLint> fmt_list(num);
-	glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, &fmt_list[0]);
-	for (int i = 0, n = fmt_list.size(); i < n; ++i) {
-		if (fmt_list[i] == 0x9278) {
-			m_etc2 = true;
-			break;
-		}		
-	}
-#endif
-	LOGI("Support etc2 %d\n", m_etc2);	
+	CheckETC2Support();
+	LOGI("Support etc2 %d\n", m_etc2);
 }
 
 RenderContext::~RenderContext()
@@ -508,6 +491,51 @@ void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, i
 	} else if (channels == 3) {
 		glReadPixels(x, y, w, h, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
 	}
+}
+
+//void RenderContext::CheckETC2Support()
+//{
+//#if defined( __APPLE__ ) && !defined(__MACOSX)
+//	m_etc2 = true;
+//#elif defined _WIN32
+//	std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
+//	m_etc2 = gl_ext.find("GL_ARB_ES3_compatibility") != std::string::npos;
+//#else
+//	m_etc2 = false;
+//	GLint num;
+//	glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &num);
+//	std::vector<GLint> fmt_list(num);
+//	glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, &fmt_list[0]);
+//	for (int i = 0, n = fmt_list.size(); i < n; ++i) {
+//		if (fmt_list[i] == 0x9278) {
+//			m_etc2 = true;
+//			break;
+//		}		
+//	}
+//#endif
+//}
+
+void RenderContext::CheckETC2Support()
+{
+	const int WIDTH = 4;
+	const int HEIGHT = 4;
+	const int BPP = 8;
+	const int SIZE = WIDTH * HEIGHT * BPP / 8;
+	char pixels[SIZE];
+	memset(pixels, 0, SIZE);
+
+	GLuint tex_id;
+	glGenTextures(1, &tex_id);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tex_id);
+
+	glGetError();
+	glCompressedTexImage2D(GL_TEXTURE_2D, 0, 0x9278, 4, 4, 0, SIZE, pixels);
+	GLenum error = glGetError();
+	m_etc2 = error == GL_NO_ERROR;
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDeleteTextures(1, &tex_id);
 }
 
 }
