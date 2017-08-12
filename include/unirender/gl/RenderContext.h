@@ -133,6 +133,7 @@ public:
 	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h);
 
 	virtual bool IsSupportETC2() const { return m_etc2; }
+	virtual bool CheckAvailableMemory(int need_texture_area) const;
 
 private:
 	void CheckETC2Support();

@@ -6,6 +6,8 @@
 #include <logger.h>
 #include <fault.h>
 
+#include <cmath>
+
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -491,6 +493,47 @@ void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, i
 	} else if (channels == 3) {
 		glReadPixels(x, y, w, h, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
 	}
+}
+
+bool RenderContext::CheckAvailableMemory(int need_texture_area) const
+{
+	const int EDGE = 1024;
+	const int AREA = EDGE * EDGE;
+	uint8_t* empty_data = new uint8_t[AREA * 4];
+	memset(empty_data, 0x00, AREA * 4);
+
+	glActiveTexture(GL_TEXTURE0);
+
+	int max_count = std::ceil((float)need_texture_area / AREA);
+	GLuint* id_list = new GLuint[max_count];
+
+	int curr_area = 0;
+	int curr_count = 0;
+	while (true) {
+		unsigned int texid = 0;
+		glGenTextures(1, &texid);
+		glBindTexture(GL_TEXTURE_2D, texid);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)EDGE, (GLsizei)EDGE, 0, GL_RGBA, GL_UNSIGNED_BYTE, empty_data);
+		if (glGetError() == GL_OUT_OF_MEMORY) {
+			break;
+		} else {
+			id_list[curr_count++] = texid;
+			curr_area += AREA;
+			if (curr_area >= need_texture_area) {
+				break;
+			}
+		}
+	}
+
+	glDeleteTextures(curr_count, id_list);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	delete[] empty_data;
+	delete[] id_list;
+
+	return curr_area >= need_texture_area;
 }
 
 //void RenderContext::CheckETC2Support()
