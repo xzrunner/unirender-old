@@ -75,9 +75,16 @@ array_ref(struct array *p, int id) {
 	return ptr;
 }
 
+#ifdef _MSC_VER
+#	include <malloc.h>
+#	define ARRAY(type, name, size) type* name = (type*)_alloca((size) * sizeof(type))
+#else
+#	define ARRAY(type, name, size) type name[size]
+#endif
+
 void 
 array_exit(struct array *p, void (*close)(void *p, void *ud), void *ud) {
-	char flag[p->n];
+	ARRAY(char, flag, p->n);
 	memset(flag, 0, p->n);
 	struct array_node * n = p->freelist;
 	while (n) {
