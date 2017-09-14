@@ -42,6 +42,7 @@ RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
 	m_rt_layers[m_rt_depth++] = render_query_target();
 
 	// State
+	m_blend = true;
 	m_blend_src = BLEND_ONE;
 	m_blend_dst = BLEND_ONE_MINUS_SRC_ALPHA;
 	m_blend_func = BLEND_FUNC_ADD;
@@ -267,6 +268,13 @@ void RenderContext::SetShaderUniform(int loc, UNIFORM_FORMAT format, const float
 
 void RenderContext::EnableBlend(bool blend)
 {
+	if (m_blend == blend) {
+		return;
+	}
+
+	m_blend = blend;
+	m_cb.flush_shader();
+
 	if (blend) {
 		glEnable(GL_BLEND);
 	} else {
@@ -312,6 +320,8 @@ void RenderContext::SetClearFlag(int flag)
 
 void RenderContext::Clear(unsigned long argb)
 {
+	m_cb.flush_shader();
+
 	render_clear(m_render, (EJ_CLEAR_MASK)m_clear_mask, argb);
 }
 

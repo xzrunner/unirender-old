@@ -167,6 +167,7 @@ private:
 	/* State                                                                */
 	/************************************************************************/
 
+	bool         m_blend;
 	BLEND_FORMAT m_blend_src, m_blend_dst;
 	BLEND_FUNC   m_blend_func;
 
