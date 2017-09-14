@@ -46,9 +46,11 @@ RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
 	m_blend_dst = BLEND_ONE_MINUS_SRC_ALPHA;
 	m_blend_func = BLEND_FUNC_ADD;
 	m_clear_mask = 0;
-	m_vp_x = m_vp_y = m_vp_w = m_vp_h = 0;
+	m_vp_x = m_vp_y = m_vp_w = m_vp_h = -1;
 	render_set_blendfunc(m_render, (EJ_BLEND_FORMAT)m_blend_src, (EJ_BLEND_FORMAT)m_blend_dst);
 	render_set_blendeq(m_render, (EJ_BLEND_FUNC)m_blend_func);
+	m_scissor = false;
+	m_scissor_x = m_scissor_y = m_scissor_w = m_scissor_h = -1;
 
 	m_etc2 = CheckETC2Support();
 	LOGI("Support etc2 %d\n", m_etc2);
@@ -315,11 +317,31 @@ void RenderContext::Clear(unsigned long argb)
 
 void RenderContext::EnableScissor(int enable)
 {
+	if (enable == m_scissor) {
+		return;
+	}
+
+	m_scissor = enable;
+	m_cb.flush_shader();
+
 	render_enablescissor(m_render, enable);
 }
 
 void RenderContext::SetScissor(int x, int y, int width, int height)
 {
+	if (m_scissor_x == x &&
+		m_scissor_y == y &&
+		m_scissor_w == width &&
+		m_scissor_h == height) {
+		return;
+	}
+
+	m_scissor_x = x;
+	m_scissor_y = y;
+	m_scissor_w = width;
+	m_scissor_h = height;
+	m_cb.flush_shader();
+
 	assert(x >= 0 && y >= 0 && width >= 0 && height >= 0);
 	render_setscissor(m_render, x, y, width, height);
 }
