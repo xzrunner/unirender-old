@@ -335,6 +335,9 @@ void RenderContext::EnableScissor(int enable)
 	m_cb.flush_shader();
 
 	render_enablescissor(m_render, enable);
+	if (enable) {
+		render_setscissor(m_render, m_scissor_x, m_scissor_y, m_scissor_w, m_scissor_h);
+	}
 }
 
 void RenderContext::SetScissor(int x, int y, int width, int height)
