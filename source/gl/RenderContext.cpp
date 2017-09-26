@@ -327,7 +327,7 @@ void RenderContext::Clear(unsigned long argb)
 
 void RenderContext::EnableScissor(int enable)
 {
-	if (enable == m_scissor) {
+	if (static_cast<bool>(enable) == m_scissor) {
 		return;
 	}
 
@@ -539,7 +539,7 @@ bool RenderContext::CheckAvailableMemory(int need_texture_area) const
 
 	glActiveTexture(GL_TEXTURE0);
 
-	int max_count = std::ceil((float)need_texture_area / AREA);
+	int max_count = static_cast<int>(std::ceil((float)need_texture_area / AREA));
 	GLuint* id_list = new GLuint[max_count];
 
 	int curr_area = 0;

@@ -1111,10 +1111,10 @@ render_clear(struct render *R, enum EJ_CLEAR_MASK mask, unsigned long c) {
 	GLbitfield m = 0;
 	if (mask & EJ_MASKC) {
 		m |= GL_COLOR_BUFFER_BIT;
-		float a = ((c >> 24) & 0xff ) / 255.0;
-		float r = ((c >> 16) & 0xff ) / 255.0;
-		float g = ((c >> 8) & 0xff ) / 255.0;
-		float b = ((c >> 0) & 0xff ) / 255.0;
+		float a = ((c >> 24) & 0xff ) / 255.0f;
+		float r = ((c >> 16) & 0xff ) / 255.0f;
+		float g = ((c >> 8) & 0xff ) / 255.0f;
+		float b = ((c >> 0) & 0xff ) / 255.0f;
 		glClearColor(r,g,b,a);
 	}
 	if (mask & EJ_MASKD) {
