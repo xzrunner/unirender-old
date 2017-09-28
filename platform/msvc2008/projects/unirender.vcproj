@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="0.unirender"
-	ProjectGUID="{EE2229A3-AD5F-46E7-AFAB-729F8AA18036}"
+	ProjectGUID="{637A0E9C-1867-459D-8611-65A064E3B2C2}"
 	RootNamespace="unirender"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
