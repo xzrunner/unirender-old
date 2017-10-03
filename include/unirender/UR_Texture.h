@@ -1,7 +1,7 @@
 #ifndef _UNIRENDER_TEXTURE_H_
 #define _UNIRENDER_TEXTURE_H_
 
-#include <CU_Uncopyable.h>
+#include <cu/uncopyable.h>
 
 namespace ur
 {
