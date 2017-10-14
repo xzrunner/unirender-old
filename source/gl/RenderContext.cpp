@@ -584,7 +584,7 @@ bool RenderContext::CheckETC2SupportFast()
 {
 	bool ret = false;
 #if defined( __APPLE__ ) && !defined(__MACOSX)
-	ret = false;
+	ret = true;
 #elif defined _WIN32
 	std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
 	ret = gl_ext.find("GL_ARB_ES3_compatibility") != std::string::npos;
