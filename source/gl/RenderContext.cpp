@@ -584,7 +584,8 @@ bool RenderContext::CheckETC2SupportFast()
 {
 	bool ret = false;
 #if defined( __APPLE__ ) && !defined(__MACOSX)
-	ret = true;
+    std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
+    ret = gl_ext.find("GL_OES_depth_texture_cube_map") != std::string::npos;
 #elif defined _WIN32
 	std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
 	ret = gl_ext.find("GL_ARB_ES3_compatibility") != std::string::npos;
@@ -605,8 +606,12 @@ bool RenderContext::CheckETC2SupportFast()
 
 bool RenderContext::CheckETC2SupportSlow()
 {
+#if defined( __APPLE__ ) && !defined(__MACOSX)
+    return false;
+#endif
+    
 	bool ret = false;
-
+    
 	const int WIDTH = 4;
 	const int HEIGHT = 4;
 	const int BPP = 8;
