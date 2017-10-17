@@ -132,7 +132,6 @@ public:
 	virtual void ReadBuffer();
 	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h);
 
-	virtual bool IsSupportETC2() const { return m_etc2; }
 	virtual bool CheckAvailableMemory(int need_texture_area) const;
 
 private:
@@ -177,12 +176,6 @@ private:
 
 	bool         m_scissor;
 	int          m_scissor_x, m_scissor_y, m_scissor_w, m_scissor_h;
-
-	/************************************************************************/
-	/* Other                                                                */
-	/************************************************************************/
-
-	bool m_etc2;
 
 }; // RenderContext
 
