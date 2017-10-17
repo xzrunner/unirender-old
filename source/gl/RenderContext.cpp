@@ -534,8 +534,8 @@ bool RenderContext::CheckAvailableMemory(int need_texture_area) const
 {
 	const int EDGE = 1024;
 	const int AREA = EDGE * EDGE;
-	uint8_t* empty_data = new uint8_t[AREA * 4];
-	memset(empty_data, 0x00, AREA * 4);
+	uint8_t* empty_data = new uint8_t[AREA * 2];
+	memset(empty_data, 0x00, AREA * 2);
 
 	glActiveTexture(GL_TEXTURE0);
 
@@ -549,7 +549,7 @@ bool RenderContext::CheckAvailableMemory(int need_texture_area) const
 		glGenTextures(1, &texid);
 		glBindTexture(GL_TEXTURE_2D, texid);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)EDGE, (GLsizei)EDGE, 0, GL_RGBA, GL_UNSIGNED_BYTE, empty_data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)EDGE, (GLsizei)EDGE, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, empty_data);
 		if (glGetError() == GL_OUT_OF_MEMORY) {
 			break;
 		} else {
