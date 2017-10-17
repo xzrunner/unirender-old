@@ -128,7 +128,7 @@ public:
 	static bool IsSupportETC2() { return m_etc2; }
 	static void SetSupportETC2(bool support) { m_etc2 = support; }
 
-private:
+protected:
 	static bool m_etc2;
 
 }; // RenderContext
