@@ -123,8 +123,13 @@ public:
 	virtual void ReadBuffer() = 0;
 	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h) = 0;
 
-	virtual bool IsSupportETC2() const = 0;
 	virtual bool CheckAvailableMemory(int need_texture_area) const = 0;
+
+	static bool IsSupportETC2() { return m_etc2; }
+	static void SetSupportETC2(bool support) { m_etc2 = support; }
+
+private:
+	static bool m_etc2;
 
 }; // RenderContext
 

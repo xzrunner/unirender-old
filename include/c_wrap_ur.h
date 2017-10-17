@@ -21,6 +21,8 @@ void ur_set_line_stripple(void* rc, int pattern);
 
 void ur_check_error(void* rc);
 
+void ur_set_support_etc2(bool support);
+
 #endif // _unirender_wrap_c_h_
 
 #ifdef __cplusplus

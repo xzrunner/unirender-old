@@ -61,4 +61,10 @@ void ur_check_error(void* _rc)
 	rc->CheckError();
 }
 
+extern "C"
+void ur_set_support_etc2(bool support)
+{
+	RenderContext::SetSupportETC2(support);
+}
+
 }

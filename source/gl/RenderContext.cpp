@@ -53,8 +53,11 @@ RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
 	m_scissor = false;
 	m_scissor_x = m_scissor_y = m_scissor_w = m_scissor_h = -1;
 
-	m_etc2 = CheckETC2Support();
-	LOGI("Support etc2 %d\n", m_etc2);
+#if defined( __APPLE__ ) && !defined(__MACOSX)
+#else
+	m_etc2 = CheckETC2Support();	
+#endif
+	LOGI("Support etc2 %d\n", IsSupportETC2());
 }
 
 RenderContext::~RenderContext()
@@ -584,8 +587,6 @@ bool RenderContext::CheckETC2SupportFast()
 {
 	bool ret = false;
 #if defined( __APPLE__ ) && !defined(__MACOSX)
-    std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
-    ret = gl_ext.find("GL_OES_depth_texture_cube_map") != std::string::npos;
 #elif defined _WIN32
 	std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
 	ret = gl_ext.find("GL_ARB_ES3_compatibility") != std::string::npos;
@@ -611,7 +612,7 @@ bool RenderContext::CheckETC2SupportSlow()
 #endif
     
 	bool ret = false;
-    
+
 	const int WIDTH = 4;
 	const int HEIGHT = 4;
 	const int BPP = 8;
