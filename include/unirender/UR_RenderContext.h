@@ -1,10 +1,10 @@
 #ifndef _UNIRENDER_RENDER_CONTEXT_H_
 #define _UNIRENDER_RENDER_CONTEXT_H_
 
+#include <cu/cu_stl.h>
+
 #include "VertexAttrib.h"
 #include "ur_typedef.h"
-
-#include <vector>
 
 namespace ur
 {
@@ -106,7 +106,7 @@ public:
 	virtual void BindBuffer(RENDER_OBJ what, int id) = 0;
 	virtual void UpdateBuffer(int id, const void* data, int n) = 0;
 
-	virtual int  CreateVertexLayout(const std::vector<VertexAttrib>& va_list) = 0;
+	virtual int  CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list) = 0;
 	virtual void ReleaseVertexLayout(int id) = 0;
 	virtual void BindVertexLayout(int id) = 0;
 

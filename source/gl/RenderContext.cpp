@@ -475,7 +475,7 @@ void RenderContext::UpdateBuffer(int id, const void* data, int n)
 	render_buffer_update(m_render, id, data, n);
 }
 
-int  RenderContext::CreateVertexLayout(const std::vector<VertexAttrib>& va_list)
+int  RenderContext::CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list)
 {
 	struct vertex_attrib va[MAX_LAYOUT];
 	int offset = 0;
@@ -588,12 +588,12 @@ bool RenderContext::CheckETC2SupportFast()
 	bool ret = false;
 #if defined( __APPLE__ ) && !defined(__MACOSX)
 #elif defined _WIN32
-	std::string gl_ext = (char*)glGetString(GL_EXTENSIONS);
-	ret = gl_ext.find("GL_ARB_ES3_compatibility") != std::string::npos;
+	CU_STR gl_ext = (char*)glGetString(GL_EXTENSIONS);
+	ret = gl_ext.find("GL_ARB_ES3_compatibility") != CU_STR::npos;
 #else
 	GLint num;
 	glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &num);
-	std::vector<GLint> fmt_list(num);
+	CU_VEC<GLint> fmt_list(num);
 	glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, &fmt_list[0]);
 	for (int i = 0, n = fmt_list.size(); i < n; ++i) {
 		if (fmt_list[i] == 0x9278) {

@@ -115,7 +115,7 @@ public:
 	virtual void BindBuffer(RENDER_OBJ what, int id);
 	virtual void UpdateBuffer(int id, const void* data, int n);
 
-	virtual int  CreateVertexLayout(const std::vector<VertexAttrib>& va_list);
+	virtual int  CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list);
 	virtual void ReleaseVertexLayout(int id);
 	virtual void BindVertexLayout(int id);
 
