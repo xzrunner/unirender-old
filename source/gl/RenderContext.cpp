@@ -593,7 +593,8 @@ bool RenderContext::CheckETC2SupportFast()
 #else
 	GLint num;
 	glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &num);
-	CU_VEC<GLint> fmt_list(num);
+	CU_VEC<GLint> fmt_list;
+	fmt_list.resize(num);
 	glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, &fmt_list[0]);
 	for (int i = 0, n = fmt_list.size(); i < n; ++i) {
 		if (fmt_list[i] == 0x9278) {
