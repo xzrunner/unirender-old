@@ -1,7 +1,7 @@
 #ifndef _UNIRENDER_GL_RENDER_CONTEXT_H_
 #define _UNIRENDER_GL_RENDER_CONTEXT_H_
 
-#include "../UR_RenderContext.h"
+#include "unirender/RenderContext.h"
 
 struct render;
 

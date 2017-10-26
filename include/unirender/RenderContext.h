@@ -1,10 +1,10 @@
 #ifndef _UNIRENDER_RENDER_CONTEXT_H_
 #define _UNIRENDER_RENDER_CONTEXT_H_
 
-#include <cu/cu_stl.h>
+#include "unirender/VertexAttrib.h"
+#include "unirender/typedef.h"
 
-#include "VertexAttrib.h"
-#include "ur_typedef.h"
+#include <cu/cu_stl.h>
 
 namespace ur
 {
