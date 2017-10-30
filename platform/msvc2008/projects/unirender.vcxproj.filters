@@ -33,16 +33,16 @@
     <ClInclude Include="..\..\..\include\unirender\gl\typedef.h">
       <Filter>gl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\unirender\UR_RenderTarget.h">
-      <Filter>obj</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\unirender\UR_Texture.h">
-      <Filter>obj</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\unirender\c_wrap_ur.h" />
     <ClInclude Include="..\..\..\include\unirender\typedef.h" />
-    <ClInclude Include="..\..\..\include\unirender\UR_RenderContext.h" />
     <ClInclude Include="..\..\..\include\unirender\VertexAttrib.h" />
+    <ClInclude Include="..\..\..\include\unirender\RenderTarget.h">
+      <Filter>obj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\unirender\Texture.h">
+      <Filter>obj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\unirender\RenderContext.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\external\ejoy2d\carray.c">
@@ -54,12 +54,13 @@
     <ClCompile Include="..\..\..\source\gl\RenderContext.cpp">
       <Filter>gl</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\UR_RenderTarget.cpp">
-      <Filter>obj</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\UR_Texture.cpp">
-      <Filter>obj</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\c_wrap_ur.cpp" />
+    <ClCompile Include="..\..\..\source\Texture.cpp">
+      <Filter>obj</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\RenderTarget.cpp">
+      <Filter>obj</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\RenderContext.cpp" />
   </ItemGroup>
 </Project>

@@ -52,7 +52,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\include\unirender;..\..\..\external;..\..\..\..\cu\src\cu;..\..\..\..\logger\src\logger;..\..\..\..\editor-external\c99;..\..\..\..\editor-external\gl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\..\external;..\..\..\..\cu\src;..\..\..\..\logger\src\logger;..\..\..\..\memmgr\include;..\..\..\..\flatten\include;..\..\..\..\cooking\include;..\..\..\..\ds\src\ds;..\..\..\..\editor-external\c99;..\..\..\..\editor-external\gl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -66,7 +66,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\..\include\unirender;..\..\..\external;..\..\..\..\cu\src\cu;..\..\..\..\logger\src\logger;..\..\..\..\editor-external\c99;..\..\..\..\editor-external\gl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\..\external;..\..\..\..\cu\src;..\..\..\..\logger\src\logger;..\..\..\..\memmgr\include;..\..\..\..\flatten\include;..\..\..\..\cooking\include;..\..\..\..\ds\src\ds;..\..\..\..\editor-external\c99;..\..\..\..\editor-external\gl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -84,19 +84,23 @@
     <ClInclude Include="..\..\..\include\unirender\c_wrap_ur.h" />
     <ClInclude Include="..\..\..\include\unirender\gl\RenderContext.h" />
     <ClInclude Include="..\..\..\include\unirender\gl\typedef.h" />
+    <ClInclude Include="..\..\..\include\unirender\RenderContext.h" />
+    <ClInclude Include="..\..\..\include\unirender\RenderTarget.h" />
+    <ClInclude Include="..\..\..\include\unirender\Texture.h" />
     <ClInclude Include="..\..\..\include\unirender\typedef.h" />
-    <ClInclude Include="..\..\..\include\unirender\UR_RenderContext.h" />
-    <ClInclude Include="..\..\..\include\unirender\UR_RenderTarget.h" />
-    <ClInclude Include="..\..\..\include\unirender\UR_Texture.h" />
     <ClInclude Include="..\..\..\include\unirender\VertexAttrib.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\external\ejoy2d\carray.c" />
     <ClCompile Include="..\..\..\external\ejoy2d\render.c" />
     <ClCompile Include="..\..\..\source\c_wrap_ur.cpp" />
-    <ClCompile Include="..\..\..\source\gl\RenderContext.cpp" />
-    <ClCompile Include="..\..\..\source\UR_RenderTarget.cpp" />
-    <ClCompile Include="..\..\..\source\UR_Texture.cpp" />
+    <ClCompile Include="..\..\..\source\gl\RenderContext.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)gl\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)gl\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\RenderContext.cpp" />
+    <ClCompile Include="..\..\..\source\RenderTarget.cpp" />
+    <ClCompile Include="..\..\..\source\Texture.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
