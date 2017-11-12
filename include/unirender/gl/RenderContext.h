@@ -23,116 +23,116 @@ public:
 	RenderContext(const RenderContext::Callback& cb, int max_texture);
 	virtual ~RenderContext();
 	
-	virtual int RenderVersion() const;
+	virtual int RenderVersion() const override final;
 
-	virtual bool Init() const;
+	virtual bool Init() const override final;
 
 	/************************************************************************/
 	/* Texture                                                              */
 	/************************************************************************/
 
-	virtual int  CreateTexture(const void* pixels, int width, int height, int format);
-	virtual int  CreateTextureID(int width, int height, int format);
-	virtual void ReleaseTexture(int id);
+	virtual int  CreateTexture(const void* pixels, int width, int height, int format) override final;
+	virtual int  CreateTextureID(int width, int height, int format) override final;
+	virtual void ReleaseTexture(int id) override final;
 
-	virtual void UpdateTexture(int tex_id, const void* pixels, int width, int height);
-	virtual void UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id);
+	virtual void UpdateTexture(int tex_id, const void* pixels, int width, int height) override final;
+	virtual void UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id) override final;
 
-	virtual void BindTexture(int id, int channel);
+	virtual void BindTexture(int id, int channel) override final;
 
-	virtual void ClearTextureCache();
+	virtual void ClearTextureCache() override final;
 
-	virtual int  GetCurrTexture() const;
+	virtual int  GetCurrTexture() const override final;
 
 	/************************************************************************/
 	/* RenderTarget                                                         */
 	/************************************************************************/
 
-	virtual int  CreateRenderTarget(int id);
-	virtual void ReleaseRenderTarget(int id);
+	virtual int  CreateRenderTarget(int id) override final;
+	virtual void ReleaseRenderTarget(int id) override final;
 
-	virtual void BindRenderTarget(int id);
-	virtual void BindRenderTargetTex(int tex_id);
-	virtual void UnbindRenderTarget();
+	virtual void BindRenderTarget(int id) override final;
+	virtual void BindRenderTargetTex(int tex_id) override final;
+	virtual void UnbindRenderTarget() override final;
 
-	virtual int  CheckRenderTargetStatus();
+	virtual int  CheckRenderTargetStatus() override final;
 
-// 	virtual void SetCurrRenderTarget(int id);
-// 	virtual int  GetCurrRenderTarget() const;
+// 	virtual void SetCurrRenderTarget(int id) override final;
+// 	virtual int  GetCurrRenderTarget() const override final;
 
 	/************************************************************************/
 	/* Shader                                                               */
 	/************************************************************************/
 
-	virtual int  CreateShader(const char* vs, const char* fs);
-	virtual void ReleaseShader(int id);
+	virtual int  CreateShader(const char* vs, const char* fs) override final;
+	virtual void ReleaseShader(int id) override final;
 
-	virtual void BindShader(int id);
+	virtual void BindShader(int id) override final;
 
-	virtual int  GetShaderUniform(const char* name);
-	virtual void SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v);
+	virtual int  GetShaderUniform(const char* name) override final;
+	virtual void SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v) override final;
 
 	/************************************************************************/
 	/* State                                                                */
 	/************************************************************************/
 
-	virtual void EnableBlend(bool blend);
-	virtual void SetBlend(int m1, int m2);
-	virtual void SetBlendEquation(int func);
-	virtual void SetDefaultBlend();
+	virtual void EnableBlend(bool blend) override final;
+	virtual void SetBlend(int m1, int m2) override final;
+	virtual void SetBlendEquation(int func) override final;
+	virtual void SetDefaultBlend() override final;
 
-	virtual void SetClearFlag(int flag);
-	virtual void Clear(unsigned long argb);
+	virtual void SetClearFlag(int flag) override final;
+	virtual void Clear(unsigned long argb) override final;
 
-	virtual void EnableScissor(int enable);
-	virtual void SetScissor(int x, int y, int width, int height);
+	virtual void EnableScissor(int enable) override final;
+	virtual void SetScissor(int x, int y, int width, int height) override final;
 
-	virtual void SetViewport(int x, int y, int w, int h);
-	virtual void GetViewport(int& x, int& y, int& w, int& h);
+	virtual void SetViewport(int x, int y, int w, int h) override final;
+	virtual void GetViewport(int& x, int& y, int& w, int& h) override final;
 
-	virtual void SetDepth(DEPTH_FORMAT d);
+	virtual void SetDepth(DEPTH_FORMAT d) override final;
 
-	virtual bool IsTexture(int id) const;
+	virtual bool IsTexture(int id) const override final;
 
-	virtual bool OutOfMemory() const;
-	virtual void CheckError() const;
+	virtual bool OutOfMemory() const override final;
+	virtual void CheckError() const override final;
 
-	virtual void SetPointSize(float size);
-	virtual void SetLineWidth(float size);
+	virtual void SetPointSize(float size) override final;
+	virtual void SetLineWidth(float size) override final;
 
-	virtual void EnableLineStripple(bool stripple);
-	virtual void SetLineStripple(int pattern);
+	virtual void EnableLineStripple(bool stripple) override final;
+	virtual void SetLineStripple(int pattern) override final;
 
 	/************************************************************************/
 	/* Draw                                                                 */
 	/************************************************************************/
 
-	virtual void DrawElements(DRAW_MODE mode, int fromidx, int ni);
-	virtual void DrawArrays(DRAW_MODE mode, int fromidx, int ni);
+	virtual void DrawElements(DRAW_MODE mode, int fromidx, int ni) override final;
+	virtual void DrawArrays(DRAW_MODE mode, int fromidx, int ni) override final;
 
-	virtual int  CreateBuffer(RENDER_OBJ what, const void *data, int n, int stride);
-	virtual void ReleaseBuffer(RENDER_OBJ what, int id);
-	virtual void BindBuffer(RENDER_OBJ what, int id);
-	virtual void UpdateBuffer(int id, const void* data, int n);
+	virtual int  CreateBuffer(RENDER_OBJ what, const void *data, int n, int stride) override final;
+	virtual void ReleaseBuffer(RENDER_OBJ what, int id) override final;
+	virtual void BindBuffer(RENDER_OBJ what, int id) override final;
+	virtual void UpdateBuffer(int id, const void* data, int n) override final;
 
-	virtual int  CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list);
-	virtual void ReleaseVertexLayout(int id);
-	virtual void BindVertexLayout(int id);
+	virtual int  CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list) override final;
+	virtual void ReleaseVertexLayout(int id) override final;
+	virtual void BindVertexLayout(int id) override final;
 
 	/************************************************************************/
 	/* Debug                                                                */
 	/************************************************************************/
 
-	virtual int  GetRealTexID(int id);
+	virtual int  GetRealTexID(int id) override final;
 
 	/************************************************************************/
 	/* Other                                                                */
 	/************************************************************************/
 
-	virtual void ReadBuffer();
-	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h);
+	virtual void ReadBuffer() override final;
+	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h) override final;
 
-	virtual bool CheckAvailableMemory(int need_texture_area) const;
+	virtual bool CheckAvailableMemory(int need_texture_area) const override final;
 
 private:
 	static bool CheckETC2Support();
