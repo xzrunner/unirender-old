@@ -12,14 +12,28 @@
 #include <assert.h>
 #include <string.h>
 
+#define CHECK_MT
+
+#ifdef CHECK_MT
+#include <thread>
+#endif // CHECK_MT
+
 namespace ur
 {
 namespace gl
 {
 
+#ifdef CHECK_MT
+static std::thread::id MAIN_THREAD_ID;
+#endif // CHECK_MT
+
 RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
 	: m_cb(cb)
 {
+#ifdef CHECK_MT
+	MAIN_THREAD_ID = std::this_thread::get_id();
+#endif // CHECK_MT
+
 	render_init_args RA;
 	// todo: config these args
 	RA.max_buffer  = 128;
@@ -62,17 +76,29 @@ RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
 
 RenderContext::~RenderContext()
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_exit(m_render);
 	free(m_render);
 }
 
 int RenderContext::RenderVersion() const
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	return render_version(m_render);
 }
 
 bool RenderContext::Init() const
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 #if OPENGLES < 2
 	return glewInit() == GLEW_OK;
 #else
@@ -86,6 +112,10 @@ bool RenderContext::Init() const
 
 int  RenderContext::CreateTexture(const void* pixels, int width, int height, int format)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, 0);
 	render_texture_update(m_render, id, width, height, pixels, 0, 0);
 	return id;
@@ -93,12 +123,20 @@ int  RenderContext::CreateTexture(const void* pixels, int width, int height, int
 
 int RenderContext::CreateTextureID(int width, int height, int format)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, 0);
 	return id;		
 }
 
 void RenderContext::ReleaseTexture(int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	// clear texture curr
 	for (int i = 0; i < MAX_TEXTURE_CHANNEL; ++i) {
 		if (m_textures[i] == id) {
@@ -111,16 +149,28 @@ void RenderContext::ReleaseTexture(int id)
 
 void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int height)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_texture_update(m_render, tex_id, width, height, pixels, 0, 0);
 }
 
 void RenderContext::UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_texture_subupdate(m_render, id, pixels, x, y, w, h);
 }
 
 void RenderContext::BindTexture(int id, int channel)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	if (channel < 0 || channel >= MAX_TEXTURE_CHANNEL || m_textures[channel] == id) {
 		return;
 	}
@@ -133,11 +183,19 @@ void RenderContext::BindTexture(int id, int channel)
 
 void RenderContext::ClearTextureCache()
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_clear_texture_cache(m_render);
 }
 
 int  RenderContext::GetCurrTexture() const
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	return m_textures[0];
 }
 
@@ -147,6 +205,10 @@ int  RenderContext::GetCurrTexture() const
 
 int  RenderContext::CreateRenderTarget(int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	GLuint gl_id = id;
 	glGenFramebuffers(1, &gl_id);
 	return gl_id;
@@ -154,12 +216,20 @@ int  RenderContext::CreateRenderTarget(int id)
 
 void RenderContext::ReleaseRenderTarget(int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	GLuint gl_id = id;
 	glDeleteFramebuffers(1, &gl_id);
 }
 
 void RenderContext::BindRenderTarget(int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	assert(m_rt_depth < MAX_RENDER_TARGET_LAYER);
 
 	m_cb.flush_shader();
@@ -174,12 +244,20 @@ void RenderContext::BindRenderTarget(int id)
 
 void RenderContext::BindRenderTargetTex(int tex_id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	int gl_id = render_get_texture_gl_id(m_render, tex_id);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gl_id, 0);
 }
 
 void RenderContext::UnbindRenderTarget()
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	assert(m_rt_depth > 1);
 
 	m_cb.flush_shader();
@@ -195,6 +273,10 @@ void RenderContext::UnbindRenderTarget()
 
 int  RenderContext::CheckRenderTargetStatus()
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	switch(status)
 	{
@@ -238,6 +320,10 @@ int  RenderContext::CheckRenderTargetStatus()
 
 int  RenderContext::CreateShader(const char* vs, const char* fs)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	struct shader_init_args args;
 	args.vs = vs;
 	args.fs = fs;
@@ -247,21 +333,37 @@ int  RenderContext::CreateShader(const char* vs, const char* fs)
 
 void RenderContext::ReleaseShader(int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_release(m_render, EJ_SHADER, id);
 }
 
 void RenderContext::BindShader(int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_shader_bind(m_render, id);
 }
 
 int RenderContext::GetShaderUniform(const char* name)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	return render_shader_locuniform(m_render, name);
 }
 
 void RenderContext::SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_shader_setuniform(m_render, loc, (EJ_UNIFORM_FORMAT)format, v);
 }
 
@@ -271,6 +373,10 @@ void RenderContext::SetShaderUniform(int loc, UNIFORM_FORMAT format, const float
 
 void RenderContext::EnableBlend(bool blend)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	if (m_blend == blend) {
 		return;
 	}
@@ -287,6 +393,10 @@ void RenderContext::EnableBlend(bool blend)
 
 void RenderContext::SetBlend(int m1, int m2)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	if (m1 == m_blend_src && m2 == m_blend_dst) {
 		return;
 	}
@@ -300,6 +410,10 @@ void RenderContext::SetBlend(int m1, int m2)
 
 void RenderContext::SetBlendEquation(int func)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	if (func == m_blend_func) {
 		return;
 	}
@@ -312,17 +426,29 @@ void RenderContext::SetBlendEquation(int func)
 
 void RenderContext::SetDefaultBlend()
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	SetBlend(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
 	SetBlendEquation(BLEND_FUNC_ADD);
 }
 
 void RenderContext::SetClearFlag(int flag)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	m_clear_mask |= flag;
 }
 
 void RenderContext::Clear(unsigned long argb)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	m_cb.flush_shader();
 
 	render_clear(m_render, (EJ_CLEAR_MASK)m_clear_mask, argb);
@@ -330,6 +456,10 @@ void RenderContext::Clear(unsigned long argb)
 
 void RenderContext::EnableScissor(int enable)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	if (static_cast<bool>(enable) == m_scissor) {
 		return;
 	}
@@ -345,6 +475,10 @@ void RenderContext::EnableScissor(int enable)
 
 void RenderContext::SetScissor(int x, int y, int width, int height)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	if (m_scissor_x == x &&
 		m_scissor_y == y &&
 		m_scissor_w == width &&
@@ -364,6 +498,10 @@ void RenderContext::SetScissor(int x, int y, int width, int height)
 
 void RenderContext::SetViewport(int x, int y, int w, int h)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	if (x == m_vp_x && y == m_vp_y &&
 		w == m_vp_w && h == m_vp_h) {
 		return;
@@ -379,6 +517,10 @@ void RenderContext::SetViewport(int x, int y, int w, int h)
 
 void RenderContext::GetViewport(int& x, int& y, int& w, int& h)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	x = m_vp_x;
 	y = m_vp_y;
 	w = m_vp_w;
@@ -387,22 +529,38 @@ void RenderContext::GetViewport(int& x, int& y, int& w, int& h)
 
 void RenderContext::SetDepth(DEPTH_FORMAT d)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_setdepth(m_render, (EJ_DEPTH_FORMAT)d);
 }
 
 bool RenderContext::IsTexture(int id) const
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	return glIsTexture(id);
 }
 
 bool RenderContext::OutOfMemory() const
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	GLenum err = glGetError();
 	return err == GL_OUT_OF_MEMORY;
 }
 
 void RenderContext::CheckError() const
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	GLenum error = glGetError();
 	if (error != GL_NO_ERROR) {
 		fault("gl error %d\n", error);
@@ -411,6 +569,10 @@ void RenderContext::CheckError() const
 
 void RenderContext::SetPointSize(float size)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 #if OPENGLES < 2
 	glPointSize(size);
 #endif
@@ -418,6 +580,10 @@ void RenderContext::SetPointSize(float size)
 
 void RenderContext::SetLineWidth(float size)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 #if OPENGLES < 2
 	glLineWidth(size);
 #endif
@@ -425,6 +591,10 @@ void RenderContext::SetLineWidth(float size)
 
 void RenderContext::EnableLineStripple(bool stripple)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 #if OPENGLES < 2
 	if (stripple) {
 		glEnable(GL_LINE_STIPPLE);
@@ -436,6 +606,10 @@ void RenderContext::EnableLineStripple(bool stripple)
 
 void RenderContext::SetLineStripple(int pattern)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 #if OPENGLES < 2
 	glLineStipple(1, pattern);
 #endif
@@ -447,36 +621,64 @@ void RenderContext::SetLineStripple(int pattern)
 
 void RenderContext::DrawElements(DRAW_MODE mode, int fromidx, int ni)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_draw_elements(m_render, (EJ_DRAW_MODE)mode, fromidx, ni);
 }
 
 void RenderContext::DrawArrays(DRAW_MODE mode, int fromidx, int ni)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_draw_arrays(m_render, (EJ_DRAW_MODE)mode, fromidx, ni);
 }
 
 int  RenderContext::CreateBuffer(RENDER_OBJ what, const void *data, int n, int stride)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	return render_buffer_create(m_render, (EJ_RENDER_OBJ)what, NULL, n, stride);
 }
 
 void RenderContext::ReleaseBuffer(RENDER_OBJ what, int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_release(m_render, (EJ_RENDER_OBJ)what, id);
 }
 
 void RenderContext::BindBuffer(RENDER_OBJ what, int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_set(m_render, (EJ_RENDER_OBJ)what, id, 0);
 }
 
 void RenderContext::UpdateBuffer(int id, const void* data, int n)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_buffer_update(m_render, id, data, n);
 }
 
 int  RenderContext::CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	struct vertex_attrib va[MAX_LAYOUT];
 	int offset = 0;
 	for (size_t i = 0, n = va_list.size(); i < n; ++i)
@@ -496,11 +698,19 @@ int  RenderContext::CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list)
 
 void RenderContext::ReleaseVertexLayout(int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_release(m_render, EJ_VERTEXLAYOUT, id);
 }
 
 void RenderContext::BindVertexLayout(int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	render_set(m_render, EJ_VERTEXLAYOUT, id, 0);
 }
 
@@ -510,6 +720,10 @@ void RenderContext::BindVertexLayout(int id)
 
 int RenderContext::GetRealTexID(int id)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	return render_get_texture_gl_id(m_render, id);
 }
 
@@ -519,6 +733,10 @@ int RenderContext::GetRealTexID(int id)
 
 void RenderContext::ReadBuffer()
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 #if OPENGLES != 2
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 #endif // OPENGLES
@@ -526,6 +744,10 @@ void RenderContext::ReadBuffer()
 
 void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, int w, int h)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	if (channels == 4) {
 		glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
 	} else if (channels == 3) {
@@ -535,6 +757,10 @@ void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, i
 
 bool RenderContext::CheckAvailableMemory(int need_texture_area) const
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	const int EDGE = 1024;
 	const int AREA = EDGE * EDGE;
 	uint8_t* empty_data = new uint8_t[AREA * 2];
@@ -576,6 +802,10 @@ bool RenderContext::CheckAvailableMemory(int need_texture_area) const
 
 bool RenderContext::CheckETC2Support()
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	bool etc2 = CheckETC2SupportFast();
 	if (!etc2) {
 		etc2 = CheckETC2SupportSlow();
@@ -585,6 +815,10 @@ bool RenderContext::CheckETC2Support()
 
 bool RenderContext::CheckETC2SupportFast()
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 	bool ret = false;
 #if defined( __APPLE__ ) && !defined(__MACOSX)
 #elif defined _WIN32
@@ -608,6 +842,10 @@ bool RenderContext::CheckETC2SupportFast()
 
 bool RenderContext::CheckETC2SupportSlow()
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
 #if defined( __APPLE__ ) && !defined(__MACOSX)
     return false;
 #endif
