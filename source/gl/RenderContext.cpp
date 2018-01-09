@@ -34,6 +34,12 @@ RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
 	MAIN_THREAD_ID = std::this_thread::get_id();
 #endif // CHECK_MT
 
+#if OPENGLES < 2
+	// Initialize GLEW to setup the OpenGL Function pointers
+//	return glewInit() == GLEW_OK;
+	glewInit();
+#endif
+
 	render_init_args RA;
 	// todo: config these args
 	RA.max_buffer  = 128;
@@ -91,19 +97,6 @@ int RenderContext::RenderVersion() const
 #endif // CHECK_MT
 
 	return render_version(m_render);
-}
-
-bool RenderContext::Init() const
-{
-#ifdef CHECK_MT
-	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
-#endif // CHECK_MT
-
-#if OPENGLES < 2
-	return glewInit() == GLEW_OK;
-#else
-	return true;
-#endif
 }
 
 /************************************************************************/

@@ -6,13 +6,6 @@ namespace ur
 {
 
 extern "C"
-bool ur_init(void* _rc)
-{
-	RenderContext* rc = static_cast<RenderContext*>(_rc);
-	return rc->Init();
-}
-
-extern "C"
 void ur_clear(void* _rc, uint32_t argb)
 {
 	RenderContext* rc = static_cast<RenderContext*>(_rc);

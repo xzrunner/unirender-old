@@ -25,8 +25,6 @@ public:
 	
 	virtual int RenderVersion() const override final;
 
-	virtual bool Init() const override final;
-
 	/************************************************************************/
 	/* Texture                                                              */
 	/************************************************************************/
