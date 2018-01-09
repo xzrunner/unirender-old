@@ -822,8 +822,14 @@ bool RenderContext::CheckETC2SupportFast()
 	bool ret = false;
 #if defined( __APPLE__ ) && !defined(__MACOSX)
 #elif defined _WIN32
-	CU_STR gl_ext = (char*)glGetString(GL_EXTENSIONS);
-	ret = gl_ext.find("GL_ARB_ES3_compatibility") != CU_STR::npos;
+	GLint n;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &n);
+	for (GLint i = 0; i < n; ++i) {
+		if (strcmp((const char*)(glGetStringi(GL_EXTENSIONS, i)), "GL_ARB_ES3_compatibility") == 0) {
+			ret = true;
+			break;
+		}
+	}
 #else
 	GLint num;
 	glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &num);
