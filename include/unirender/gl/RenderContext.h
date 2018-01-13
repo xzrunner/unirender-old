@@ -79,6 +79,9 @@ public:
 	virtual void SetBlendEquation(int func) override final;
 	virtual void SetDefaultBlend() override final;
 
+	virtual void EnableDepth(bool depth) override final;
+	virtual void SetDepthFormat(DEPTH_FORMAT fmt) override final;
+
 	virtual void SetClearFlag(int flag) override final;
 	virtual void Clear(unsigned long argb) override final;
 
@@ -87,8 +90,6 @@ public:
 
 	virtual void SetViewport(int x, int y, int w, int h) override final;
 	virtual void GetViewport(int& x, int& y, int& w, int& h) override final;
-
-	virtual void SetDepth(DEPTH_FORMAT d) override final;
 
 	virtual bool IsTexture(int id) const override final;
 
@@ -168,6 +169,9 @@ private:
 	BLEND_FORMAT m_blend_src, m_blend_dst;
 	BLEND_FUNC   m_blend_func;
 
+	bool         m_depth;
+	DEPTH_FORMAT m_depth_fmt;
+	
 	int          m_clear_mask;
 
 	int          m_vp_x, m_vp_y, m_vp_w, m_vp_h;

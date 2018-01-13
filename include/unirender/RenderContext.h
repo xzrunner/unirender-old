@@ -70,6 +70,9 @@ public:
 	virtual void SetBlendEquation(int func) = 0;
 	virtual void SetDefaultBlend() = 0;
 
+	virtual void EnableDepth(bool depth) = 0;
+	virtual void SetDepthFormat(DEPTH_FORMAT fmt) = 0;
+
 	virtual void SetClearFlag(int flag) = 0;
 	virtual void Clear(unsigned long argb) = 0;
 
@@ -78,8 +81,6 @@ public:
 
 	virtual void SetViewport(int x, int y, int w, int h) = 0;
 	virtual void GetViewport(int& x, int& y, int& w, int& h) = 0;
-
-	virtual void SetDepth(DEPTH_FORMAT d) = 0;
 
 	virtual bool IsTexture(int id) const = 0;
 

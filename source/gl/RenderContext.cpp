@@ -66,6 +66,8 @@ RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
 	m_blend_src = BLEND_ONE;
 	m_blend_dst = BLEND_ONE_MINUS_SRC_ALPHA;
 	m_blend_func = BLEND_FUNC_ADD;
+	m_depth = false;
+	m_depth_fmt = DEPTH_DISABLE;
 	m_clear_mask = 0;
 	m_vp_x = m_vp_y = m_vp_w = m_vp_h = -1;
 	render_set_blendfunc(m_render, (EJ_BLEND_FORMAT)m_blend_src, (EJ_BLEND_FORMAT)m_blend_dst);
@@ -427,6 +429,34 @@ void RenderContext::SetDefaultBlend()
 	SetBlendEquation(BLEND_FUNC_ADD);
 }
 
+void RenderContext::EnableDepth(bool depth)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	if (m_depth == depth) {
+		return;
+	}
+
+	m_depth = depth;
+	render_enabledepthmask(m_render, m_depth);
+}
+
+void RenderContext::SetDepthFormat(DEPTH_FORMAT fmt)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	if (m_depth_fmt == fmt) {
+		return;
+	}
+
+	m_depth_fmt = fmt;
+	render_setdepth(m_render, EJ_DEPTH_FORMAT(m_depth_fmt));
+}
+
 void RenderContext::SetClearFlag(int flag)
 {
 #ifdef CHECK_MT
@@ -518,15 +548,6 @@ void RenderContext::GetViewport(int& x, int& y, int& w, int& h)
 	y = m_vp_y;
 	w = m_vp_w;
 	h = m_vp_h;
-}
-
-void RenderContext::SetDepth(DEPTH_FORMAT d)
-{
-#ifdef CHECK_MT
-	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
-#endif // CHECK_MT
-
-	render_setdepth(m_render, (EJ_DEPTH_FORMAT)d);
 }
 
 bool RenderContext::IsTexture(int id) const
