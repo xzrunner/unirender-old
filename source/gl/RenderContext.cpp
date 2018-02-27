@@ -1,6 +1,7 @@
 #include "unirender/gl/RenderContext.h"
 #include "unirender/gl/typedef.h"
 
+#include <guard/check.h>
 #include <ejoy2d/render.h>
 #include <ejoy2d/opengl.h>
 #include <logger.h>
@@ -27,8 +28,7 @@ namespace gl
 static std::thread::id MAIN_THREAD_ID;
 #endif // CHECK_MT
 
-RenderContext::RenderContext(const RenderContext::Callback& cb, int max_texture)
-	: m_cb(cb)
+RenderContext::RenderContext(int max_texture)
 {
 #ifdef CHECK_MT
 	MAIN_THREAD_ID = std::this_thread::get_id();
@@ -169,7 +169,8 @@ void RenderContext::BindTexture(int id, int channel)
 	if (channel < 0 || channel >= MAX_TEXTURE_CHANNEL || m_textures[channel] == id) {
 		return;
 	}
-
+	
+	GD_ASSERT(m_cb.flush_render_shader, "null cb.")
 	m_cb.flush_render_shader();
 
 	m_textures[channel] = id;
@@ -227,6 +228,7 @@ void RenderContext::BindRenderTarget(int id)
 
 	assert(m_rt_depth < MAX_RENDER_TARGET_LAYER);
 
+	GD_ASSERT(m_cb.flush_shader, "null cb.")
 	m_cb.flush_shader();
 
 	int curr = m_rt_layers[m_rt_depth - 1];
@@ -255,6 +257,7 @@ void RenderContext::UnbindRenderTarget()
 
 	assert(m_rt_depth > 1);
 
+	GD_ASSERT(m_cb.flush_shader, "null cb.")
 	m_cb.flush_shader();
 
 	int curr = m_rt_layers[m_rt_depth - 1],
@@ -377,6 +380,7 @@ void RenderContext::EnableBlend(bool blend)
 	}
 
 	m_blend = blend;
+	GD_ASSERT(m_cb.flush_shader, "null cb.")
 	m_cb.flush_shader();
 
 	if (blend) {
@@ -396,6 +400,7 @@ void RenderContext::SetBlend(int m1, int m2)
 		return;
 	}
 
+	GD_ASSERT(m_cb.flush_shader, "null cb.")
 	m_cb.flush_shader();
 
 	m_blend_src = static_cast<BLEND_FORMAT>(m1);
@@ -413,6 +418,7 @@ void RenderContext::SetBlendEquation(int func)
 		return;
 	}
 
+	GD_ASSERT(m_cb.flush_shader, "null cb.")
 	m_cb.flush_shader();
 
 	m_blend_func = static_cast<BLEND_FUNC>(func);
@@ -472,6 +478,7 @@ void RenderContext::Clear(unsigned long argb)
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
+	GD_ASSERT(m_cb.flush_shader, "null cb.")
 	m_cb.flush_shader();
 
 	render_clear(m_render, (EJ_CLEAR_MASK)m_clear_mask, argb);
@@ -488,6 +495,7 @@ void RenderContext::EnableScissor(int enable)
 	}
 
 	m_scissor = enable;
+	GD_ASSERT(m_cb.flush_shader, "null cb.")
 	m_cb.flush_shader();
 
 	render_enablescissor(m_render, enable);
@@ -513,6 +521,7 @@ void RenderContext::SetScissor(int x, int y, int width, int height)
 	m_scissor_y = y;
 	m_scissor_w = width;
 	m_scissor_h = height;
+	GD_ASSERT(m_cb.flush_shader, "null cb.")
 	m_cb.flush_shader();
 
 	assert(x >= 0 && y >= 0 && width >= 0 && height >= 0);

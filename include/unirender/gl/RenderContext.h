@@ -15,14 +15,7 @@ namespace gl
 class RenderContext : public ur::RenderContext
 {
 public:
-	struct Callback
-	{
-		std::function<void()> flush_shader;
-		std::function<void()> flush_render_shader;
-	};
-
-public:
-	RenderContext(const RenderContext::Callback& cb, int max_texture);
+	RenderContext(int max_texture);
 	virtual ~RenderContext();
 	
 	virtual int RenderVersion() const override final;
@@ -134,6 +127,15 @@ public:
 	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h) override final;
 
 	virtual bool CheckAvailableMemory(int need_texture_area) const override final;
+
+public:
+	struct Callback
+	{
+		std::function<void()> flush_shader;
+		std::function<void()> flush_render_shader;
+	};
+
+	void RegistCB(const RenderContext::Callback& cb) { m_cb = cb; }
 
 private:
 	static bool CheckETC2Support();
