@@ -3,6 +3,8 @@
 
 #include "unirender/RenderContext.h"
 
+#include <functional>
+
 struct render;
 
 namespace ur
@@ -15,8 +17,8 @@ class RenderContext : public ur::RenderContext
 public:
 	struct Callback
 	{
-		void (*flush_shader)();
-		void (*flush_render_shader)();
+		std::function<void()> flush_shader;
+		std::function<void()> flush_render_shader;
 	};
 
 public:
