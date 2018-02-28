@@ -43,6 +43,7 @@
       <Filter>obj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\unirender\RenderContext.h" />
+    <ClInclude Include="..\..\..\include\unirender\Blackboard.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\external\ejoy2d\carray.c">
@@ -62,5 +63,6 @@
       <Filter>obj</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\RenderContext.cpp" />
+    <ClCompile Include="..\..\..\source\Blackboard.cpp" />
   </ItemGroup>
 </Project>

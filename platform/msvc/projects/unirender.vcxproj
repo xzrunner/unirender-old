@@ -82,6 +82,7 @@
     <ClInclude Include="..\..\..\external\ejoy2d\carray.h" />
     <ClInclude Include="..\..\..\external\ejoy2d\opengl.h" />
     <ClInclude Include="..\..\..\external\ejoy2d\render.h" />
+    <ClInclude Include="..\..\..\include\unirender\Blackboard.h" />
     <ClInclude Include="..\..\..\include\unirender\c_wrap_ur.h" />
     <ClInclude Include="..\..\..\include\unirender\gl\RenderContext.h" />
     <ClInclude Include="..\..\..\include\unirender\gl\typedef.h" />
@@ -94,6 +95,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\external\ejoy2d\carray.c" />
     <ClCompile Include="..\..\..\external\ejoy2d\render.c" />
+    <ClCompile Include="..\..\..\source\Blackboard.cpp" />
     <ClCompile Include="..\..\..\source\c_wrap_ur.cpp" />
     <ClCompile Include="..\..\..\source\gl\RenderContext.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)gl\</ObjectFileName>
