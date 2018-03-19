@@ -295,7 +295,7 @@ static int
 compile_link(struct render *R, struct shader *s, const char * VS, const char *FS) {
 	GLuint fs = compile(R, FS, GL_FRAGMENT_SHADER);
 	if (fs == 0) {
-		logger_printf(&R->log, "Can't compile fragment shader");
+		logger_printf(&R->log, "Can't compile fragment shader\n");
 		return 0;
 	} else {
 		glAttachShader(s->glid, fs);
