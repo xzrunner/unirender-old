@@ -171,6 +171,7 @@ void render_state_reset(struct render *R);
 
 void render_clear(struct render *R, enum EJ_CLEAR_MASK mask, unsigned long argb);
 void render_draw_elements(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni);
+void render_draw_elements_vao(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni, unsigned int vao);
 void render_draw_arrays(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni);
 
 // todo

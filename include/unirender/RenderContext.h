@@ -12,6 +12,28 @@ namespace ur
 class RenderContext
 {
 public:
+	struct VertexAttribute
+	{
+		VertexAttribute(uint32_t index, size_t size, size_t stride, size_t offset)
+			: index(index), size(size), stride(stride), offset(offset) {}
+
+		uint32_t index = 0;
+		size_t   size = 0;
+		size_t   stride = 0;
+		size_t   offset = 0;
+	};
+
+	struct VertexInfo
+	{
+		const float*          vertices = nullptr;
+		size_t                vn = 0;
+		const unsigned short* indices = nullptr;
+		size_t                in = 0;
+
+		std::vector<VertexAttribute> va_list;
+	};
+
+public:
 	RenderContext() {}
 	virtual ~RenderContext() {}
 
@@ -108,6 +130,10 @@ public:
 	virtual int  CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list) = 0;
 	virtual void ReleaseVertexLayout(int id) = 0;
 	virtual void BindVertexLayout(int id) = 0;
+
+	virtual void CreateVAO(const VertexInfo& vi, unsigned int& vao, unsigned int& vbo, unsigned int& ebo) = 0;
+	virtual void ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int ebo) = 0;
+	virtual void DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) = 0;
 
 	/************************************************************************/
 	/* Debug                                                                */

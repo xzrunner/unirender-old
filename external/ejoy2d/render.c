@@ -15,7 +15,7 @@
 #if !defined (VAO_DISABLE) && !defined (__ANDROID__)
 // If your platform doesn't support VAO, comment it out.
 // Or define VAO_DISABLE first
-#define VAO_ENABLE
+//#define VAO_ENABLE
 
 
 #if defined (GL_OES_vertex_array_object)
@@ -1158,6 +1158,31 @@ render_draw_elements(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int 
 		glDrawElements(draw_mode[mode], ni, type, (char *)0 + offset);
 		CHECK_GL_ERROR
 	}
+}
+
+void 
+render_draw_elements_vao(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni, unsigned int vao) {
+	render_state_commit(R);
+
+	static int draw_mode[] = {
+		GL_POINTS,
+		GL_LINES,
+		GL_LINE_LOOP,
+		GL_LINE_STRIP,
+		GL_TRIANGLES,
+		GL_TRIANGLE_STRIP,
+		GL_TRIANGLE_FAN,
+	};
+	assert((int)mode < sizeof(draw_mode) / sizeof(int));
+
+	glBindVertexArray(vao);
+
+	int offset = sizeof(short) * fromidx;
+	glDrawElements(draw_mode[mode], ni, GL_UNSIGNED_SHORT, (char *)0 + offset);
+
+	glBindVertexArray(0);
+
+	CHECK_GL_ERROR
 }
 
 void 
