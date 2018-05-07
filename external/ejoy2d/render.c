@@ -46,6 +46,19 @@
 	#define CHECK_GL_ERROR check_opengl_error_debug((struct render *)R, __FILE__, __LINE__);
 #endif
 
+#ifndef GL_COMPRESSED_RGBA8_ETC2_EAC
+#define GL_COMPRESSED_RGBA8_ETC2_EAC 0x9278
+#endif // GL_COMPRESSED_RGBA8_ETC2_EAC
+#ifndef GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT 0x83F1
+#endif // GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
+#ifndef GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT 0x83F2
+#endif // GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
+#ifndef GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
+#endif // GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
+
 struct buffer {
 	GLuint glid;
 	GLenum gltype;
@@ -128,11 +141,11 @@ static inline void
 check_opengl_error_debug(struct render *R, const char *filename, int line) {
 	GLenum error = glGetError();
 	if (error != GL_NO_ERROR
-//		&& error != GL_INVALID_ENUM 
+//		&& error != GL_INVALID_ENUM
 //		&& error != GL_INVALID_VALUE
 //		&& error != GL_INVALID_OPERATION
 //		&& error != GL_OUT_OF_MEMORY
-//		&& error != GL_STACK_OVERFLOW 
+//		&& error != GL_STACK_OVERFLOW
 //		&& error != GL_STACK_UNDERFLOW
 	) {
 		logger_printf(&R->log, "GL_ERROR (0x%x) @ %s : %d\n", error, filename, line);
@@ -141,7 +154,7 @@ check_opengl_error_debug(struct render *R, const char *filename, int line) {
 }
 
 // what should be EJ_VERTEXBUFFER or EJ_INDEXBUFFER
-RID 
+RID
 render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void *data, int n, int stride) {
 	GLenum gltype;
 	switch(what) {
@@ -173,7 +186,7 @@ render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void *data
 	return array_id(&R->buffer, buf);
 }
 
-void 
+void
 render_buffer_update(struct render *R, RID id, const void * data, int n) {
 	struct buffer * buf = (struct buffer *)array_ref(&R->buffer, id);
 #ifdef VAO_ENABLE
@@ -194,7 +207,7 @@ close_buffer(void *p, void *R) {
 	CHECK_GL_ERROR
 }
 
-RID 
+RID
 render_register_vertexlayout(struct render *R, int n, struct vertex_attrib * attrib) {
 	assert(n <= MAX_ATTRIB);
 	struct attrib * a = (struct attrib*)array_alloc(&R->attrib);
@@ -214,7 +227,7 @@ render_register_vertexlayout(struct render *R, int n, struct vertex_attrib * att
 static GLuint
 compile(struct render *R, const char * source, int type) {
 	GLint status;
-	
+
 	GLuint shader = glCreateShader(type);
 
 	const GLchar* sources[3] = {
@@ -250,9 +263,9 @@ compile(struct render *R, const char * source, int type) {
 	glShaderSource(shader, 3, sources, NULL);
 
 	glCompileShader(shader);
-	
+
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-	
+
 	if (status == GL_FALSE) {
 		char buf[1024];
 		GLint len;
@@ -274,7 +287,7 @@ static int
 link(struct render *R, GLuint prog) {
 	GLint status;
 	glLinkProgram(prog);
-	
+
 	glGetProgramiv(prog, GL_LINK_STATUS, &status);
 	if (status == 0) {
 		char buf[1024];
@@ -300,7 +313,7 @@ compile_link(struct render *R, struct shader *s, const char * VS, const char *FS
 	} else {
 		glAttachShader(s->glid, fs);
 	}
-	
+
 	GLuint vs = compile(R, VS, GL_VERTEX_SHADER);
 	if (vs == 0) {
 		logger_printf(&R->log, "Can't compile vertex shader");
@@ -343,7 +356,7 @@ compile_link(struct render *R, struct shader *s, const char * VS, const char *FS
 	return link(R, s->glid);
 }
 
-RID 
+RID
 render_shader_create(struct render *R, struct shader_init_args *args) {
 	struct shader * s = (struct shader *)array_alloc(&R->shader);
 	if (s == NULL) {
@@ -402,7 +415,7 @@ close_target(void *p, void *R) {
 	CHECK_GL_ERROR
 }
 
-void 
+void
 render_release(struct render *R, enum EJ_RENDER_OBJ what, RID id) {
 	switch (what) {
 	case EJ_VERTEXBUFFER:
@@ -452,7 +465,7 @@ render_release(struct render *R, enum EJ_RENDER_OBJ what, RID id) {
 	}
 }
 
-void 
+void
 render_set(struct render *R, enum EJ_RENDER_OBJ what, RID id, int slot) {
 	switch (what) {
 	case EJ_VERTEXBUFFER:
@@ -482,7 +495,7 @@ render_set(struct render *R, enum EJ_RENDER_OBJ what, RID id, int slot) {
 	}
 }
 
-RID 
+RID
 render_get(struct render *R, enum EJ_RENDER_OBJ what, int slot) {
 	switch (what) {
 	case EJ_TEXTURE:
@@ -521,9 +534,9 @@ render_shader_bind(struct render *R, RID id) {
 	CHECK_GL_ERROR
 }
 
-int 
+int
 render_size(struct render_init_args *args) {
-	return sizeof(struct render) + 
+	return sizeof(struct render) +
 		array_size(args->max_buffer, sizeof(struct buffer)) +
 		array_size(args->max_layout, sizeof(struct attrib)) +
 		array_size(args->max_target, sizeof(struct target)) +
@@ -538,7 +551,7 @@ new_array(struct block *B, struct array *A, int n, int sz) {
 	array_init(A, buffer, n, sz);
 }
 
-struct render * 
+struct render *
 render_init(struct render_init_args *args, void * buffer, int sz) {
 	struct block B;
 	block_init(&B, buffer, sz);
@@ -558,7 +571,7 @@ render_init(struct render_init_args *args, void * buffer, int sz) {
 	return R;
 }
 
-void 
+void
 render_exit(struct render * R) {
 	array_exit(&R->buffer, close_buffer, R);
 	array_exit(&R->shader, close_shader, R);
@@ -566,12 +579,12 @@ render_exit(struct render * R) {
 	array_exit(&R->target, close_target, R);
 }
 
-void 
+void
 render_setviewport(int x, int y, int width, int height) {
 	glViewport(x, y, width, height);
 }
 
-void 
+void
 render_setscissor(struct render *R, int x, int y, int width, int height ) {
 	R->current.scissor = 1;
 	R->current.scissor_x = x;
@@ -650,11 +663,13 @@ static int
 calc_texture_size(enum EJ_TEXTURE_FORMAT format, int width, int height) {
 	switch( format ) {
 	case EJ_TEXTURE_RGBA8 :
+	case EJ_TEXTURE_BGRA_EXT:
 		return width * height * 4;
 	case EJ_TEXTURE_RGB565:
 	case EJ_TEXTURE_RGBA4 :
 		return width * height * 2;
 	case EJ_TEXTURE_RGB:
+	case EJ_TEXTURE_BGR_EXT:
 		return width * height * 3;
 	case EJ_TEXTURE_A8 :
 	case EJ_TEXTURE_DEPTH :
@@ -666,12 +681,17 @@ calc_texture_size(enum EJ_TEXTURE_FORMAT format, int width, int height) {
 		return width * height / 2;
 	case EJ_TEXTURE_ETC2:
 		return width * height;
+	case EJ_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+		return width * height / 2;
+	case EJ_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+	case EJ_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+		return width * height;
 	default:
 		return 0;
 	}
 }
 
-RID 
+RID
 render_texture_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap) {
 	struct texture * tex = (struct texture *)array_alloc(&R->texture);
 	if (tex == NULL)
@@ -715,64 +735,82 @@ bind_texture(struct render *R, struct texture * tex, int slice, GLenum *type, in
 
 // return compressed
 static int
-texture_format(struct texture * tex, GLint *pf, GLenum *pt) {
-	GLuint format = 0;
-	GLenum itype = 0;
+texture_format(struct texture* tex, GLint* internal_format, GLenum* pixel_format, GLenum* itype) {
 	int compressed = 0;
 	switch(tex->format) {
 	case EJ_TEXTURE_RGBA8 :
-		format = GL_RGBA;
-		itype = GL_UNSIGNED_BYTE;
+		*internal_format = *pixel_format = GL_RGBA;
+		*itype = GL_UNSIGNED_BYTE;
 		break;
 	case EJ_TEXTURE_RGB :
-		format = GL_RGB;
-		itype = GL_UNSIGNED_BYTE;
+		*internal_format = *pixel_format = GL_RGB;
+		*itype = GL_UNSIGNED_BYTE;
 		break;
 	case EJ_TEXTURE_RGBA4 :
-		format = GL_RGBA;
-		itype = GL_UNSIGNED_SHORT_4_4_4_4;
+		*internal_format = *pixel_format = GL_RGBA;
+		*itype = GL_UNSIGNED_SHORT_4_4_4_4;
 		break;
 	case EJ_TEXTURE_RGB565:
-		format = GL_RGB;
-		itype = GL_UNSIGNED_SHORT_5_6_5;
+		*internal_format = *pixel_format = GL_RGB;
+		*itype = GL_UNSIGNED_SHORT_5_6_5;
+		break;
+	case EJ_TEXTURE_BGRA_EXT:
+		*internal_format = GL_RGBA;
+		*pixel_format = GL_BGRA_EXT;
+		*itype = GL_UNSIGNED_BYTE;
+		break;
+	case EJ_TEXTURE_BGR_EXT:
+		*internal_format = GL_RGB;
+		*pixel_format = GL_BGR_EXT;
+		*itype = GL_UNSIGNED_BYTE;
 		break;
 	case EJ_TEXTURE_A8 :
 	case EJ_TEXTURE_DEPTH :
 	#if OPENGLES == 3
-		format = GL_RED;
+		*internal_format = *pixel_format = GL_RED;
 	#else
-		format = GL_ALPHA;
+		*internal_format = *pixel_format = GL_ALPHA;
 	#endif
-		itype = GL_UNSIGNED_BYTE;
+		*itype = GL_UNSIGNED_BYTE;
 		break;
-#ifdef GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG 
+#ifdef GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG
 	case EJ_TEXTURE_PVR2 :
-		format = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+		*internal_format = *pixel_format = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
 		compressed = 1;
 		break;
 #endif
-#ifdef GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG 
+#ifdef GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG
 	case EJ_TEXTURE_PVR4 :
-		format = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+		*internal_format = *pixel_format = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
 		compressed = 1;
 		break;
 #endif
 #ifdef GL_ETC1_RGB8_OES
 	case EJ_TEXTURE_ETC1 :
-		format = GL_ETC1_RGB8_OES;
+		*internal_format = *pixel_format = GL_ETC1_RGB8_OES;
 		compressed = 1;
 		break;
 #endif // GL_ETC1_RGB8_OES
 	case EJ_TEXTURE_ETC2:
-		format = 0x9278;	// GL_COMPRESSED_RGBA8_ETC2_EAC
+		*internal_format = *pixel_format = GL_COMPRESSED_RGBA8_ETC2_EAC;
+		compressed = 1;
+		break;
+	case EJ_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+		*internal_format = *pixel_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+		compressed = 1;
+		break;
+	case EJ_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+		*internal_format = *pixel_format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+		compressed = 1;
+		break;
+	case EJ_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+		*internal_format = *pixel_format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 		compressed = 1;
 		break;
 	default:
 		assert(0);
 		return -1;
 	}
-	*pf = format;
-	*pt = itype;
 	return compressed;
 }
 
@@ -796,21 +834,22 @@ render_texture_update(struct render *R, RID id, int width, int height, const voi
 	glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-	GLint format = 0;
+	GLint internal_format = 0;
+	GLenum pixel_format = 0;
 	GLenum itype = 0;
-	int compressed = texture_format(tex, &format, &itype);
+	int compressed = texture_format(tex, &internal_format, &pixel_format, &itype);
 	if (compressed) {
- 		glCompressedTexImage2D(target, miplevel, format,
- 			(GLsizei)tex->width, (GLsizei)tex->height, 0, 
+ 		glCompressedTexImage2D(target, miplevel, pixel_format,
+ 			(GLsizei)tex->width, (GLsizei)tex->height, 0,
  			calc_texture_size(tex->format, width, height), pixels);
 	} else {
-		glTexImage2D(target, miplevel, format, (GLsizei)width, (GLsizei)height, 0, format, itype, pixels);
+		glTexImage2D(target, miplevel, internal_format, (GLsizei)width, (GLsizei)height, 0, pixel_format, itype, pixels);
 	}
 
 	CHECK_GL_ERROR
 }
 
-void 
+void
 render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, int y, int w, int h) {
 	struct texture * tex = (struct texture *)array_ref(&R->texture, id);
 	if (tex == NULL)
@@ -821,22 +860,23 @@ render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, in
 	bind_texture(R, tex, 0, &type, &target);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-	GLint format = 0;
+	GLint internal_format = 0;
+	GLenum pixel_format = 0;
 	GLenum itype = 0;
-	int compressed = texture_format(tex, &format, &itype);
+	int compressed = texture_format(tex, &internal_format, &pixel_format, &itype);
 	if (compressed) {
-		glCompressedTexSubImage2D(GL_TEXTURE_2D, 0, 
-			x, y, w, h,	format, 
+		glCompressedTexSubImage2D(GL_TEXTURE_2D, 0,
+			x, y, w, h, pixel_format,
 			calc_texture_size(tex->format, w, h), pixels);
 	} else {
-		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, format, itype, pixels);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, pixel_format, itype, pixels);
 	}
 
 	CHECK_GL_ERROR
 }
 
 // blend func
-void 
+void
 render_set_blendfunc(struct render *R, enum EJ_BLEND_FORMAT src, enum EJ_BLEND_FORMAT dst) {
 	R->current.blend_src = src;
 	R->current.blend_dst = dst;
@@ -844,34 +884,34 @@ render_set_blendfunc(struct render *R, enum EJ_BLEND_FORMAT src, enum EJ_BLEND_F
 }
 
 // blend equation
-void 
+void
 render_set_blendeq(struct render *R, enum EJ_BLEND_FUNC eq) {
 	R->current.blend_func = eq;
 	R->changeflag |= CHANGE_BLEND_EQ;
 }
 
 // depth
-void 
+void
 render_enabledepthmask(struct render *R, int enable) {
 	R->current.depthmask = enable;
 	R->changeflag |= CHANGE_DEPTH;
 }
 
 // depth
-void 
+void
 render_enablescissor(struct render *R, int enable) {
 	R->current.scissor = enable;
 	R->changeflag |= CHANGE_SCISSOR;
 }
 
-void 
+void
 render_setdepth(struct render *R, enum EJ_DEPTH_FORMAT d) {
 	R->current.depth = d;
 	R->changeflag |= CHANGE_DEPTH;
 }
 
 // cull
-void 
+void
 render_setcull(struct render *R, enum EJ_CULL_MODE c) {
 	R->current.cull = c;
 	R->changeflag |= CHANGE_CULL;
@@ -899,7 +939,7 @@ create_rt(struct render *R, RID texid) {
 	return array_id(&R->target, tar);
 }
 
-RID 
+RID
 render_target_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format) {
 	RID tex = render_texture_create(R, width, height, format, EJ_TEXTURE_2D, 0);
 	if (tex == 0)
@@ -917,7 +957,7 @@ render_target_create(struct render *R, int width, int height, enum EJ_TEXTURE_FO
 	return rt;
 }
 
-RID 
+RID
 render_target_texture(struct render *R, RID rt) {
 	struct target *tar = (struct target *)array_ref(&R->target, rt);
 	if (tar) {
@@ -1023,15 +1063,15 @@ render_state_commit(struct render *R) {
 		if (R->last.depth != R->current.depth) {
 			if (R->last.depth == EJ_DEPTH_DISABLE) {
 				glEnable( GL_DEPTH_TEST);
-			} 
+			}
 			if (R->current.depth == EJ_DEPTH_DISABLE) {
 				glDisable( GL_DEPTH_TEST);
 			} else {
 				static GLenum depth[] = {
 					0,
-					GL_LEQUAL, 
+					GL_LEQUAL,
 					GL_LESS,
-					GL_EQUAL, 
+					GL_EQUAL,
 					GL_GREATER,
 					GL_GEQUAL,
 					GL_ALWAYS,
@@ -1085,14 +1125,14 @@ render_state_commit(struct render *R) {
 			R->last.scissor_w = R->current.scissor_w;
 			R->last.scissor_h = R->current.scissor_h;
 		}
-	}	
+	}
 
 	R->changeflag = 0;
 
 	CHECK_GL_ERROR
 }
 
-void 
+void
 render_state_reset(struct render *R) {
 	R->changeflag = ~0;
 	memset(&R->last, 0 , sizeof(R->last));
@@ -1130,7 +1170,7 @@ render_clear(struct render *R, enum EJ_CLEAR_MASK mask, unsigned long c) {
 }
 
 // draw
-void 
+void
 render_draw_elements(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni) {
 	static int draw_mode[] = {
 		GL_POINTS,
@@ -1160,7 +1200,7 @@ render_draw_elements(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int 
 	}
 }
 
-void 
+void
 render_draw_elements_vao(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni, unsigned int vao) {
 	render_state_commit(R);
 
@@ -1185,7 +1225,7 @@ render_draw_elements_vao(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, 
 	CHECK_GL_ERROR
 }
 
-void 
+void
 render_draw_arrays(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni) {
 	static int draw_mode[] = {
 		GL_POINTS,
@@ -1203,7 +1243,7 @@ render_draw_arrays(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni
 }
 
 // uniform
-int 
+int
 render_shader_locuniform(struct render *R, const char * name) {
 	struct shader * s = (struct shader *)array_ref(&R->shader, R->program);
 	if (s) {
@@ -1215,7 +1255,7 @@ render_shader_locuniform(struct render *R, const char * name) {
 	}
 }
 
-void 
+void
 render_shader_setuniform(struct render *R, int loc, enum EJ_UNIFORM_FORMAT format, const float *v) {
 	switch(format) {
 	case EJ_UNIFORM_FLOAT1:
@@ -1246,12 +1286,12 @@ render_shader_setuniform(struct render *R, int loc, enum EJ_UNIFORM_FORMAT forma
 	CHECK_GL_ERROR
 }
 
-int 
+int
 render_version(struct render *R) {
 	return OPENGLES;
 }
 
-int 
+int
 render_get_texture_gl_id(struct render *R, RID id) {
 	struct texture * tex = (struct texture *)array_ref(&R->texture, id);
 	if (tex == NULL) {
@@ -1261,14 +1301,14 @@ render_get_texture_gl_id(struct render *R, RID id) {
 	}
 }
 
-int 
+int
 render_query_target() {
 	GLint fbo = 0;
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo);
 	return fbo;
 }
 
-void 
+void
 render_clear_texture_cache(struct render* R) {
 	memset(R->last.texture, 0, sizeof(R->last.texture));
 }
