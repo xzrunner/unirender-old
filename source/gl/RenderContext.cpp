@@ -77,7 +77,7 @@ RenderContext::RenderContext(int max_texture)
 
 #if defined( __APPLE__ ) && !defined(__MACOSX)
 #else
-	m_etc2 = CheckETC2Support();	
+	m_etc2 = CheckETC2Support();
 #endif
 	LOGI("Support etc2 %d\n", IsSupportETC2());
 }
@@ -123,7 +123,7 @@ int RenderContext::CreateTextureID(int width, int height, int format)
 #endif // CHECK_MT
 
 	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, 0);
-	return id;		
+	return id;
 }
 
 void RenderContext::ReleaseTexture(int id)
@@ -169,7 +169,7 @@ void RenderContext::BindTexture(int id, int channel)
 	if (channel < 0 || channel >= MAX_TEXTURE_CHANNEL || m_textures[channel] == id) {
 		return;
 	}
-	
+
 	GD_ASSERT(m_cb.flush_render_shader, "null cb.")
 	m_cb.flush_render_shader();
 
@@ -303,7 +303,7 @@ int  RenderContext::CheckRenderTargetStatus()
 //void RenderContext::SetCurrRenderTarget(int id)
 //{
 ////	render_set(RS->R, TARGET, id, 0);
-//	m_curr_rt = id;	
+//	m_curr_rt = id;
 //}
 //
 //int  RenderContext::GetCurrRenderTarget() const
@@ -737,26 +737,57 @@ void RenderContext::BindVertexLayout(int id)
 	render_set(m_render, EJ_VERTEXLAYOUT, id, 0);
 }
 
-void RenderContext::CreateVAO(const VertexInfo& vi, 
-	                          unsigned int& vao, 
-	                          unsigned int& vbo, 
+void RenderContext::CreateVAO(const VertexInfo& vi,
+	                          unsigned int& vao,
+	                          unsigned int& vbo,
 	                          unsigned int& ebo)
 {
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ebo); 
+	glGenBuffers(1, &ebo);
 
 	glBindVertexArray(vao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vi.vn, vi.vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vi.vn, vi.vertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * vi.in, vi.indices, GL_STATIC_DRAW);
 
+	size_t stride = 0;
 	for (auto& va : vi.va_list) {
-		glEnableVertexAttribArray(va.index);
-		glVertexAttribPointer(va.index, va.size, GL_FLOAT, GL_FALSE, va.stride * sizeof(float), (void*)(va.offset * sizeof(float)));
+		stride += va.num * va.size;
+	}
+
+	size_t idx = 0;
+	size_t offset = 0;
+	for (auto& va : vi.va_list)
+	{
+		GLenum type;
+		GLboolean normalized;
+		switch (va.size)
+		{
+		case 1:
+			type = GL_UNSIGNED_BYTE;
+			normalized = GL_TRUE;
+			break;
+		case 2:
+			type = GL_UNSIGNED_SHORT;
+			normalized = GL_TRUE;
+			break;
+		case 4:
+			type = GL_FLOAT;
+			normalized = GL_FALSE;
+			break;
+		default:
+			assert(0);
+		}
+
+		glEnableVertexAttribArray(idx);
+		glVertexAttribPointer(idx, va.num, type, normalized, stride, (void*)(offset));
+
+		++idx;
+		offset += va.size * va.num;
 	}
 
 	glBindVertexArray(0);
@@ -906,7 +937,7 @@ bool RenderContext::CheckETC2SupportFast()
 		if (fmt_list[i] == 0x9278) {
 			ret = true;
 			break;
-		}		
+		}
 	}
 #endif
 	return ret;
@@ -921,7 +952,7 @@ bool RenderContext::CheckETC2SupportSlow()
 #if defined( __APPLE__ ) && !defined(__MACOSX)
     return false;
 #endif
-    
+
 	bool ret = false;
 
 	const int WIDTH = 4;

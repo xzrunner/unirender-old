@@ -1,18 +1,22 @@
 #pragma once
 
 #include <cu/uncopyable.h>
+#include <cu/cu_stl.h>
 
 #include <string>
+#include <vector>
 
 namespace ur
 {
 
 class RenderContext;
+struct VertexAttrib;
 
 class Shader : private cu::Uncopyable
 {
 public:
-	Shader(RenderContext* rc, const char* vertex_path, const char* fragment_path);
+	Shader(RenderContext* rc, const char* vertex_path,
+		const char* fragment_path, const CU_VEC<VertexAttrib>& va_list);
 	~Shader();
 
 	void Use();

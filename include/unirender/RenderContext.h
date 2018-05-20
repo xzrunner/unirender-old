@@ -14,18 +14,16 @@ class RenderContext
 public:
 	struct VertexAttribute
 	{
-		VertexAttribute(uint32_t index, size_t size, size_t stride, size_t offset)
-			: index(index), size(size), stride(stride), offset(offset) {}
+		VertexAttribute(size_t num, size_t size)
+			: num(num), size(size) {}
 
-		uint32_t index = 0;
-		size_t   size = 0;
-		size_t   stride = 0;
-		size_t   offset = 0;
+		size_t num = 0;
+		size_t size = 0;
 	};
 
 	struct VertexInfo
 	{
-		const float*          vertices = nullptr;
+		const void*           vertices = nullptr;
 		size_t                vn = 0;
 		const unsigned short* indices = nullptr;
 		size_t                in = 0;

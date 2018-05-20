@@ -8,7 +8,10 @@
 namespace ur
 {
 
-Shader::Shader(RenderContext* rc, const char* vertex_path, const char* fragment_path)
+Shader::Shader(RenderContext* rc,
+	           const char* vertex_path,
+	           const char* fragment_path,
+	           const CU_VEC<VertexAttrib>& va_list)
 	: m_rc(rc)
 	, m_id(-1)
 {
@@ -16,6 +19,8 @@ Shader::Shader(RenderContext* rc, const char* vertex_path, const char* fragment_
 	std::ifstream ffs(fragment_path);
 	if (!fvs.fail() && !ffs.fail())
 	{
+		rc->CreateVertexLayout(va_list);
+
 		std::stringstream svs, sfs;
 		svs << fvs.rdbuf();
 		sfs << ffs.rdbuf();
