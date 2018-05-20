@@ -356,13 +356,13 @@ int RenderContext::GetShaderUniform(const char* name)
 	return render_shader_locuniform(m_render, name);
 }
 
-void RenderContext::SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v)
+void RenderContext::SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v, int n)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	render_shader_setuniform(m_render, loc, (EJ_UNIFORM_FORMAT)format, v);
+	render_shader_setuniform(m_render, loc, (EJ_UNIFORM_FORMAT)format, v, n);
 }
 
 /************************************************************************/

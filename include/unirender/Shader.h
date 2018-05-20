@@ -23,6 +23,7 @@ public:
 	void SetVec3(const std::string& name, const float value[3]) const;
 	void SetMat3(const std::string& name, const float value[9]) const;
 	void SetMat4(const std::string& name, const float value[16]) const;
+	void SetMultiMat4(const std::string& name, const float* value, int n) const;
 
 private:
 	RenderContext* m_rc;

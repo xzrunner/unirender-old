@@ -83,4 +83,11 @@ void Shader::SetMat4(const std::string& name, const float value[16]) const
 	}
 }
 
+void Shader::SetMultiMat4(const std::string& name, const float* value, int n) const
+{
+	if (m_id != -1) {
+		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_MULTI_FLOAT44, value, n);
+	}
+}
+
 }

@@ -81,7 +81,7 @@ public:
 	virtual void BindShader(int id) = 0;
 
 	virtual int  GetShaderUniform(const char* name) = 0;
-	virtual void SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v) = 0;
+	virtual void SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v, int n = 1) = 0;
 
 	/************************************************************************/
 	/* State                                                                */

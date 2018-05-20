@@ -1256,7 +1256,7 @@ render_shader_locuniform(struct render *R, const char * name) {
 }
 
 void
-render_shader_setuniform(struct render *R, int loc, enum EJ_UNIFORM_FORMAT format, const float *v) {
+render_shader_setuniform(struct render *R, int loc, enum EJ_UNIFORM_FORMAT format, const float *v, int n) {
 	switch(format) {
 	case EJ_UNIFORM_FLOAT1:
 		glUniform1f(loc, v[0]);
@@ -1278,6 +1278,9 @@ render_shader_setuniform(struct render *R, int loc, enum EJ_UNIFORM_FORMAT forma
 		break;
 	case EJ_UNIFORM_INT1:
 		glUniform1i(loc, (int)v[0]);
+		break;
+	case EJ_UNIFORM_MULTI_FLOAT44:
+		glUniformMatrix4fv(loc, n, GL_FALSE, v);
 		break;
 	default:
 		assert(0);

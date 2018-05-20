@@ -17,7 +17,7 @@ class RenderContext : public ur::RenderContext
 public:
 	RenderContext(int max_texture);
 	virtual ~RenderContext();
-	
+
 	virtual int RenderVersion() const override final;
 
 	/************************************************************************/
@@ -63,7 +63,7 @@ public:
 	virtual void BindShader(int id) override final;
 
 	virtual int  GetShaderUniform(const char* name) override final;
-	virtual void SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v) override final;
+	virtual void SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v, int n = 1) override final;
 
 	/************************************************************************/
 	/* State                                                                */
@@ -144,7 +144,7 @@ public:
 private:
 	static bool CheckETC2Support();
 	static bool CheckETC2SupportFast();
-	static bool CheckETC2SupportSlow();	
+	static bool CheckETC2SupportSlow();
 
 private:
 	static const int MAX_TEXTURE_CHANNEL = 8;
@@ -179,7 +179,7 @@ private:
 
 	bool         m_depth;
 	DEPTH_FORMAT m_depth_fmt;
-	
+
 	int          m_clear_mask;
 
 	int          m_vp_x, m_vp_y, m_vp_w, m_vp_h;
