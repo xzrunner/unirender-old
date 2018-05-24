@@ -15,7 +15,8 @@
 #if !defined (VAO_DISABLE) && !defined (__ANDROID__)
 // If your platform doesn't support VAO, comment it out.
 // Or define VAO_DISABLE first
-//#define VAO_ENABLE
+// fixme: some state changed not needed
+#define VAO_ENABLE
 
 
 #if defined (GL_OES_vertex_array_object)
