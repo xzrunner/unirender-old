@@ -15,8 +15,8 @@ struct VertexAttrib;
 class Shader : private cu::Uncopyable
 {
 public:
-	Shader(RenderContext* rc, const char* vertex_path,
-		const char* fragment_path, const CU_VEC<VertexAttrib>& va_list);
+	Shader(RenderContext* rc, const char* vs, const char* fs,
+		const CU_VEC<VertexAttrib>& va_list);
 	~Shader();
 
 	void Use();
@@ -35,5 +35,8 @@ private:
 	int m_id;
 
 }; // Shader
+
+std::unique_ptr<Shader> CreateShaderFromFile(RenderContext* rc, const char* vs_filepath,
+	const char* fs_filepath, const CU_VEC<VertexAttrib>& va_list);
 
 }

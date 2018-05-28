@@ -8,28 +8,13 @@
 namespace ur
 {
 
-Shader::Shader(RenderContext* rc,
-	           const char* vertex_path,
-	           const char* fragment_path,
+Shader::Shader(RenderContext* rc, const char* vs, const char* fs,
 	           const CU_VEC<VertexAttrib>& va_list)
 	: m_rc(rc)
 	, m_id(-1)
 {
-	std::ifstream fvs(vertex_path);
-	std::ifstream ffs(fragment_path);
-	if (!fvs.fail() && !ffs.fail())
-	{
-		rc->CreateVertexLayout(va_list);
-
-		std::stringstream svs, sfs;
-		svs << fvs.rdbuf();
-		sfs << ffs.rdbuf();
-		fvs.close();
-		ffs.close();
-
-		std::string vs = svs.str(), fs = sfs.str();
-		m_id = rc->CreateShader(vs.c_str(), fs.c_str());
-	}
+	rc->CreateVertexLayout(va_list);
+	m_id = rc->CreateShader(vs, fs);
 }
 
 Shader::~Shader()
@@ -93,6 +78,25 @@ void Shader::SetMultiMat4(const std::string& name, const float* value, int n) co
 	if (m_id != -1) {
 		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_MULTI_FLOAT44, value, n);
 	}
+}
+
+std::unique_ptr<Shader> CreateShaderFromFile(RenderContext* rc, const char* vs_filepath,
+	                                         const char* fs_filepath, const CU_VEC<VertexAttrib>& va_list)
+{
+	std::ifstream fvs(vs_filepath);
+	std::ifstream ffs(fs_filepath);
+	if (fvs.fail() || ffs.fail()) {
+		return nullptr;
+	}
+
+	std::stringstream svs, sfs;
+	svs << fvs.rdbuf();
+	sfs << ffs.rdbuf();
+	fvs.close();
+	ffs.close();
+
+	std::string vs = svs.str(), fs = sfs.str();
+	return std::make_unique<Shader>(rc, vs.c_str(), fs.c_str(), va_list);
 }
 
 }
