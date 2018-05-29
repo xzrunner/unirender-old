@@ -767,7 +767,7 @@ texture_format(struct texture* tex, GLint* internal_format, GLenum* pixel_format
 		break;
 	case EJ_TEXTURE_A8 :
 	case EJ_TEXTURE_DEPTH :
-	#if OPENGLES == 3
+	#if OPENGLES == 3 || OPENGLES == 0
 		*internal_format = *pixel_format = GL_RED;
 	#else
 		*internal_format = *pixel_format = GL_ALPHA;
