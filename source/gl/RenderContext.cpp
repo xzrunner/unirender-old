@@ -316,16 +316,35 @@ int  RenderContext::CheckRenderTargetStatus()
 /* Shader                                                               */
 /************************************************************************/
 
-int  RenderContext::CreateShader(const char* vs, const char* fs)
+int  RenderContext::CreateShader(const char* vs, const char* fs, const std::vector<std::string>& textures)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
 	struct shader_init_args args;
+
 	args.vs = vs;
 	args.fs = fs;
-	args.texture = 0;
+
+	int n = textures.size();
+	args.texture = n;
+	if (n > 0)
+	{
+		args.texture_uniform = (const char**)malloc(sizeof(char*) * n);
+		for (int i = 0; i < args.texture; ++i)
+		{
+			auto& src = textures[i];
+			char* dst = (char*)malloc(src.size() + 1);
+			strcpy(dst, src.c_str());
+			args.texture_uniform[i] = dst;
+		}
+	}
+	else
+	{
+		args.texture_uniform = NULL;
+	}
+
 	return render_shader_create(m_render, &args);
 }
 

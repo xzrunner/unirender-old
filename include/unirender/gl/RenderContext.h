@@ -57,7 +57,7 @@ public:
 	/* Shader                                                               */
 	/************************************************************************/
 
-	virtual int  CreateShader(const char* vs, const char* fs) override final;
+	virtual int  CreateShader(const char* vs, const char* fs, const std::vector<std::string>& textures) override final;
 	virtual void ReleaseShader(int id) override final;
 
 	virtual void BindShader(int id) override final;

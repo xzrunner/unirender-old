@@ -9,12 +9,13 @@ namespace ur
 {
 
 Shader::Shader(RenderContext* rc, const char* vs, const char* fs,
+	           const std::vector<std::string>& textures,
 	           const CU_VEC<VertexAttrib>& va_list)
 	: m_rc(rc)
 	, m_id(-1)
 {
 	rc->CreateVertexLayout(va_list);
-	m_id = rc->CreateShader(vs, fs);
+	m_id = rc->CreateShader(vs, fs, textures);
 }
 
 Shader::~Shader()
@@ -80,8 +81,8 @@ void Shader::SetMultiMat4(const std::string& name, const float* value, int n) co
 	}
 }
 
-std::unique_ptr<Shader> CreateShaderFromFile(RenderContext* rc, const char* vs_filepath,
-	                                         const char* fs_filepath, const CU_VEC<VertexAttrib>& va_list)
+std::unique_ptr<Shader> CreateShaderFromFile(RenderContext* rc, const char* vs_filepath, const char* fs_filepath,
+	                                         const std::vector<std::string>& textures, const CU_VEC<VertexAttrib>& va_list)
 {
 	std::ifstream fvs(vs_filepath);
 	std::ifstream ffs(fs_filepath);
@@ -96,7 +97,7 @@ std::unique_ptr<Shader> CreateShaderFromFile(RenderContext* rc, const char* vs_f
 	ffs.close();
 
 	std::string vs = svs.str(), fs = sfs.str();
-	return std::make_unique<Shader>(rc, vs.c_str(), fs.c_str(), va_list);
+	return std::make_unique<Shader>(rc, vs.c_str(), fs.c_str(), textures, va_list);
 }
 
 }
