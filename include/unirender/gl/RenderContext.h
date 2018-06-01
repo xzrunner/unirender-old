@@ -94,6 +94,8 @@ public:
 	virtual void SetPointSize(float size) override final;
 	virtual void SetLineWidth(float size) override final;
 
+	virtual void SetPolygonMode(POLYGON_MODE poly_mode) override final;
+
 	virtual void EnableLineStripple(bool stripple) override final;
 	virtual void SetLineStripple(int pattern) override final;
 

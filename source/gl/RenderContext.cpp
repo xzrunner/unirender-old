@@ -631,6 +631,26 @@ void RenderContext::SetLineWidth(float size)
 #endif
 }
 
+void RenderContext::SetPolygonMode(POLYGON_MODE poly_mode)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	switch (poly_mode)
+	{
+	case POLYGON_POINT:
+		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+		break;
+	case POLYGON_LINE:
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		break;
+	case POLYGON_FILL:
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		break;
+	}
+}
+
 void RenderContext::EnableLineStripple(bool stripple)
 {
 #ifdef CHECK_MT

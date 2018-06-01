@@ -105,6 +105,13 @@ enum CULL_MODE {
 	CULL_BACK,
 };
 
+enum POLYGON_MODE
+{
+	POLYGON_POINT = 0,
+	POLYGON_LINE,
+	POLYGON_FILL,
+};
+
 }
 
 #endif // _UNIRENDER_TYPEDEF_H_

@@ -110,6 +110,8 @@ public:
 	virtual void SetPointSize(float size) = 0;
 	virtual void SetLineWidth(float size) = 0;
 
+	virtual void SetPolygonMode(POLYGON_MODE poly_mode) = 0;
+
 	virtual void EnableLineStripple(bool stripple) = 0;
 	virtual void SetLineStripple(int pattern) = 0;
 
