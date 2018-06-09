@@ -93,6 +93,8 @@ public:
 	virtual void EnableDepth(bool depth) = 0;
 	virtual void SetDepthFormat(DEPTH_FORMAT fmt) = 0;
 
+	virtual void SetCull(CULL_MODE cull) = 0;
+
 	virtual void SetClearFlag(int flag) = 0;
 	virtual void Clear(unsigned long argb) = 0;
 

@@ -483,6 +483,15 @@ void RenderContext::SetDepthFormat(DEPTH_FORMAT fmt)
 	render_setdepth(m_render, EJ_DEPTH_FORMAT(m_depth_fmt));
 }
 
+void RenderContext::SetCull(CULL_MODE cull)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	render_setcull(m_render, EJ_CULL_MODE(cull));
+}
+
 void RenderContext::SetClearFlag(int flag)
 {
 #ifdef CHECK_MT

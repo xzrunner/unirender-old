@@ -77,6 +77,8 @@ public:
 	virtual void EnableDepth(bool depth) override final;
 	virtual void SetDepthFormat(DEPTH_FORMAT fmt) override final;
 
+	virtual void SetCull(CULL_MODE cull) override final;
+
 	virtual void SetClearFlag(int flag) override final;
 	virtual void Clear(unsigned long argb) override final;
 
