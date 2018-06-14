@@ -25,6 +25,8 @@ public:
 	{
 		const void*           vertices = nullptr;
 		size_t                vn = 0;
+		size_t                stride = 0;
+
 		const unsigned short* indices = nullptr;
 		size_t                in = 0;
 
@@ -136,6 +138,7 @@ public:
 	virtual void CreateVAO(const VertexInfo& vi, unsigned int& vao, unsigned int& vbo, unsigned int& ebo) = 0;
 	virtual void ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int ebo) = 0;
 	virtual void DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) = 0;
+	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) = 0;
 
 	/************************************************************************/
 	/* Debug                                                                */

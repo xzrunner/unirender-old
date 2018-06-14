@@ -1239,7 +1239,31 @@ render_draw_arrays(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni
 	};
 	assert((int)mode < sizeof(draw_mode)/sizeof(int));
 	render_state_commit(R);
-	glDrawArrays(draw_mode[mode], 0, ni);
+	glDrawArrays(draw_mode[mode], fromidx, ni);
+	CHECK_GL_ERROR
+}
+
+void
+render_draw_arrays_vao(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni, unsigned int vao) {
+	render_state_commit(R);
+
+	static int draw_mode[] = {
+		GL_POINTS,
+		GL_LINES,
+		GL_LINE_LOOP,
+		GL_LINE_STRIP,
+		GL_TRIANGLES,
+		GL_TRIANGLE_STRIP,
+		GL_TRIANGLE_FAN,
+	};
+	assert((int)mode < sizeof(draw_mode) / sizeof(int));
+
+	glBindVertexArray(vao);
+
+	glDrawArrays(draw_mode[mode], fromidx, ni);
+
+	glBindVertexArray(0);
+
 	CHECK_GL_ERROR
 }
 

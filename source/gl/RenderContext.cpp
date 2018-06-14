@@ -791,17 +791,25 @@ void RenderContext::CreateVAO(const VertexInfo& vi,
 	                          unsigned int& vbo,
 	                          unsigned int& ebo)
 {
+	bool element = vi.in != 0;
+
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ebo);
+	if (element) {
+		glGenBuffers(1, &ebo);
+	} else {
+		ebo = 0;
+	}
 
 	glBindVertexArray(vao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, vi.vn, vi.vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vi.vn * vi.stride, vi.vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * vi.in, vi.indices, GL_STATIC_DRAW);
+	if (element) {
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * vi.in, vi.indices, GL_STATIC_DRAW);
+	}
 
 	size_t stride = 0;
 	for (auto& va : vi.va_list) {
@@ -848,7 +856,9 @@ void RenderContext::ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int 
 {
 	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(1, &vbo);
-	glDeleteBuffers(1, &ebo);
+	if (ebo != 0) {
+		glDeleteBuffers(1, &ebo);
+	}
 }
 
 void RenderContext::DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao)
@@ -858,6 +868,15 @@ void RenderContext::DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigne
 #endif // CHECK_MT
 
 	render_draw_elements_vao(m_render, (EJ_DRAW_MODE)mode, fromidx, ni, vao);
+}
+
+void RenderContext::DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	render_draw_arrays_vao(m_render, (EJ_DRAW_MODE)mode, fromidx, ni, vao);
 }
 
 /************************************************************************/

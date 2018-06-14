@@ -120,6 +120,7 @@ public:
 	virtual void CreateVAO(const VertexInfo& vi, unsigned int& vao, unsigned int& vbo, unsigned int& ebo) override final;
 	virtual void ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int ebo) override final;
 	virtual void DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) override final;
+	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) override final;
 
 	/************************************************************************/
 	/* Debug                                                                */
