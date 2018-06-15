@@ -851,14 +851,14 @@ render_texture_update(struct render *R, RID id, int width, int height, const voi
 }
 
 void
-render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, int y, int w, int h) {
+render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, int y, int w, int h, int slice, int miplevel) {
 	struct texture * tex = (struct texture *)array_ref(&R->texture, id);
 	if (tex == NULL)
 		return;
 
 	GLenum type;
 	int target;
-	bind_texture(R, tex, 0, &type, &target);
+	bind_texture(R, tex, slice, &type, &target);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
 	GLint internal_format = 0;
@@ -866,11 +866,11 @@ render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, in
 	GLenum itype = 0;
 	int compressed = texture_format(tex, &internal_format, &pixel_format, &itype);
 	if (compressed) {
-		glCompressedTexSubImage2D(GL_TEXTURE_2D, 0,
+		glCompressedTexSubImage2D(GL_TEXTURE_2D, miplevel,
 			x, y, w, h, pixel_format,
 			calc_texture_size(tex->format, w, h), pixels);
 	} else {
-		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, pixel_format, itype, pixels);
+		glTexSubImage2D(GL_TEXTURE_2D, miplevel, x, y, w, h, pixel_format, itype, pixels);
 	}
 
 	CHECK_GL_ERROR

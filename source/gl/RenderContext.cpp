@@ -105,24 +105,24 @@ int RenderContext::RenderVersion() const
 /* Texture                                                              */
 /************************************************************************/
 
-int  RenderContext::CreateTexture(const void* pixels, int width, int height, int format)
+int  RenderContext::CreateTexture(const void* pixels, int width, int height, int format, int mipmap)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, 0);
+	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap);
 	render_texture_update(m_render, id, width, height, pixels, 0, 0);
 	return id;
 }
 
-int RenderContext::CreateTextureID(int width, int height, int format)
+int RenderContext::CreateTextureID(int width, int height, int format, int mipmap)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, 0);
+	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap);
 	return id;
 }
 
@@ -142,22 +142,22 @@ void RenderContext::ReleaseTexture(int id)
 	render_release(m_render, EJ_TEXTURE, id);
 }
 
-void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int height)
+void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice, int miplevel)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	render_texture_update(m_render, tex_id, width, height, pixels, 0, 0);
+	render_texture_update(m_render, tex_id, width, height, pixels, slice, miplevel);
 }
 
-void RenderContext::UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id)
+void RenderContext::UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice, int miplevel)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	render_texture_subupdate(m_render, id, pixels, x, y, w, h);
+	render_texture_subupdate(m_render, id, pixels, x, y, w, h, slice, miplevel);
 }
 
 void RenderContext::BindTexture(int id, int channel)
