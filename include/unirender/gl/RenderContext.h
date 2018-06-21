@@ -28,7 +28,7 @@ public:
 	virtual int  CreateTextureID(int width, int height, int format, int mipmap = 0) override final;
 	virtual void ReleaseTexture(int id) override final;
 
-	virtual void UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice = 0, int miplevel = 0) override final;
+	virtual void UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice = 0, int miplevel = 0, int linear = 1) override final;
 	virtual void UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice = 0, int miplevel = 0) override final;
 
 	virtual void BindTexture(int id, int channel) override final;

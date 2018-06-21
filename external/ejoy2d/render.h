@@ -150,7 +150,7 @@ RID render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void *
 void render_buffer_update(struct render *R, RID id, const void * data, int n);
 
 RID render_texture_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap);
-void render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel);
+void render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel, int linear);
 // subupdate only support slice 0, miplevel 0
 void render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, int y, int w, int h, int slice, int miplevel);
 

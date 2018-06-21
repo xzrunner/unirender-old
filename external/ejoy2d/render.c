@@ -816,7 +816,7 @@ texture_format(struct texture* tex, GLint* internal_format, GLenum* pixel_format
 }
 
 void
-render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel) {
+render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel, int linear) {
 	struct texture * tex = (struct texture *)array_ref(&R->texture, id);
 	if (tex == NULL)
 		return;
@@ -826,11 +826,23 @@ render_texture_update(struct render *R, RID id, int width, int height, const voi
 	bind_texture(R, tex, slice, &type, &target);
 
 	if (tex->mipmap) {
-		glTexParameteri( type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+		if (linear) {
+			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		} else {
+			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		}
 	} else {
-		glTexParameteri( type, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		if (linear) {
+			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		} else {
+			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		}
 	}
-	glTexParameteri( type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	if (linear) {
+		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	} else {
+		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
 	glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 	glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
@@ -945,7 +957,7 @@ render_target_create(struct render *R, int width, int height, enum EJ_TEXTURE_FO
 	RID tex = render_texture_create(R, width, height, format, EJ_TEXTURE_2D, 0);
 	if (tex == 0)
 		return 0;
-	render_texture_update(R, tex, width, height, NULL, 0, 0);
+	render_texture_update(R, tex, width, height, NULL, 0, 0, 1);
 	RID rt = create_rt(R, tex);
 	glBindFramebuffer(GL_FRAMEBUFFER, R->default_framebuffer);
 	R->last.target = 0;
