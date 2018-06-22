@@ -774,8 +774,8 @@ texture_format(struct texture* tex, GLint* internal_format, GLenum* pixel_format
 	#else
 		*internal_format = *pixel_format = GL_ALPHA;
 	#endif
-		*itype = GL_UNSIGNED_BYTE;
-//		*itype = GL_FLOAT;
+//		*itype = GL_UNSIGNED_BYTE;
+		*itype = GL_FLOAT;
 		break;
 #ifdef GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG
 	case EJ_TEXTURE_PVR2 :
