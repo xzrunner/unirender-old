@@ -105,14 +105,16 @@ int RenderContext::RenderVersion() const
 /* Texture                                                              */
 /************************************************************************/
 
-int  RenderContext::CreateTexture(const void* pixels, int width, int height, int format, int mipmap)
+int  RenderContext::CreateTexture(const void* pixels, int width, int height, int format, int mipmap, int linear)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
 	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap);
-	render_texture_update(m_render, id, width, height, pixels, 0, 0, 1);
+
+	render_texture_update(m_render, id, width, height, pixels, 0, 0, linear);
+
 	return id;
 }
 
@@ -239,14 +241,19 @@ void RenderContext::BindRenderTarget(int id)
 	m_rt_layers[m_rt_depth++] = id;
 }
 
-void RenderContext::BindRenderTargetTex(int tex_id)
+void RenderContext::BindRenderTargetTex(int color_tex, int depth_tex)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	int gl_id = render_get_texture_gl_id(m_render, tex_id);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gl_id, 0);
+	int gl_color_tex = render_get_texture_gl_id(m_render, color_tex);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gl_color_tex, 0);
+
+	if (depth_tex >= 0) {
+		int gl_depth_tex = render_get_texture_gl_id(m_render, depth_tex);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gl_depth_tex, 0);
+	}
 }
 
 void RenderContext::UnbindRenderTarget()
@@ -913,6 +920,7 @@ void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, i
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
+//	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	if (channels == 4) {
 		glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
 	} else if (channels == 3) {

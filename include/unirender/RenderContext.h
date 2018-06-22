@@ -43,7 +43,7 @@ public:
 	/* Texture                                                              */
 	/************************************************************************/
 
-	virtual int  CreateTexture(const void* pixels, int width, int height, int format, int mipmap = 0) = 0;
+	virtual int  CreateTexture(const void* pixels, int width, int height, int format, int mipmap = 0, int linear = 1) = 0;
 	virtual int  CreateTextureID(int width, int height, int format, int mipmap = 0) = 0;
 	virtual void ReleaseTexture(int id) = 0;
 
@@ -63,7 +63,7 @@ public:
 	virtual void ReleaseRenderTarget(int id) = 0;
 
 	virtual void BindRenderTarget(int id) = 0;
-	virtual void BindRenderTargetTex(int tex_id) = 0;
+	virtual void BindRenderTargetTex(int color_tex, int depth_tex = -1) = 0;
 	virtual void UnbindRenderTarget() = 0;
 
 	virtual int  CheckRenderTargetStatus() = 0;

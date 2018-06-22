@@ -12,7 +12,7 @@ class Texture;
 class RenderTarget : private cu::Uncopyable
 {
 public:
-	RenderTarget(RenderContext* rc, int width, int height);
+	RenderTarget(RenderContext* rc, int width, int height, bool has_depth = false);
 	~RenderTarget();
 
 	void Bind();
@@ -23,11 +23,12 @@ public:
 	int TexID() const;
 
 	void Resize(int width, int height);
-	
+
 private:
 	RenderContext* m_rc;
 
-	Texture* m_texture;
+	Texture* m_color_tex;
+	Texture* m_depth_tex;
 
 	int m_id;
 

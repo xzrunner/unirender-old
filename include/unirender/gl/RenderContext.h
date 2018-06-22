@@ -24,7 +24,7 @@ public:
 	/* Texture                                                              */
 	/************************************************************************/
 
-	virtual int  CreateTexture(const void* pixels, int width, int height, int format, int mipmap = 0) override final;
+	virtual int  CreateTexture(const void* pixels, int width, int height, int format, int mipmap = 0, int linear = 1) override final;
 	virtual int  CreateTextureID(int width, int height, int format, int mipmap = 0) override final;
 	virtual void ReleaseTexture(int id) override final;
 
@@ -45,7 +45,7 @@ public:
 	virtual void ReleaseRenderTarget(int id) override final;
 
 	virtual void BindRenderTarget(int id) override final;
-	virtual void BindRenderTargetTex(int tex_id) override final;
+	virtual void BindRenderTargetTex(int color_tex, int depth_tex = -1) override final;
 	virtual void UnbindRenderTarget() override final;
 
 	virtual int  CheckRenderTargetStatus() override final;

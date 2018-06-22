@@ -10,6 +10,9 @@
     <Filter Include="obj">
       <UniqueIdentifier>{3969b0ad-6acb-498d-aa72-ee097b9dec9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="tools">
+      <UniqueIdentifier>{ef98ab09-abd9-4d39-8014-4a2a2b0508f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\external\ejoy2d\blendmode.h">
@@ -43,9 +46,14 @@
       <Filter>obj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\unirender\RenderContext.h" />
-    <ClInclude Include="..\..\..\include\unirender\Blackboard.h" />
     <ClInclude Include="..\..\..\include\unirender\Shader.h">
       <Filter>obj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\unirender\Blackboard.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\unirender\Utility.h">
+      <Filter>tools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -66,9 +74,14 @@
       <Filter>obj</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\RenderContext.cpp" />
-    <ClCompile Include="..\..\..\source\Blackboard.cpp" />
     <ClCompile Include="..\..\..\source\Shader.cpp">
       <Filter>obj</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\Blackboard.cpp">
+      <Filter>tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\Utility.cpp">
+      <Filter>tools</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
