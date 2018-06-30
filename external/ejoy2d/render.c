@@ -63,8 +63,6 @@
 struct buffer {
 	GLuint glid;
 	GLenum gltype;
-	int n;
-	int stride;
 };
 
 struct attrib {
@@ -92,6 +90,7 @@ struct attrib_layout {
 	GLint size;
  	GLenum type;
  	GLboolean normalized;
+	int stride;
 	int offset;
 };
 
@@ -156,7 +155,7 @@ check_opengl_error_debug(struct render *R, const char *filename, int line) {
 
 // what should be EJ_VERTEXBUFFER or EJ_INDEXBUFFER
 RID
-render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void *data, int n, int stride) {
+render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void *data, int size) {
 	GLenum gltype;
 	switch(what) {
 	case EJ_VERTEXBUFFER:
@@ -173,14 +172,10 @@ render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void *data
 		return 0;
 	glGenBuffers(1, &buf->glid);
 	glBindBuffer(gltype, buf->glid);
-	if (data && n > 0) {
-		glBufferData(gltype, n * stride, data, GL_STATIC_DRAW);
-		buf->n = n;
-	} else {
-		buf->n = 0;
+	if (data && size > 0) {
+		glBufferData(gltype, size, data, GL_STATIC_DRAW);
 	}
 	buf->gltype = gltype;
-	buf->stride = stride;
 
 	CHECK_GL_ERROR
 
@@ -188,15 +183,14 @@ render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void *data
 }
 
 void
-render_buffer_update(struct render *R, RID id, const void * data, int n) {
+render_buffer_update(struct render *R, RID id, const void* data, int size) {
 	struct buffer * buf = (struct buffer *)array_ref(&R->buffer, id);
 #ifdef VAO_ENABLE
 	glBindVertexArray(0);
 #endif
 	R->changeflag |= CHANGE_VERTEXARRAY;
 	glBindBuffer(buf->gltype, buf->glid);
-	buf->n = n;
-	glBufferData(buf->gltype, n * buf->stride, data, GL_DYNAMIC_DRAW);
+	glBufferData(buf->gltype, size, data, GL_DYNAMIC_DRAW);
 	CHECK_GL_ERROR
 }
 
@@ -212,8 +206,9 @@ RID
 render_register_vertexlayout(struct render *R, int n, struct vertex_attrib * attrib) {
 	assert(n <= MAX_ATTRIB);
 	struct attrib * a = (struct attrib*)array_alloc(&R->attrib);
-	if (a == NULL)
+	if (a == NULL) {
 		return 0;
+	}
 
 	a->n = n;
 	memcpy(a->a, attrib, n * sizeof(struct vertex_attrib));
@@ -223,6 +218,16 @@ render_register_vertexlayout(struct render *R, int n, struct vertex_attrib * att
 	R->attrib_layout = id;
 
 	return id;
+}
+
+void
+render_update_vertexlayout(struct render* R, int n, struct vertex_attrib* attrib) {
+	struct attrib* a = (struct attrib *)array_ref(&R->attrib, R->attrib_layout);
+	assert(a && a->n == n);
+	for (int i = 0; i < a->n; ++i) {
+		a->a[i] = attrib[i];
+		strcpy(a->a[i].name, attrib[i].name);
+	}
 }
 
 static GLuint
@@ -334,8 +339,9 @@ compile_link(struct render *R, struct shader *s, const char * VS, const char *FS
 		struct attrib_layout *al = &s->a[i];
 		glBindAttribLocation(s->glid, i, va->name);
 		al->vbslot = va->vbslot;
-		al->offset = va->offset;
 		al->size = va->n;
+		al->stride = va->stride;
+		al->offset = va->offset;
 		switch (va->size) {
 		case 1:
 			al->type = GL_UNSIGNED_BYTE;
@@ -597,13 +603,30 @@ render_setscissor(struct render *R, int x, int y, int width, int height ) {
 
 static int
 change_vb(struct render *R, struct shader * s) {
+	int ret = 0;
+	struct attrib* a = (struct attrib*)array_ref(&R->attrib, R->attrib_layout);
+	assert(s->n == a->n);
+	for (int i = 0; i < s->n; ++i) {
+		if (s->a[i].stride != a->a[i].stride) {
+			ret = 1;
+			s->a[i].stride = a->a[i].stride;
+		}
+		if (s->a[i].offset != a->a[i].offset) {
+			ret = 1;
+			s->a[i].offset = a->a[i].offset;
+		}
+	}
+
 #ifdef VAO_ENABLE
 	int change = memcmp(R->vbslot, s->vbslot, sizeof(R->vbslot));
 	memcpy(s->vbslot, R->vbslot, sizeof(R->vbslot));
-	return change;
+	if (change) {
+		ret = 1;
+	}
 #else
-	return 1;
+	ret = 1;
 #endif
+	return ret;
 }
 
 static int
@@ -628,7 +651,6 @@ apply_va(struct render *R) {
 		if (change_vb(R,s)) {
 			int i;
 			RID last_vb = 0;
-			int stride = 0;
 			for (i=0;i<s->n;i++) {
 				struct attrib_layout *al = &s->a[i];
 				int vbidx = al->vbslot;
@@ -640,10 +662,9 @@ apply_va(struct render *R) {
 					}
 					glBindBuffer(GL_ARRAY_BUFFER, buf->glid);
 					last_vb = vb;
-					stride = buf->stride;
 				}
 				glEnableVertexAttribArray(i);
-				glVertexAttribPointer(i, al->size, al->type, al->normalized, stride, (const GLvoid *)(ptrdiff_t)(al->offset));
+				glVertexAttribPointer(i, al->size, al->type, al->normalized, al->stride, (const GLvoid *)(ptrdiff_t)(al->offset));
 			}
 		}
 
@@ -1202,16 +1223,8 @@ render_draw_elements(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int 
 	RID ib = R->indexbuffer;
 	struct buffer * buf = (struct buffer *)array_ref(&R->buffer, ib);
 	if (buf) {
-		assert(fromidx + ni <= buf->n);
-		int offset = fromidx;
-		GLenum type = GL_UNSIGNED_SHORT;
-		if (buf->stride == 1) {
-			type = GL_UNSIGNED_BYTE;
-		} else {
-			offset *= sizeof(short);
-		}
-
-		glDrawElements(draw_mode[mode], ni, type, (char *)0 + offset);
+		int offset = fromidx * sizeof(short);
+		glDrawElements(draw_mode[mode], ni, GL_UNSIGNED_SHORT, (char *)0 + offset);
 		CHECK_GL_ERROR
 	}
 }

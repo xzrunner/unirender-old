@@ -33,7 +33,8 @@ public:
 private:
 	RenderContext* m_rc;
 
-	int m_id;
+	int m_shader_id;
+	int m_vert_layout_id;
 
 }; // Shader
 

@@ -12,15 +12,6 @@ namespace ur
 class RenderContext
 {
 public:
-	struct VertexAttribute
-	{
-		VertexAttribute(size_t num, size_t size)
-			: num(num), size(size) {}
-
-		size_t num = 0;
-		size_t size = 0;
-	};
-
 	struct VertexInfo
 	{
 		const void*           vertices = nullptr;
@@ -30,7 +21,7 @@ public:
 		const unsigned short* indices = nullptr;
 		size_t                in = 0;
 
-		std::vector<VertexAttribute> va_list;
+		std::vector<VertexAttrib> va_list;
 	};
 
 public:
@@ -126,14 +117,15 @@ public:
 	virtual void DrawElements(DRAW_MODE mode, int fromidx, int ni) = 0;
 	virtual void DrawArrays(DRAW_MODE mode, int fromidx, int ni) = 0;
 
-	virtual int  CreateBuffer(RENDER_OBJ what, const void *data, int n, int stride) = 0;
+	virtual int  CreateBuffer(RENDER_OBJ what, const void *data, int size) = 0;
 	virtual void ReleaseBuffer(RENDER_OBJ what, int id) = 0;
 	virtual void BindBuffer(RENDER_OBJ what, int id) = 0;
-	virtual void UpdateBuffer(int id, const void* data, int n) = 0;
+	virtual void UpdateBuffer(int id, const void* data, int size) = 0;
 
 	virtual int  CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list) = 0;
 	virtual void ReleaseVertexLayout(int id) = 0;
 	virtual void BindVertexLayout(int id) = 0;
+	virtual void UpdateVertexLayout(const CU_VEC<VertexAttrib>& va_list) = 0;
 
 	virtual void CreateVAO(const VertexInfo& vi, unsigned int& vao, unsigned int& vbo, unsigned int& ebo) = 0;
 	virtual void ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int ebo) = 0;

@@ -21,10 +21,11 @@ struct render_init_args {
 };
 
 struct vertex_attrib {
-	const char * name;
+	char name[16];
 	int vbslot;
 	int n;
 	int size;
+	int stride;
 	int offset;
 };
 
@@ -144,10 +145,11 @@ RID render_get(struct render *R, enum EJ_RENDER_OBJ what, int slot);
 void render_release(struct render *R, enum EJ_RENDER_OBJ what, RID id);
 
 RID render_register_vertexlayout(struct render *R, int n, struct vertex_attrib * attrib);
+void render_update_vertexlayout(struct render *R, int n, struct vertex_attrib * attrib);
 
 // what should be EJ_VERTEXBUFFER or EJ_INDEXBUFFER
-RID render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void *data, int n, int stride);
-void render_buffer_update(struct render *R, RID id, const void * data, int n);
+RID render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void* data, int size);
+void render_buffer_update(struct render *R, RID id, const void* data, int size);
 
 RID render_texture_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap);
 void render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel, int linear);

@@ -108,14 +108,15 @@ public:
 	virtual void DrawElements(DRAW_MODE mode, int fromidx, int ni) override final;
 	virtual void DrawArrays(DRAW_MODE mode, int fromidx, int ni) override final;
 
-	virtual int  CreateBuffer(RENDER_OBJ what, const void *data, int n, int stride) override final;
+	virtual int  CreateBuffer(RENDER_OBJ what, const void *data, int size) override final;
 	virtual void ReleaseBuffer(RENDER_OBJ what, int id) override final;
 	virtual void BindBuffer(RENDER_OBJ what, int id) override final;
-	virtual void UpdateBuffer(int id, const void* data, int n) override final;
+	virtual void UpdateBuffer(int id, const void* data, int size) override final;
 
 	virtual int  CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list) override final;
 	virtual void ReleaseVertexLayout(int id) override final;
 	virtual void BindVertexLayout(int id) override final;
+	virtual void UpdateVertexLayout(const CU_VEC<VertexAttrib>& va_list) override final;
 
 	virtual void CreateVAO(const VertexInfo& vi, unsigned int& vao, unsigned int& vbo, unsigned int& ebo) override final;
 	virtual void ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int ebo) override final;

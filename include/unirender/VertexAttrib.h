@@ -11,17 +11,19 @@ struct VertexAttrib
 	CU_STR name;
 	int n;
 	int size;
-	int tot_size;
+	int stride;
+	int offset;
 
-	VertexAttrib() : n(0), size(0), tot_size(0) {}
-	VertexAttrib(const CU_STR& name, int n, int size) {
-		Assign(name, n, size);
+	VertexAttrib() : n(0), size(0), stride(0), offset(0) {}
+	VertexAttrib(const CU_STR& name, int n, int size, int stride, int offset) {
+		Assign(name, n, size, stride, offset);
 	}
-	void Assign(const CU_STR& name, int n, int size) {
+	void Assign(const CU_STR& name, int n, int size, int stride, int offset) {
 		this->name = name;
 		this->n = n;
 		this->size = size;
-		this->tot_size = size * n;
+		this->stride = stride;
+		this->offset = offset;
 	}
 };
 

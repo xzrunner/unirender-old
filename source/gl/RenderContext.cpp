@@ -716,13 +716,13 @@ void RenderContext::DrawArrays(DRAW_MODE mode, int fromidx, int ni)
 	render_draw_arrays(m_render, (EJ_DRAW_MODE)mode, fromidx, ni);
 }
 
-int  RenderContext::CreateBuffer(RENDER_OBJ what, const void *data, int n, int stride)
+int  RenderContext::CreateBuffer(RENDER_OBJ what, const void *data, int size)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	return render_buffer_create(m_render, (EJ_RENDER_OBJ)what, NULL, n, stride);
+	return render_buffer_create(m_render, (EJ_RENDER_OBJ)what, data, size);
 }
 
 void RenderContext::ReleaseBuffer(RENDER_OBJ what, int id)
@@ -743,13 +743,13 @@ void RenderContext::BindBuffer(RENDER_OBJ what, int id)
 	render_set(m_render, (EJ_RENDER_OBJ)what, id, 0);
 }
 
-void RenderContext::UpdateBuffer(int id, const void* data, int n)
+void RenderContext::UpdateBuffer(int id, const void* data, int size)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	render_buffer_update(m_render, id, data, n);
+	render_buffer_update(m_render, id, data, size);
 }
 
 int  RenderContext::CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list)
@@ -759,17 +759,18 @@ int  RenderContext::CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list)
 #endif // CHECK_MT
 
 	struct vertex_attrib va[MAX_LAYOUT];
-	int offset = 0;
 	for (size_t i = 0, n = va_list.size(); i < n; ++i)
 	{
 		const VertexAttrib& src = va_list[i];
 		vertex_attrib& dst = va[i];
-		dst.name = src.name.c_str();
+		assert(src.name.size() < sizeof(dst.name) - 1);
+		strncpy(dst.name, src.name.c_str(), src.name.size());
+		dst.name[src.name.size()] = 0;
 		dst.vbslot = 0;	// todo
 		dst.n = src.n;
 		dst.size = src.size;
-		dst.offset = offset;
-		offset += src.tot_size;
+		dst.stride = src.stride;
+		dst.offset = src.offset;
 	}
 
 	return render_register_vertexlayout(m_render, (int)(va_list.size()), va);
@@ -791,6 +792,31 @@ void RenderContext::BindVertexLayout(int id)
 #endif // CHECK_MT
 
 	render_set(m_render, EJ_VERTEXLAYOUT, id, 0);
+}
+
+void RenderContext::UpdateVertexLayout(const CU_VEC<VertexAttrib>& va_list)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	struct vertex_attrib va[MAX_LAYOUT];
+	for (size_t i = 0, n = va_list.size(); i < n; ++i)
+	{
+		const VertexAttrib& src = va_list[i];
+		vertex_attrib& dst = va[i];
+
+		assert(src.name.size() < sizeof(dst.name) - 1);
+		strncpy(dst.name, src.name.c_str(), src.name.size());
+		dst.name[src.name.size()] = 0;
+		dst.vbslot = 0;	// todo
+		dst.n = src.n;
+		dst.size = src.size;
+		dst.stride = src.stride;
+		dst.offset = src.offset;
+	}
+
+	return render_update_vertexlayout(m_render, (int)(va_list.size()), va);
 }
 
 void RenderContext::CreateVAO(const VertexInfo& vi,
@@ -818,13 +844,7 @@ void RenderContext::CreateVAO(const VertexInfo& vi,
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * vi.in, vi.indices, GL_STATIC_DRAW);
 	}
 
-	size_t stride = 0;
-	for (auto& va : vi.va_list) {
-		stride += va.num * va.size;
-	}
-
 	size_t idx = 0;
-	size_t offset = 0;
 	for (auto& va : vi.va_list)
 	{
 		GLenum type;
@@ -848,10 +868,9 @@ void RenderContext::CreateVAO(const VertexInfo& vi,
 		}
 
 		glEnableVertexAttribArray(idx);
-		glVertexAttribPointer(idx, va.num, type, normalized, stride, (void*)(offset));
+		glVertexAttribPointer(idx, va.n, type, normalized, va.stride, (const GLvoid *)(ptrdiff_t)(va.offset));
 
 		++idx;
-		offset += va.size * va.num;
 	}
 
 	glBindVertexArray(0);
