@@ -5,6 +5,8 @@
 
 #include <cu/uncopyable.h>
 
+#include <memory>
+
 namespace ur
 {
 
@@ -13,29 +15,30 @@ class RenderContext;
 class Texture : private cu::Uncopyable
 {
 public:
+	Texture();
 	Texture(RenderContext* rc, int width, int height,
-		int format = TEXTURE_RGBA8, bool filter_linear = true);
+		TEXTURE_FORMAT format, unsigned int texid);
 	~Texture();
+
+	void LoadEmpty(RenderContext* rc, int width, int height,
+		TEXTURE_FORMAT format = TEXTURE_RGBA8, bool filter_linear = true);
 
 	int Width() const { return m_width; }
 	int Height() const { return m_height; }
 
-	int ID() const { return m_id; }
-
-	void Bind() const;
+	unsigned int TexID() const { return m_texid; }
 
 private:
-	void Init(bool filter_linear);
+	RenderContext* m_rc = nullptr;
 
-private:
-	RenderContext* m_rc;
+	int m_width = 0, m_height = 0;
+	TEXTURE_FORMAT m_format = TEXTURE_INVALID;
 
-	int m_width, m_height;
-	int m_format;
-
-	int m_id;
+	unsigned int m_texid = 0;
 
 }; // Texture
+
+using TexturePtr = std::unique_ptr<Texture>;
 
 }
 

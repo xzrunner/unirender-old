@@ -1,13 +1,14 @@
 #ifndef _UNIRENDER_RENDER_TARGET_H_
 #define _UNIRENDER_RENDER_TARGET_H_
 
+#include "unirender/Texture.h"
+
 #include <cu/uncopyable.h>
 
 namespace ur
 {
 
 class RenderContext;
-class Texture;
 
 class RenderTarget : private cu::Uncopyable
 {
@@ -27,8 +28,8 @@ public:
 private:
 	RenderContext* m_rc;
 
-	Texture* m_color_tex;
-	Texture* m_depth_tex;
+	TexturePtr m_color_tex;
+	TexturePtr m_depth_tex;
 
 	int m_id;
 

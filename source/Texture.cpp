@@ -8,34 +8,49 @@
 namespace ur
 {
 
-Texture::Texture(RenderContext* rc, int width, int height, int format, bool filter_linear)
+Texture::Texture()
+	: m_rc(nullptr)
+	, m_width(0)
+	, m_height(0)
+	, m_format(TEXTURE_INVALID)
+	, m_texid(0)
+{
+}
+
+Texture::Texture(RenderContext* rc, int width, int height,
+	             TEXTURE_FORMAT format, unsigned int texid)
 	: m_rc(rc)
 	, m_width(width)
 	, m_height(height)
 	, m_format(format)
-	, m_id(0)
+	, m_texid(texid)
 {
-	Init(filter_linear);
 }
 
 Texture::~Texture()
 {
-	m_rc->ReleaseTexture(m_id);
+	if (m_texid != 0) {
+		m_rc->ReleaseTexture(m_texid);
+	}
 }
 
-void Texture::Bind() const
+void Texture::LoadEmpty(RenderContext* rc, int width, int height,
+	                    TEXTURE_FORMAT format, bool filter_linear)
 {
-	m_rc->BindTexture(m_id, 0);
-}
+	if (m_texid != 0) {
+		m_rc->ReleaseTexture(m_texid);
+	}
+	m_rc = rc;
+	m_width  = width;
+	m_height = height;
+	m_format = format;
 
-void Texture::Init(bool filter_linear)
-{
 	size_t sz = Utility::CalcTextureSize(m_format, m_width, m_height);
 
 	uint8_t* pixels = new uint8_t[sz];
 	memset(pixels, 0, sz);
 
-	m_id = m_rc->CreateTexture(pixels, m_width, m_height, m_format, 0, filter_linear ? 1 : 0);
+	m_texid = m_rc->CreateTexture(pixels, m_width, m_height, m_format, 0, filter_linear ? 1 : 0);
 
 	delete[] pixels;
 }

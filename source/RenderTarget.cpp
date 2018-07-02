@@ -8,10 +8,12 @@ namespace ur
 RenderTarget::RenderTarget(RenderContext* rc, int width, int height, bool has_depth)
 	: m_rc(rc)
 {
-	m_color_tex = new Texture(rc, width, height);
+	m_color_tex = std::make_unique<Texture>();
+	m_color_tex->LoadEmpty(rc, width, height);
 
 	if (has_depth) {
-		m_depth_tex = new Texture(rc, width, height, TEXTURE_DEPTH, false);
+		m_depth_tex = std::make_unique<Texture>();
+		m_depth_tex->LoadEmpty(rc, width, height, TEXTURE_DEPTH, false);
 	} else {
 		m_depth_tex = nullptr;
 	}
@@ -22,19 +24,15 @@ RenderTarget::RenderTarget(RenderContext* rc, int width, int height, bool has_de
 RenderTarget::~RenderTarget()
 {
 	m_rc->ReleaseRenderTarget(m_id);
-	delete m_color_tex;
-	if (m_depth_tex) {
-		delete m_depth_tex;
-	}
 }
 
 void RenderTarget::Bind()
 {
 	m_rc->BindRenderTarget(m_id);
 	if (m_depth_tex) {
-		m_rc->BindRenderTargetTex(m_color_tex->ID(), m_depth_tex->ID());
+		m_rc->BindRenderTargetTex(m_color_tex->TexID(), m_depth_tex->TexID());
 	} else {
-		m_rc->BindRenderTargetTex(m_color_tex->ID());
+		m_rc->BindRenderTargetTex(m_color_tex->TexID());
 	}
 }
 
@@ -55,7 +53,7 @@ int RenderTarget::Height() const
 
 int RenderTarget::TexID() const
 {
-	return m_color_tex->ID();
+	return m_color_tex->TexID();
 }
 
 void RenderTarget::Resize(int width, int height)
@@ -64,12 +62,11 @@ void RenderTarget::Resize(int width, int height)
 		return;
 	}
 
-	delete m_color_tex;
-	m_color_tex = new Texture(m_rc, width, height);
-
+	m_color_tex = std::make_unique<Texture>();
+	m_color_tex->LoadEmpty(m_rc, width, height);
 	if (m_depth_tex) {
-		delete m_depth_tex;
-		m_depth_tex = new Texture(m_rc, width, height, TEXTURE_DEPTH);
+		m_depth_tex = std::make_unique<Texture>();
+		m_depth_tex->LoadEmpty(m_rc, width, height, TEXTURE_DEPTH, false);
 	}
 }
 
