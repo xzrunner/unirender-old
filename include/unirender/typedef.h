@@ -112,6 +112,9 @@ enum POLYGON_MODE
 	POLYGON_FILL,
 };
 
+static const int TEXTURE_FILTER_NEAREST = 1;
+static const int TEXTURE_WARP_REPEAT    = 2;
+
 }
 
 #endif // _UNIRENDER_TYPEDEF_H_

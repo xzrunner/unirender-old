@@ -135,6 +135,9 @@ enum EJ_CULL_MODE {
 	EJ_CULL_BACK,
 };
 
+#define EJ_TEXTURE_FILTER_NEAREST 1
+#define EJ_TEXTURE_WARP_REPEAT    2
+
 int render_version(struct render *R);
 int render_size(struct render_init_args *args);
 struct render * render_init(struct render_init_args *args, void * buffer, int sz);
@@ -151,8 +154,8 @@ void render_update_vertexlayout(struct render *R, int n, struct vertex_attrib * 
 RID render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void* data, int size);
 void render_buffer_update(struct render *R, RID id, const void* data, int size);
 
-RID render_texture_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap);
-void render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel, int linear);
+RID render_texture_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap_levels);
+void render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel, int flags);
 // subupdate only support slice 0, miplevel 0
 void render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, int y, int w, int h, int slice, int miplevel);
 

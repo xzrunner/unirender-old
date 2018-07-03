@@ -105,26 +105,26 @@ int RenderContext::RenderVersion() const
 /* Texture                                                              */
 /************************************************************************/
 
-int  RenderContext::CreateTexture(const void* pixels, int width, int height, int format, int mipmap, int linear)
+int  RenderContext::CreateTexture(const void* pixels, int width, int height, int format, int mipmap_levels, int linear)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap);
+	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap_levels);
 
 	render_texture_update(m_render, id, width, height, pixels, 0, 0, linear);
 
 	return id;
 }
 
-int RenderContext::CreateTextureID(int width, int height, int format, int mipmap)
+int RenderContext::CreateTextureID(int width, int height, int format, int mipmap_levels)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap);
+	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap_levels);
 	return id;
 }
 
@@ -144,13 +144,13 @@ void RenderContext::ReleaseTexture(int id)
 	render_release(m_render, EJ_TEXTURE, id);
 }
 
-void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice, int miplevel, int linear)
+void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice, int miplevel, int flags)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	render_texture_update(m_render, tex_id, width, height, pixels, slice, miplevel, linear);
+	render_texture_update(m_render, tex_id, width, height, pixels, slice, miplevel, flags);
 }
 
 void RenderContext::UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice, int miplevel)

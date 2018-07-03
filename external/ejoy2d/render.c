@@ -79,7 +79,7 @@ struct texture {
 	GLuint glid;
 	int width;
 	int height;
-	int mipmap;
+	int mipmap_levels;
 	enum EJ_TEXTURE_FORMAT format;
 	enum EJ_TEXTURE_TYPE type;
 	int memsize;
@@ -714,7 +714,7 @@ calc_texture_size(enum EJ_TEXTURE_FORMAT format, int width, int height) {
 }
 
 RID
-render_texture_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap) {
+render_texture_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap_levels) {
 	struct texture * tex = (struct texture *)array_alloc(&R->texture);
 	if (tex == NULL)
 		return 0;
@@ -724,9 +724,9 @@ render_texture_create(struct render *R, int width, int height, enum EJ_TEXTURE_F
 	tex->format = format;
 	tex->type = type;
 	assert(type == EJ_TEXTURE_2D || type == EJ_TEXTURE_CUBE);
-	tex->mipmap = mipmap;
+	tex->mipmap_levels = mipmap_levels;
 	int size = calc_texture_size(format, width, height);
-	if (mipmap) {
+	if (mipmap_levels > 1) {
 		size += size / 3;
 	}
 	if (type == EJ_TEXTURE_CUBE) {
@@ -840,7 +840,7 @@ texture_format(struct texture* tex, GLint* internal_format, GLenum* pixel_format
 }
 
 void
-render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel, int linear) {
+render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel, int flags) {
 	struct texture * tex = (struct texture *)array_ref(&R->texture, id);
 	if (tex == NULL)
 		return;
@@ -849,26 +849,33 @@ render_texture_update(struct render *R, RID id, int width, int height, const voi
 	int target;
 	bind_texture(R, tex, slice, &type, &target);
 
-	if (tex->mipmap) {
-		if (linear) {
-			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		} else {
+	if (tex->mipmap_levels > 1) {
+		if (flags & EJ_TEXTURE_FILTER_NEAREST) {
 			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-		}
-	} else {
-		if (linear) {
-			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		} else {
+			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		}
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, tex->mipmap_levels - 1);
+	} else {
+		if (flags & EJ_TEXTURE_FILTER_NEAREST) {
 			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		} else {
+			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		}
 	}
-	if (linear) {
-		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	} else {
+	if (flags & EJ_TEXTURE_FILTER_NEAREST) {
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	} else {
+		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
-	glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+	if (flags & EJ_TEXTURE_WARP_REPEAT) {
+		glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	} else {
+		glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+		glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+	}
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
 	GLint internal_format = 0;
