@@ -115,6 +115,7 @@ public:
 	/************************************************************************/
 
 	virtual void DrawElements(DRAW_MODE mode, int fromidx, int ni) = 0;
+	virtual void DrawElements(DRAW_MODE mode, int count, unsigned int* indices) = 0;
 	virtual void DrawArrays(DRAW_MODE mode, int fromidx, int ni) = 0;
 
 	virtual int  CreateBuffer(RENDER_OBJ what, const void *data, int size) = 0;

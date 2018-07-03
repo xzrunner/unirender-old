@@ -106,6 +106,7 @@ public:
 	/************************************************************************/
 
 	virtual void DrawElements(DRAW_MODE mode, int fromidx, int ni) override final;
+	virtual void DrawElements(DRAW_MODE mode, int count, unsigned int* indices) override final;
 	virtual void DrawArrays(DRAW_MODE mode, int fromidx, int ni) override final;
 
 	virtual int  CreateBuffer(RENDER_OBJ what, const void *data, int size) override final;

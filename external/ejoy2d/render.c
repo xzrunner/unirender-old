@@ -1262,6 +1262,26 @@ render_draw_elements_vao(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, 
 }
 
 void
+render_draw_elements_no_buf(struct render *R, enum EJ_DRAW_MODE mode, int size, unsigned int* indices) {
+	static int draw_mode[] = {
+		GL_POINTS,
+		GL_LINES,
+		GL_LINE_LOOP,
+		GL_LINE_STRIP,
+		GL_TRIANGLES,
+		GL_TRIANGLE_STRIP,
+		GL_TRIANGLE_FAN,
+	};
+	assert((int)mode < sizeof(draw_mode)/sizeof(int));
+	render_state_commit(R);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glDrawElements(draw_mode[mode], size, GL_UNSIGNED_INT, indices);
+	CHECK_GL_ERROR
+}
+
+void
 render_draw_arrays(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni) {
 	static int draw_mode[] = {
 		GL_POINTS,

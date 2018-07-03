@@ -707,6 +707,15 @@ void RenderContext::DrawElements(DRAW_MODE mode, int fromidx, int ni)
 	render_draw_elements(m_render, (EJ_DRAW_MODE)mode, fromidx, ni);
 }
 
+void RenderContext::DrawElements(DRAW_MODE mode, int count, unsigned int* indices)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	render_draw_elements_no_buf(m_render, (EJ_DRAW_MODE)mode, count, indices);
+}
+
 void RenderContext::DrawArrays(DRAW_MODE mode, int fromidx, int ni)
 {
 #ifdef CHECK_MT
