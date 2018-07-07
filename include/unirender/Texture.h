@@ -38,7 +38,7 @@ private:
 
 }; // Texture
 
-using TexturePtr = std::unique_ptr<Texture>;
+using TexturePtr = std::shared_ptr<Texture>;
 
 }
 
