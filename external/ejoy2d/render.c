@@ -1357,7 +1357,7 @@ render_shader_setuniform(struct render *R, int loc, enum EJ_UNIFORM_FORMAT forma
 		glUniformMatrix4fv(loc, 1, GL_FALSE, v);
 		break;
 	case EJ_UNIFORM_INT1:
-		glUniform1i(loc, (int)v[0]);
+		glUniform1i(loc, (int)(*v));
 		break;
 	case EJ_UNIFORM_MULTI_FLOAT44:
 		glUniformMatrix4fv(loc, n, GL_FALSE, v);
