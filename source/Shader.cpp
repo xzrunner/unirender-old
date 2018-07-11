@@ -40,7 +40,8 @@ void Shader::Use()
 void Shader::SetInt(const std::string& name, int value) const
 {
 	if (m_shader_id != -1) {
-		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_INT1, &static_cast<float>(value));
+		float fval = static_cast<float>(value);
+		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_INT1, &fval);
 	}
 }
 
