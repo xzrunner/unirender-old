@@ -65,6 +65,13 @@ void Shader::SetVec3(const std::string& name, const float value[3]) const
 	}
 }
 
+void Shader::SetVec4(const std::string& name, const float value[4]) const
+{
+	if (m_shader_id != -1) {
+		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_FLOAT4, value);
+	}
+}
+
 void Shader::SetMat3(const std::string& name, const float value[9]) const
 {
 	if (m_shader_id != -1) {

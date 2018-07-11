@@ -1,5 +1,7 @@
 #pragma once
 
+#include "unirender/Texture.h"
+
 #include <cu/uncopyable.h>
 #include <cu/cu_stl.h>
 
@@ -18,7 +20,10 @@ class Shader : private cu::Uncopyable
 public:
 	Shader(RenderContext* rc, const char* vs, const char* fs,
 		const std::vector<std::string>& textures, const CU_VEC<VertexAttrib>& va_list);
-	~Shader();
+	virtual ~Shader();
+
+	virtual void DrawBefore(const ur::TexturePtr& tex) {}
+	virtual void DrawAfter() {}
 
 	void Use();
 
@@ -26,6 +31,7 @@ public:
 	void SetFloat(const std::string& name, float value) const;
 	void SetVec2(const std::string& name, const float value[2]) const;
 	void SetVec3(const std::string& name, const float value[3]) const;
+	void SetVec4(const std::string& name, const float value[4]) const;
 	void SetMat3(const std::string& name, const float value[9]) const;
 	void SetMat4(const std::string& name, const float value[16]) const;
 	void SetMultiMat4(const std::string& name, const float* value, int n) const;
