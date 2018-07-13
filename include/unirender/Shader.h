@@ -22,6 +22,7 @@ public:
 		const std::vector<std::string>& textures, const CU_VEC<VertexAttrib>& va_list);
 	virtual ~Shader();
 
+	virtual ur::DRAW_MODE GetDrawMode() const { return ur::DRAW_TRIANGLES; }
 	virtual void DrawBefore(const ur::TexturePtr& tex) {}
 	virtual void DrawAfter() {}
 
