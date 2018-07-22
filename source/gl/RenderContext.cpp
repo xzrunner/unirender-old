@@ -113,7 +113,11 @@ int  RenderContext::CreateTexture(const void* pixels, int width, int height, int
 
 	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap_levels);
 
-	render_texture_update(m_render, id, width, height, pixels, 0, 0, linear);
+	int flags = 0;
+	if (!linear) {
+		flags = EJ_TEXTURE_FILTER_NEAREST;
+	}
+	render_texture_update(m_render, id, width, height, pixels, 0, 0, flags);
 
 	return id;
 }
