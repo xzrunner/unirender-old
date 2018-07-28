@@ -475,6 +475,9 @@ void RenderContext::EnableDepthMask(bool depth)
 		return;
 	}
 
+	GD_ASSERT(m_cb.flush_shader, "null cb.");
+	m_cb.flush_shader();
+
 	m_depth = depth;
 	render_enabledepthmask(m_render, m_depth);
 	render_setdepth(m_render, EJ_DEPTH_LESS_EQUAL);
@@ -489,6 +492,9 @@ void RenderContext::SetDepthTest(DEPTH_FORMAT fmt)
 	if (m_depth_fmt == fmt) {
 		return;
 	}
+
+	GD_ASSERT(m_cb.flush_shader, "null cb.");
+	m_cb.flush_shader();
 
 	m_depth_fmt = fmt;
 	render_setdepth(m_render, EJ_DEPTH_FORMAT(m_depth_fmt));
