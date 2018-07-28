@@ -77,6 +77,7 @@ public:
 	virtual void EnableDepth(bool depth) override final;
 	virtual void SetDepthFormat(DEPTH_FORMAT fmt) override final;
 
+	virtual void SetFrontFace(bool clockwise) override final;
 	virtual void SetCull(CULL_MODE cull) override final;
 
 	virtual void SetClearFlag(int flag) override final;

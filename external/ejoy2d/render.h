@@ -174,6 +174,7 @@ void render_setscissor(struct render *R, int x, int y, int width, int height );
 void render_set_blendfunc(struct render *R, enum EJ_BLEND_FORMAT src, enum EJ_BLEND_FORMAT dst);
 void render_set_blendeq(struct render *R, enum EJ_BLEND_FUNC eq);
 void render_setdepth(struct render *R, enum EJ_DEPTH_FORMAT d);
+void render_set_front_face(struct render *R, int clockwise);
 void render_setcull(struct render *R, enum EJ_CULL_MODE c);
 void render_enabledepthmask(struct render *R, int enable);
 void render_enablescissor(struct render *R, int enable);

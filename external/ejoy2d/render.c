@@ -955,6 +955,16 @@ render_setdepth(struct render *R, enum EJ_DEPTH_FORMAT d) {
 }
 
 // cull
+
+void
+render_set_front_face(struct render *R, int clockwise) {
+	if (clockwise) {
+		glFrontFace(GL_CW);
+	} else {
+		glFrontFace(GL_CCW);
+	}
+}
+
 void
 render_setcull(struct render *R, enum EJ_CULL_MODE c) {
 	R->current.cull = c;

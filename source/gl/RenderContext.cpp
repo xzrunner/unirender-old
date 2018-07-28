@@ -494,6 +494,11 @@ void RenderContext::SetDepthFormat(DEPTH_FORMAT fmt)
 	render_setdepth(m_render, EJ_DEPTH_FORMAT(m_depth_fmt));
 }
 
+void RenderContext::SetFrontFace(bool clockwise)
+{
+	render_set_front_face(m_render, clockwise);
+}
+
 void RenderContext::SetCull(CULL_MODE cull)
 {
 #ifdef CHECK_MT
