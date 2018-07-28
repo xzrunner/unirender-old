@@ -74,8 +74,8 @@ public:
 	virtual void SetBlendEquation(int func) override final;
 	virtual void SetDefaultBlend() override final;
 
-	virtual void EnableDepth(bool depth) override final;
-	virtual void SetDepthFormat(DEPTH_FORMAT fmt) override final;
+	virtual void EnableDepthMask(bool depth) override final;
+	virtual void SetDepthTest(DEPTH_FORMAT fmt) override final;
 
 	virtual void SetFrontFace(bool clockwise) override final;
 	virtual void SetCull(CULL_MODE cull) override final;

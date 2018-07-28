@@ -83,8 +83,8 @@ public:
 	virtual void SetBlendEquation(int func) = 0;
 	virtual void SetDefaultBlend() = 0;
 
-	virtual void EnableDepth(bool depth) = 0;
-	virtual void SetDepthFormat(DEPTH_FORMAT fmt) = 0;
+	virtual void EnableDepthMask(bool depth) = 0;
+	virtual void SetDepthTest(DEPTH_FORMAT fmt) = 0;
 
 	virtual void SetFrontFace(bool clockwise) = 0;
 	virtual void SetCull(CULL_MODE cull) = 0;

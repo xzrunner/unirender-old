@@ -465,7 +465,7 @@ void RenderContext::SetDefaultBlend()
 	SetBlendEquation(BLEND_FUNC_ADD);
 }
 
-void RenderContext::EnableDepth(bool depth)
+void RenderContext::EnableDepthMask(bool depth)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
@@ -480,7 +480,7 @@ void RenderContext::EnableDepth(bool depth)
 	render_setdepth(m_render, EJ_DEPTH_LESS_EQUAL);
 }
 
-void RenderContext::SetDepthFormat(DEPTH_FORMAT fmt)
+void RenderContext::SetDepthTest(DEPTH_FORMAT fmt)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
