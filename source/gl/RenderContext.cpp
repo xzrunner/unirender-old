@@ -480,7 +480,6 @@ void RenderContext::EnableDepthMask(bool depth)
 
 	m_depth = depth;
 	render_enabledepthmask(m_render, m_depth);
-	render_setdepth(m_render, EJ_DEPTH_LESS_EQUAL);
 }
 
 void RenderContext::SetDepthTest(DEPTH_FORMAT fmt)
