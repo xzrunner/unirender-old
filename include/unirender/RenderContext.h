@@ -123,6 +123,7 @@ public:
 	virtual void ReleaseBuffer(RENDER_OBJ what, int id) = 0;
 	virtual void BindBuffer(RENDER_OBJ what, int id) = 0;
 	virtual void UpdateBuffer(int id, const void* data, int size) = 0;
+	virtual void UpdateVboBuffer(int vbo, const void* data, int size) = 0;
 
 	virtual int  CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list) = 0;
 	virtual void ReleaseVertexLayout(int id) = 0;

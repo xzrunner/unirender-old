@@ -775,6 +775,12 @@ void RenderContext::UpdateBuffer(int id, const void* data, int size)
 	render_buffer_update(m_render, id, data, size);
 }
 
+void RenderContext::UpdateVboBuffer(int vbo, const void* data, int size)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+}
+
 int  RenderContext::CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list)
 {
 #ifdef CHECK_MT

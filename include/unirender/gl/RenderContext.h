@@ -114,6 +114,7 @@ public:
 	virtual void ReleaseBuffer(RENDER_OBJ what, int id) override final;
 	virtual void BindBuffer(RENDER_OBJ what, int id) override final;
 	virtual void UpdateBuffer(int id, const void* data, int size) override final;
+	virtual void UpdateVboBuffer(int vbo, const void* data, int size) override final;
 
 	virtual int  CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list) override final;
 	virtual void ReleaseVertexLayout(int id) override final;
