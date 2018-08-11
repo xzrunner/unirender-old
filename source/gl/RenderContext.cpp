@@ -647,6 +647,15 @@ void RenderContext::SetPointSize(float size)
 #endif // CHECK_MT
 
 #if OPENGLES < 2
+	if (m_point_size == size) {
+		return;
+	}
+
+	GD_ASSERT(m_cb.flush_shader, "null cb.");
+	m_cb.flush_shader();
+
+	m_point_size = size;
+
 	glPointSize(size);
 #endif
 }
@@ -658,6 +667,15 @@ void RenderContext::SetLineWidth(float size)
 #endif // CHECK_MT
 
 #if OPENGLES < 2
+	if (m_line_width == size) {
+		return;
+	}
+
+	GD_ASSERT(m_cb.flush_shader, "null cb.");
+	m_cb.flush_shader();
+
+	m_line_width = size;
+
 	glLineWidth(size);
 #endif
 }
@@ -667,6 +685,15 @@ void RenderContext::SetPolygonMode(POLYGON_MODE poly_mode)
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
+
+	if (m_poly_mode == poly_mode) {
+		return;
+	}
+
+	GD_ASSERT(m_cb.flush_shader, "null cb.");
+	m_cb.flush_shader();
+
+	m_poly_mode = poly_mode;
 
 	switch (poly_mode)
 	{
@@ -688,7 +715,16 @@ void RenderContext::EnableLineStripple(bool stripple)
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
+	if (m_line_stripple == stripple) {
+		return;
+	}
+
 #if OPENGLES < 2
+	GD_ASSERT(m_cb.flush_shader, "null cb.");
+	m_cb.flush_shader();
+
+	m_line_stripple = stripple;
+
 	if (stripple) {
 		glEnable(GL_LINE_STIPPLE);
 	} else {

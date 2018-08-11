@@ -182,6 +182,11 @@ private:
 	/* State                                                                */
 	/************************************************************************/
 
+	float        m_point_size = 1;
+	float        m_line_width = 1;
+	POLYGON_MODE m_poly_mode = POLYGON_FILL;
+	bool         m_line_stripple = false;
+
 	bool         m_blend;
 	BLEND_FORMAT m_blend_src, m_blend_dst;
 	BLEND_FUNC   m_blend_func;
