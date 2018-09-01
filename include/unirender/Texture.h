@@ -26,9 +26,11 @@ public:
 	int Width() const { return m_width; }
 	int Height() const { return m_height; }
 
+	auto Format() const { return m_format; }
+
 	unsigned int TexID() const { return m_texid; }
 
-private:
+protected:
 	RenderContext* m_rc = nullptr;
 
 	int m_width = 0, m_height = 0;
