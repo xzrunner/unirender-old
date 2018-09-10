@@ -465,6 +465,10 @@ render_release(struct render *R, enum EJ_RENDER_OBJ what, RID id) {
 		break;
 	}
 	case EJ_VERTEXLAYOUT:
+		struct attrib * attr = (struct attrib *)array_ref(&R->attrib, id);
+		if (attr) {
+			array_free(&R->attrib, attr);
+		}
 		break;
 	default:
 		assert(0);
