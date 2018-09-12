@@ -28,6 +28,11 @@ public:
 
 	void Use();
 
+	// todo
+	void SetUsedTextures(const std::vector<uint32_t>& textures) {
+		m_textures = textures;
+	}
+
 	void SetInt(const std::string& name, int value) const;
 	void SetFloat(const std::string& name, float value) const;
 	void SetVec2(const std::string& name, const float value[2]) const;
@@ -42,6 +47,9 @@ private:
 
 	int m_shader_id;
 	int m_vert_layout_id;
+
+	// todo
+	std::vector<uint32_t> m_textures;
 
 }; // Shader
 

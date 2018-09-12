@@ -31,6 +31,10 @@ Shader::~Shader()
 
 void Shader::Use()
 {
+	for (int i = 0, n = m_textures.size(); i < n; ++i) {
+		m_rc->BindTexture(m_textures[i], i);
+	}
+
 	if (m_shader_id != -1) {
 		m_rc->BindShader(m_shader_id);
 		m_rc->BindVertexLayout(m_vert_layout_id);
