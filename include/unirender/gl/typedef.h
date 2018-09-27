@@ -6,8 +6,8 @@ namespace ur
 namespace gl
 {
 
-static const int MAX_LAYOUT  = 64;
-static const int MAX_SHADER  = 64;
+static const int MAX_LAYOUT  = 1024;
+static const int MAX_SHADER  = 1024;
 
 }
 }
