@@ -9,11 +9,11 @@ RenderTarget::RenderTarget(RenderContext* rc, int width, int height, bool has_de
 	: m_rc(rc)
 {
 	m_color_tex = std::make_unique<Texture>();
-	m_color_tex->LoadEmpty(rc, width, height);
+	m_color_tex->Upload(rc, width, height);
 
 	if (has_depth) {
 		m_depth_tex = std::make_unique<Texture>();
-		m_depth_tex->LoadEmpty(rc, width, height, TEXTURE_DEPTH, false);
+		m_depth_tex->Upload(rc, width, height, TEXTURE_DEPTH, nullptr, false);
 	} else {
 		m_depth_tex = nullptr;
 	}
@@ -63,10 +63,10 @@ void RenderTarget::Resize(int width, int height)
 	}
 
 	m_color_tex = std::make_unique<Texture>();
-	m_color_tex->LoadEmpty(m_rc, width, height);
+	m_color_tex->Upload(m_rc, width, height);
 	if (m_depth_tex) {
 		m_depth_tex = std::make_unique<Texture>();
-		m_depth_tex->LoadEmpty(m_rc, width, height, TEXTURE_DEPTH, false);
+		m_depth_tex->Upload(m_rc, width, height, TEXTURE_DEPTH, nullptr, false);
 	}
 }
 

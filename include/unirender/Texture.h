@@ -20,8 +20,8 @@ public:
 		TEXTURE_FORMAT format, unsigned int texid);
 	~Texture();
 
-	void LoadEmpty(RenderContext* rc, int width, int height,
-		TEXTURE_FORMAT format = TEXTURE_RGBA8, bool filter_linear = true);
+	void Upload(RenderContext* rc, int width, int height, TEXTURE_FORMAT format = TEXTURE_RGBA8,
+		const unsigned char* filling = nullptr, bool filter_linear = true);
 
 	int Width() const { return m_width; }
 	int Height() const { return m_height; }
