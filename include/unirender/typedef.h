@@ -112,6 +112,13 @@ enum POLYGON_MODE
 	POLYGON_FILL,
 };
 
+enum ACCESS_MODE
+{
+	READ_ONLY = 0,
+	WRITE_ONLY,
+	READ_WRITE,
+};
+
 static const int TEXTURE_FILTER_NEAREST = 1;
 static const int TEXTURE_WARP_REPEAT    = 2;
 

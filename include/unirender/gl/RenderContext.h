@@ -54,6 +54,21 @@ public:
 // 	virtual int  GetCurrRenderTarget() const override final;
 
 	/************************************************************************/
+	/* PixelBuffer                                                          */
+	/************************************************************************/
+
+	// todo: GL_PIXEL_PACK_BUFFER
+
+	virtual int  CreatePixelBuffer(uint32_t id, int width, int height, int format) override final;
+	virtual void ReleasePixelBuffer(uint32_t id) override final;
+
+	virtual void BindPixelBuffer(uint32_t id) override final;
+	virtual void UnbindPixelBuffer() override final;
+
+	virtual void* MapPixelBuffer(ACCESS_MODE mode) override final;
+	virtual void  UnmapPixelBuffer() override final;
+
+	/************************************************************************/
 	/* Shader                                                               */
 	/************************************************************************/
 
@@ -101,6 +116,8 @@ public:
 
 	virtual void EnableLineStripple(bool stripple) override final;
 	virtual void SetLineStripple(int pattern) override final;
+
+	virtual void SetUnpackRowLength(int len) override final;
 
 	/************************************************************************/
 	/* Draw                                                                 */
@@ -177,6 +194,12 @@ private:
 	int m_rt_layers[MAX_RENDER_TARGET_LAYER];
 
 //	int m_curr_rt;
+
+	/************************************************************************/
+	/* PixelBuffer                                                          */
+	/************************************************************************/
+
+	uint32_t m_pbo = 0;
 
 	/************************************************************************/
 	/* State                                                                */

@@ -86,6 +86,7 @@
     <ClInclude Include="..\..\..\include\unirender\c_wrap_ur.h" />
     <ClInclude Include="..\..\..\include\unirender\gl\RenderContext.h" />
     <ClInclude Include="..\..\..\include\unirender\gl\typedef.h" />
+    <ClInclude Include="..\..\..\include\unirender\PixelBuffer.h" />
     <ClInclude Include="..\..\..\include\unirender\RenderContext.h" />
     <ClInclude Include="..\..\..\include\unirender\RenderTarget.h" />
     <ClInclude Include="..\..\..\include\unirender\Shader.h" />
@@ -103,6 +104,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)gl\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)gl\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\PixelBuffer.cpp" />
     <ClCompile Include="..\..\..\source\RenderContext.cpp" />
     <ClCompile Include="..\..\..\source\RenderTarget.cpp" />
     <ClCompile Include="..\..\..\source\Shader.cpp" />

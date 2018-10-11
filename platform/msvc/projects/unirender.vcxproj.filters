@@ -55,6 +55,9 @@
     <ClInclude Include="..\..\..\include\unirender\Utility.h">
       <Filter>tools</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\unirender\PixelBuffer.h">
+      <Filter>obj</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\external\ejoy2d\carray.c">
@@ -82,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\Utility.cpp">
       <Filter>tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\PixelBuffer.cpp">
+      <Filter>obj</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

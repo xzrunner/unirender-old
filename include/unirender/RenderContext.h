@@ -63,6 +63,19 @@ public:
 // 	virtual int  GetCurrRenderTarget() const = 0;
 
 	/************************************************************************/
+	/* PixelBuffer                                                          */
+	/************************************************************************/
+
+	virtual int  CreatePixelBuffer(uint32_t id, int width, int height, int format) = 0;
+	virtual void ReleasePixelBuffer(uint32_t id) = 0;
+
+	virtual void BindPixelBuffer(uint32_t id) = 0;
+	virtual void UnbindPixelBuffer() = 0;
+
+	virtual void* MapPixelBuffer(ACCESS_MODE mode) = 0;
+	virtual void  UnmapPixelBuffer() = 0;
+
+	/************************************************************************/
 	/* Shader                                                               */
 	/************************************************************************/
 
@@ -110,6 +123,8 @@ public:
 
 	virtual void EnableLineStripple(bool stripple) = 0;
 	virtual void SetLineStripple(int pattern) = 0;
+
+	virtual void SetUnpackRowLength(int len) = 0;
 
 	/************************************************************************/
 	/* Draw                                                                 */

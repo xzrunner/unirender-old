@@ -1,5 +1,6 @@
 #include "unirender/gl/RenderContext.h"
 #include "unirender/gl/typedef.h"
+#include "unirender/Utility.h"
 
 #include <guard/check.h>
 #include <ejoy2d/render.h>
@@ -107,6 +108,8 @@ int RenderContext::RenderVersion() const
 
 int  RenderContext::CreateTexture(const void* pixels, int width, int height, int format, int mipmap_levels, int linear)
 {
+	CheckError();
+
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
@@ -322,6 +325,71 @@ int  RenderContext::CheckRenderTargetStatus()
 ////	return render_get(RS->R, TARGET, 0);
 //	return m_curr_rt;
 //}
+
+/************************************************************************/
+/* PixelBuffer                                                          */
+/************************************************************************/
+
+int RenderContext::CreatePixelBuffer(uint32_t id, int width, int height, int format)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	GLuint gl_id = id;
+	glGenBuffers(1, &gl_id);
+	BindPixelBuffer(gl_id);
+	size_t sz = Utility::CalcTextureSize(format, width, height);
+	glBufferData(GL_PIXEL_UNPACK_BUFFER, sz, 0, GL_STREAM_DRAW);
+	UnbindPixelBuffer();
+	return gl_id;
+}
+
+void RenderContext::ReleasePixelBuffer(uint32_t id)
+{
+	glDeleteBuffers(1, &id);
+}
+
+void RenderContext::BindPixelBuffer(uint32_t id)
+{
+	if (m_pbo == id) {
+		return;
+	}
+
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, id);
+	m_pbo = id;
+}
+
+void RenderContext::UnbindPixelBuffer()
+{
+	if (m_pbo != 0) {
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+		m_pbo = 0;
+	}
+}
+
+void* RenderContext::MapPixelBuffer(ACCESS_MODE mode)
+{
+	uint32_t gl_mode;
+	switch (mode)
+	{
+	case READ_ONLY:
+		gl_mode = GL_READ_ONLY;
+		break;
+	case WRITE_ONLY:
+		gl_mode = GL_WRITE_ONLY;
+		break;
+	case READ_WRITE:
+		gl_mode = GL_READ_WRITE;
+		break;
+	}
+	return glMapBuffer(GL_PIXEL_UNPACK_BUFFER, gl_mode);
+}
+
+void  RenderContext::UnmapPixelBuffer()
+{
+	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+}
 
 /************************************************************************/
 /* Shader                                                               */
@@ -742,6 +810,15 @@ void RenderContext::SetLineStripple(int pattern)
 #if OPENGLES < 2
 	glLineStipple(1, pattern);
 #endif
+}
+
+void RenderContext::SetUnpackRowLength(int len)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, len);
 }
 
 /************************************************************************/
