@@ -156,6 +156,10 @@ check_opengl_error_debug(struct render *R, const char *filename, int line) {
 // what should be EJ_VERTEXBUFFER or EJ_INDEXBUFFER
 RID
 render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void *data, int size) {
+#ifdef VAO_ENABLE
+	glBindVertexArray(0);
+#endif
+
 	GLenum gltype;
 	switch(what) {
 	case EJ_VERTEXBUFFER:
