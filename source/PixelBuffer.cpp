@@ -32,7 +32,7 @@ public:
 		m_access_mode = -1;
 	}
 
-	virtual uint8_t* GetMappedPointer() const override 
+	virtual uint8_t* GetMappedPointer() const override
 	{
 		return m_access_mode < 0 ? nullptr : m_buf.get();
 	}
@@ -117,7 +117,7 @@ private:
 	ur::RenderContext* m_rc;
 
 	uint32_t m_buf_id;
-	
+
 	uint8_t* m_mapped_ptr = nullptr;
 
 }; // GpuPixelBuffer
@@ -127,7 +127,7 @@ private:
 namespace ur
 {
 
-std::unique_ptr<PixelBuffer> PixelBuffer::Create(RenderContext* rc, size_t width, size_t height, 
+std::unique_ptr<PixelBuffer> PixelBuffer::Create(RenderContext* rc, size_t width, size_t height,
 	                                             TEXTURE_FORMAT format, bool gpu)
 {
 	if (gpu) {

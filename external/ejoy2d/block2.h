@@ -8,13 +8,13 @@ struct block {
 	int sz;
 };
 
-static inline void 
+static inline void
 block_init(struct block * B, void * buffer, int sz) {
 	B->buffer = (char*)buffer;
 	B->sz = sz;
 }
 
-static inline void * 
+static inline void *
 block_slice(struct block * B, int sz) {
 	if (B->sz < sz) {
 		return NULL;

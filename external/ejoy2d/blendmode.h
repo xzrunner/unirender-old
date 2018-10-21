@@ -17,7 +17,7 @@
 
 #include "render.h"
 
-static enum BLEND_FORMAT 
+static enum BLEND_FORMAT
 blend_mode(int gl_mode) {
 	switch(gl_mode) {
 	case BLEND_GL_ZERO:
