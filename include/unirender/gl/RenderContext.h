@@ -224,6 +224,8 @@ private:
 	bool         m_scissor;
 	int          m_scissor_x, m_scissor_y, m_scissor_w, m_scissor_h;
 
+	int          m_cull = CULL_DISABLE;
+
 }; // RenderContext
 
 }

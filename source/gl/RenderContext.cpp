@@ -578,6 +578,11 @@ void RenderContext::SetCull(CULL_MODE cull)
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
+	if (m_cull == cull) {
+		return;
+	}
+
+	m_cull = cull;
 	render_setcull(m_render, EJ_CULL_MODE(cull));
 }
 
