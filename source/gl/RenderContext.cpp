@@ -29,7 +29,8 @@ namespace gl
 static std::thread::id MAIN_THREAD_ID;
 #endif // CHECK_MT
 
-RenderContext::RenderContext(int max_texture)
+RenderContext::RenderContext(int max_texture, std::function<void()> flush_shader)
+	: m_flush_shader(std::move(flush_shader))
 {
 #ifdef CHECK_MT
 	MAIN_THREAD_ID = std::this_thread::get_id();
@@ -169,7 +170,7 @@ void RenderContext::UpdateSubTexture(const void* pixels, int x, int y, int w, in
 	render_texture_subupdate(m_render, id, pixels, x, y, w, h, slice, miplevel);
 }
 
-void RenderContext::BindTexture(int id, int channel)
+void RenderContext::BindTexture(int id, int channel, bool flush_cb)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
@@ -179,8 +180,9 @@ void RenderContext::BindTexture(int id, int channel)
 		return;
 	}
 
-	GD_ASSERT(m_cb.flush_render_shader, "null cb.")
-	m_cb.flush_render_shader();
+	if (flush_cb && m_flush_shader) {
+		m_flush_shader();
+	}
 
 	m_textures[channel] = id;
 	render_set(m_render, EJ_TEXTURE, id, channel);
@@ -237,8 +239,9 @@ void RenderContext::BindRenderTarget(int id)
 
 	assert(m_rt_depth < MAX_RENDER_TARGET_LAYER);
 
-	GD_ASSERT(m_cb.flush_shader, "null cb.")
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	int curr = m_rt_layers[m_rt_depth - 1];
 	if (curr != id) {
@@ -271,8 +274,9 @@ void RenderContext::UnbindRenderTarget()
 
 	assert(m_rt_depth > 1);
 
-	GD_ASSERT(m_cb.flush_shader, "null cb.")
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	int curr = m_rt_layers[m_rt_depth - 1],
 		prev = m_rt_layers[m_rt_depth - 2];
@@ -478,8 +482,9 @@ void RenderContext::EnableBlend(bool blend)
 	}
 
 	m_blend = blend;
-	GD_ASSERT(m_cb.flush_shader, "null cb.")
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	if (blend) {
 		glEnable(GL_BLEND);
@@ -488,7 +493,7 @@ void RenderContext::EnableBlend(bool blend)
 	}
 }
 
-void RenderContext::SetBlend(int m1, int m2)
+void RenderContext::SetBlend(int m1, int m2, bool flush_cb)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
@@ -498,8 +503,9 @@ void RenderContext::SetBlend(int m1, int m2)
 		return;
 	}
 
-	GD_ASSERT(m_cb.flush_shader, "null cb.")
-	m_cb.flush_shader();
+	if (flush_cb && m_flush_shader) {
+		m_flush_shader();
+	}
 
 	m_blend_src = static_cast<BLEND_FORMAT>(m1);
 	m_blend_dst = static_cast<BLEND_FORMAT>(m2);
@@ -516,8 +522,9 @@ void RenderContext::SetBlendEquation(int func)
 		return;
 	}
 
-	GD_ASSERT(m_cb.flush_shader, "null cb.")
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	m_blend_func = static_cast<BLEND_FUNC>(func);
 	render_set_blendeq(m_render, (EJ_BLEND_FUNC)m_blend_func);
@@ -543,8 +550,9 @@ void RenderContext::EnableDepthMask(bool depth)
 		return;
 	}
 
-	GD_ASSERT(m_cb.flush_shader, "null cb.");
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	m_depth = depth;
 	render_enabledepthmask(m_render, m_depth);
@@ -560,8 +568,9 @@ void RenderContext::SetDepthTest(DEPTH_FORMAT fmt)
 		return;
 	}
 
-	GD_ASSERT(m_cb.flush_shader, "null cb.");
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	m_depth_fmt = fmt;
 	render_setdepth(m_render, EJ_DEPTH_FORMAT(m_depth_fmt));
@@ -601,8 +610,9 @@ void RenderContext::Clear(unsigned long argb)
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	GD_ASSERT(m_cb.flush_shader, "null cb.")
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	render_clear(m_render, (EJ_CLEAR_MASK)m_clear_mask, argb);
 }
@@ -618,8 +628,9 @@ void RenderContext::EnableScissor(int enable)
 	}
 
 	m_scissor = enable;
-	GD_ASSERT(m_cb.flush_shader, "null cb.")
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	render_enablescissor(m_render, enable);
 	if (enable) {
@@ -644,8 +655,9 @@ void RenderContext::SetScissor(int x, int y, int width, int height)
 	m_scissor_y = y;
 	m_scissor_w = width;
 	m_scissor_h = height;
-	GD_ASSERT(m_cb.flush_shader, "null cb.")
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	assert(x >= 0 && y >= 0 && width >= 0 && height >= 0);
 	render_setscissor(m_render, x, y, width, height);
@@ -724,8 +736,9 @@ void RenderContext::SetPointSize(float size)
 		return;
 	}
 
-	GD_ASSERT(m_cb.flush_shader, "null cb.");
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	m_point_size = size;
 
@@ -744,8 +757,9 @@ void RenderContext::SetLineWidth(float size)
 		return;
 	}
 
-	GD_ASSERT(m_cb.flush_shader, "null cb.");
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	m_line_width = size;
 
@@ -763,8 +777,9 @@ void RenderContext::SetPolygonMode(POLYGON_MODE poly_mode)
 		return;
 	}
 
-	GD_ASSERT(m_cb.flush_shader, "null cb.");
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	m_poly_mode = poly_mode;
 
@@ -793,8 +808,9 @@ void RenderContext::EnableLineStripple(bool stripple)
 	}
 
 #if OPENGLES < 2
-	GD_ASSERT(m_cb.flush_shader, "null cb.");
-	m_cb.flush_shader();
+	if (m_flush_shader) {
+		m_flush_shader();
+	}
 
 	m_line_stripple = stripple;
 
@@ -1137,6 +1153,11 @@ bool RenderContext::CheckAvailableMemory(int need_texture_area) const
 	delete[] id_list;
 
 	return curr_area >= need_texture_area;
+}
+
+void RenderContext::CallFlushCB()
+{
+	m_flush_shader();
 }
 
 bool RenderContext::CheckETC2Support()

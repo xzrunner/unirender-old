@@ -15,7 +15,7 @@ namespace gl
 class RenderContext : public ur::RenderContext
 {
 public:
-	RenderContext(int max_texture);
+	RenderContext(int max_texture, std::function<void()> flush_shader);
 	virtual ~RenderContext();
 
 	virtual int RenderVersion() const override final;
@@ -31,7 +31,7 @@ public:
 	virtual void UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice = 0, int miplevel = 0, int flags = 0) override final;
 	virtual void UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice = 0, int miplevel = 0) override final;
 
-	virtual void BindTexture(int id, int channel) override final;
+	virtual void BindTexture(int id, int channel, bool flush_cb = true) override final;
 
 	virtual void ClearTextureCache() override final;
 
@@ -85,7 +85,7 @@ public:
 	/************************************************************************/
 
 	virtual void EnableBlend(bool blend) override final;
-	virtual void SetBlend(int m1, int m2) override final;
+	virtual void SetBlend(int m1, int m2, bool flush_cb = true) override final;
 	virtual void SetBlendEquation(int func) override final;
 	virtual void SetDefaultBlend() override final;
 
@@ -158,14 +158,7 @@ public:
 
 	virtual bool CheckAvailableMemory(int need_texture_area) const override final;
 
-public:
-	struct Callback
-	{
-		std::function<void()> flush_shader;
-		std::function<void()> flush_render_shader;
-	};
-
-	void RegistCB(const RenderContext::Callback& cb) { m_cb = cb; }
+	virtual void CallFlushCB() override final;
 
 private:
 	static bool CheckETC2Support();
@@ -178,7 +171,8 @@ private:
 
 private:
 	render* m_render;
-	Callback m_cb;
+
+	std::function<void()> m_flush_shader = nullptr;
 
 	/************************************************************************/
 	/* Texture                                                              */

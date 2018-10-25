@@ -10,11 +10,16 @@ namespace ur
 
 Shader::Shader(RenderContext* rc, const char* vs, const char* fs,
 	           const std::vector<std::string>& textures,
-	           const CU_VEC<VertexAttrib>& va_list)
+	           const CU_VEC<VertexAttrib>& va_list,
+	           bool flush_cb)
 	: m_rc(rc)
 	, m_shader_id(-1)
 	, m_vert_layout_id(-1)
 {
+	if (flush_cb) {
+		rc->CallFlushCB();
+	}
+
 	m_vert_layout_id = rc->CreateVertexLayout(va_list);
 	m_shader_id = rc->CreateShader(vs, fs, textures);
 }
@@ -29,8 +34,12 @@ Shader::~Shader()
 	}
 }
 
-void Shader::Use()
+void Shader::Use(bool flush_cb)
 {
+	if (flush_cb) {
+		m_rc->CallFlushCB();
+	}
+
 	for (int i = 0, n = m_textures.size(); i < n; ++i) {
 		m_rc->BindTexture(m_textures[i], i);
 	}

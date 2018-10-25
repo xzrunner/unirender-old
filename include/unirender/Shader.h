@@ -19,14 +19,14 @@ class Shader : private cu::Uncopyable
 {
 public:
 	Shader(RenderContext* rc, const char* vs, const char* fs,
-		const std::vector<std::string>& textures, const CU_VEC<VertexAttrib>& va_list);
+		const std::vector<std::string>& textures, const CU_VEC<VertexAttrib>& va_list, bool flush_cb = true);
 	virtual ~Shader();
 
 	virtual ur::DRAW_MODE GetDrawMode() const { return ur::DRAW_TRIANGLES; }
 	virtual void DrawBefore(const ur::TexturePtr& tex) {}
 	virtual void DrawAfter() {}
 
-	void Use();
+	void Use(bool flush_cb = true);
 
 	// todo
 	void SetUsedTextures(const std::vector<uint32_t>& textures) {
