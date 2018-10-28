@@ -909,10 +909,20 @@ void RenderContext::UpdateBuffer(int id, const void* data, int size)
 	render_buffer_update(m_render, id, data, size);
 }
 
-void RenderContext::UpdateVboBuffer(int vbo, const void* data, int size)
+void RenderContext::UpdateBufferRaw(BUFFER_TYPE type, int id, const void* data, int size, int offset)
 {
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+	glBindVertexArray(0);
+	switch (type)
+	{
+	case BUFFER_VERTEX:
+		glBindBuffer(GL_ARRAY_BUFFER, id);
+		glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
+		break;
+	case BUFFER_INDEX:
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, size, data);
+		break;
+	}
 }
 
 int  RenderContext::CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list)
