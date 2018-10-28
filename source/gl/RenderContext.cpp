@@ -1009,12 +1009,29 @@ void RenderContext::CreateVAO(const VertexInfo& vi,
 
 	glBindVertexArray(vao);
 
+	auto gl_usage = [](BUFFER_USAGE usage)->GLenum {
+		auto ret = GL_STATIC_DRAW;
+		switch (usage)
+		{
+		case USAGE_STATIC:
+			ret = GL_STATIC_DRAW;
+			break;
+		case USAGE_DYNAMIC:
+			ret = GL_DYNAMIC_DRAW;
+			break;
+		case USAGE_STREAM:
+			ret = GL_STREAM_DRAW;
+			break;
+		};
+		return ret;
+	};
+
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, vi.vn * vi.stride, vi.vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vi.vn * vi.stride, vi.vertices, gl_usage(vi.vert_usage));
 
 	if (element) {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * vi.in, vi.indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * vi.in, vi.indices, gl_usage(vi.index_usage));
 	}
 
 	size_t idx = 0;

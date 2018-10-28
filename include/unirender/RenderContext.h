@@ -14,10 +14,12 @@ class RenderContext
 public:
 	struct VertexInfo
 	{
+		BUFFER_USAGE          vert_usage = USAGE_STATIC;
 		const void*           vertices = nullptr;
 		size_t                vn = 0;
 		size_t                stride = 0;
 
+		BUFFER_USAGE          index_usage = USAGE_STATIC;
 		const unsigned short* indices = nullptr;
 		size_t                in = 0;
 
