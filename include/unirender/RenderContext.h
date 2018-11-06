@@ -43,7 +43,7 @@ public:
 	virtual void UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice = 0, int miplevel = 0, int flags = 0) = 0;
 	virtual void UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice = 0, int miplevel = 0) = 0;
 
-	virtual void BindTexture(int id, int channel, bool flush_cb = true) = 0;
+	virtual void BindTexture(int id, int channel) = 0;
 
 	virtual void ClearTextureCache() = 0;
 
@@ -94,7 +94,7 @@ public:
 	/************************************************************************/
 
 	virtual void EnableBlend(bool blend) = 0;
-	virtual void SetBlend(int m1, int m2, bool flush_cb = true) = 0;
+	virtual void SetBlend(int m1, int m2) = 0;
 	virtual void SetBlendEquation(int func) = 0;
 	virtual void SetDefaultBlend() = 0;
 
@@ -167,6 +167,7 @@ public:
 
 	virtual bool CheckAvailableMemory(int need_texture_area) const = 0;
 
+	virtual void EnableFlushCB(bool enable) = 0;
 	virtual void CallFlushCB() = 0;
 
 	static bool IsSupportETC2() { return m_etc2; }
