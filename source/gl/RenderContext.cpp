@@ -585,20 +585,27 @@ void RenderContext::SetClearFlag(int flag)
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	m_clear_mask |= flag;
+	m_clear_mask = flag;
 }
 
-void RenderContext::Clear(unsigned long argb)
+void RenderContext::SetClearColor(uint32_t arbg)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	if (m_flush_shader) {
-		m_flush_shader();
-	}
+	m_clear_color = arbg;
+}
 
-	render_clear(m_render, (EJ_CLEAR_MASK)m_clear_mask, argb);
+void RenderContext::Clear()
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	CallFlushCB();
+
+	render_clear(m_render, (EJ_CLEAR_MASK)m_clear_mask, m_clear_color);
 }
 
 void RenderContext::EnableScissor(int enable)

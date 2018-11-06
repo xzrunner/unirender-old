@@ -9,7 +9,8 @@ extern "C"
 void ur_clear(void* _rc, uint32_t argb)
 {
 	RenderContext* rc = static_cast<RenderContext*>(_rc);
-	rc->Clear(argb);
+	rc->SetClearColor(argb);
+	rc->Clear();
 }
 
 extern "C"

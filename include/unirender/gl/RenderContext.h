@@ -96,7 +96,8 @@ public:
 	virtual void SetCull(CULL_MODE cull) override final;
 
 	virtual void SetClearFlag(int flag) override final;
-	virtual void Clear(unsigned long argb) override final;
+	virtual void SetClearColor(uint32_t arbg) override final;
+	virtual void Clear() override final;
 
 	virtual void EnableScissor(int enable) override final;
 	virtual void SetScissor(int x, int y, int width, int height) override final;
@@ -221,6 +222,8 @@ private:
 	int          m_scissor_x, m_scissor_y, m_scissor_w, m_scissor_h;
 
 	int          m_cull = CULL_DISABLE;
+
+	uint32_t     m_clear_color = 0;
 
 }; // RenderContext
 

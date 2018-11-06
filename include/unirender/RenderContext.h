@@ -105,7 +105,8 @@ public:
 	virtual void SetCull(CULL_MODE cull) = 0;
 
 	virtual void SetClearFlag(int flag) = 0;
-	virtual void Clear(unsigned long argb) = 0;
+	virtual void SetClearColor(uint32_t arbg) = 0;
+	virtual void Clear() = 0;
 
 	virtual void EnableScissor(int enable) = 0;
 	virtual void SetScissor(int x, int y, int width, int height) = 0;
