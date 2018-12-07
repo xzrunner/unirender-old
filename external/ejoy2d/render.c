@@ -35,10 +35,11 @@
 #define CHANGE_TEXTURE		0x2
 #define CHANGE_BLEND_FUNC	0x4
 #define CHANGE_BLEND_EQ		0x8
-#define CHANGE_DEPTH		0x10
-#define CHANGE_CULL			0x20
-#define CHANGE_TARGET		0x40
-#define CHANGE_SCISSOR		0x80
+#define CHANGE_ALPHA		0x10
+#define CHANGE_DEPTH		0x20
+#define CHANGE_CULL			0x40
+#define CHANGE_TARGET		0x80
+#define CHANGE_SCISSOR		0x100
 
 #ifdef NO_CHECK_GL_ERROR
 	#define CHECK_GL_ERROR
@@ -113,6 +114,8 @@ struct rstate {
 	enum EJ_BLEND_FORMAT blend_src;
 	enum EJ_BLEND_FORMAT blend_dst;
 	enum EJ_BLEND_FUNC blend_func;
+	enum EJ_ALPHA_FUNC alpha_func;
+	float alpha_ref;
 	enum EJ_DEPTH_FORMAT depth;
 	enum EJ_CULL_MODE cull;
 	int depthmask;
@@ -991,6 +994,13 @@ render_set_blendeq(struct render *R, enum EJ_BLEND_FUNC eq) {
 	R->changeflag |= CHANGE_BLEND_EQ;
 }
 
+void
+render_set_alpha_test(struct render *R, enum EJ_ALPHA_FUNC func, float ref) {
+	R->current.alpha_func = func;
+	R->current.alpha_ref = ref;
+	R->changeflag |= CHANGE_ALPHA;
+}
+
 // depth
 void
 render_enabledepthmask(struct render *R, int enable) {
@@ -1168,6 +1178,32 @@ render_state_commit(struct render *R) {
 			enum EJ_BLEND_FUNC func = R->current.blend_func;
 			glBlendEquation(blend[func]);
 			R->last.blend_func = func;
+		}
+	}
+
+	if (R->changeflag & CHANGE_ALPHA) {
+		if (R->last.alpha_func != R->current.alpha_func || R->last.alpha_ref != R->current.alpha_ref) {
+			if (R->current.alpha_func == EJ_ALPHA_DISABLE) {
+				glDisable(GL_ALPHA_TEST);
+			} else {
+				glEnable(GL_ALPHA_TEST);
+
+				static GLenum alpha[] = {
+					0,
+					GL_NEVER,
+					GL_LESS,
+					GL_EQUAL,
+					GL_LEQUAL,
+					GL_GREATER,
+					GL_NOTEQUAL,
+					GL_GEQUAL,
+					GL_ALWAYS,
+				};
+				glAlphaFunc(alpha[R->current.alpha_func], R->current.alpha_ref);
+			}
+
+			R->last.alpha_func = R->current.alpha_func;
+			R->last.alpha_ref = R->current.alpha_ref;
 		}
 	}
 

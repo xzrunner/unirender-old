@@ -68,12 +68,15 @@ RenderContext::RenderContext(int max_texture, std::function<void(ur::RenderConte
 	m_blend_src = BLEND_ONE;
 	m_blend_dst = BLEND_ONE_MINUS_SRC_ALPHA;
 	m_blend_func = BLEND_FUNC_ADD;
+	m_alpha_func = ALPHA_ALWAYS;
+	m_alpha_ref = 0;
 	m_depth = false;
 	m_depth_fmt = DEPTH_DISABLE;
 	m_clear_mask = 0;
 	m_vp_x = m_vp_y = m_vp_w = m_vp_h = -1;
 	render_set_blendfunc(m_render, (EJ_BLEND_FORMAT)m_blend_src, (EJ_BLEND_FORMAT)m_blend_dst);
 	render_set_blendeq(m_render, (EJ_BLEND_FUNC)m_blend_func);
+	render_set_alpha_test(m_render, (EJ_ALPHA_FUNC)m_alpha_func, m_alpha_ref);
 	m_scissor = false;
 	m_scissor_x = m_scissor_y = m_scissor_w = m_scissor_h = -1;
 
@@ -550,6 +553,23 @@ void RenderContext::SetDefaultBlend()
 
 	SetBlend(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
 	SetBlendEquation(BLEND_FUNC_ADD);
+}
+
+void RenderContext::SetAlphaTest(ALPHA_FUNC func, float ref)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	if (func == m_alpha_func && ref == m_alpha_ref) {
+		return;
+	}
+
+	CallFlushCB();
+
+	m_alpha_func = func;
+	m_alpha_ref  = ref;
+	render_set_alpha_test(m_render, (EJ_ALPHA_FUNC)func, ref);
 }
 
 void RenderContext::EnableDepthMask(bool depth)

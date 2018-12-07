@@ -92,6 +92,18 @@ enum EJ_BLEND_FUNC {
 	EJ_BLEND_FUNC_REVERSE_SUBTRACT,
 };
 
+enum EJ_ALPHA_FUNC {
+	EJ_ALPHA_DISABLE = 0,
+	EJ_ALPHA_NEVER,
+	EJ_ALPHA_LESS,
+	EJ_ALPHA_EQUAL,
+	EJ_ALPHA_LEQUAL,
+	EJ_ALPHA_GREATER,
+	EJ_ALPHA_NOTEQUAL,
+	EJ_ALPHA_GEQUAL,
+	EJ_ALPHA_ALWAYS,
+};
+
 enum EJ_DEPTH_FORMAT {
 	EJ_DEPTH_DISABLE = 0,
 	EJ_DEPTH_LESS_EQUAL,
@@ -177,6 +189,7 @@ void render_setscissor(struct render *R, int x, int y, int width, int height );
 
 void render_set_blendfunc(struct render *R, enum EJ_BLEND_FORMAT src, enum EJ_BLEND_FORMAT dst);
 void render_set_blendeq(struct render *R, enum EJ_BLEND_FUNC eq);
+void render_set_alpha_test(struct render *R, enum EJ_ALPHA_FUNC func, float ref);
 void render_setdepth(struct render *R, enum EJ_DEPTH_FORMAT d);
 void render_set_front_face(struct render *R, int clockwise);
 void render_setcull(struct render *R, enum EJ_CULL_MODE c);

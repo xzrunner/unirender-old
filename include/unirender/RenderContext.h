@@ -95,14 +95,20 @@ public:
 	/* State                                                                */
 	/************************************************************************/
 
+	// alpha blend
 	virtual void EnableBlend(bool blend) = 0;
 	virtual void SetBlend(int m1, int m2) = 0;
 	virtual void SetBlendEquation(int func) = 0;
 	virtual void SetDefaultBlend() = 0;
 
+	// alpha test
+	virtual void SetAlphaTest(ALPHA_FUNC func, float ret = 0) = 0;
+
+	// depth
 	virtual void EnableDepthMask(bool depth) = 0;
 	virtual void SetDepthTest(DEPTH_FORMAT fmt) = 0;
 
+	// face
 	virtual void SetFrontFace(bool clockwise) = 0;
 	virtual void SetCull(CULL_MODE cull) = 0;
 

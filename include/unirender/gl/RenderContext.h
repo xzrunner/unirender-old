@@ -91,6 +91,8 @@ public:
 	virtual void SetBlendEquation(int func) override final;
 	virtual void SetDefaultBlend() override final;
 
+	virtual void SetAlphaTest(ALPHA_FUNC func, float ret = 0) override final;
+
 	virtual void EnableDepthMask(bool depth) override final;
 	virtual void SetDepthTest(DEPTH_FORMAT fmt) override final;
 
@@ -212,6 +214,9 @@ private:
 	bool         m_blend;
 	BLEND_FORMAT m_blend_src, m_blend_dst;
 	BLEND_FUNC   m_blend_func;
+
+	ALPHA_FUNC   m_alpha_func;
+	float        m_alpha_ref;
 
 	bool         m_depth;
 	DEPTH_FORMAT m_depth_fmt;
