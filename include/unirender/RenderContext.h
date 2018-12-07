@@ -37,10 +37,12 @@ public:
 	/************************************************************************/
 
 	virtual int  CreateTexture(const void* pixels, int width, int height, int format, int mipmap_levels = 0, int linear = 1) = 0;
+	virtual int  CreateTexture3D(const void* pixels, int width, int height, int depth, int format) = 0;
 	virtual int  CreateTextureID(int width, int height, int format, int mipmap_levels = 0) = 0;
 	virtual void ReleaseTexture(int id) = 0;
 
 	virtual void UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice = 0, int miplevel = 0, int flags = 0) = 0;
+	virtual void UpdateTexture3d(int tex_id, const void* pixels, int width, int height, int depth) = 0;
 	virtual void UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice = 0, int miplevel = 0) = 0;
 
 	virtual void BindTexture(int id, int channel) = 0;

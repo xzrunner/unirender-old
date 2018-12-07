@@ -91,6 +91,7 @@
     <ClInclude Include="..\..\..\include\unirender\RenderTarget.h" />
     <ClInclude Include="..\..\..\include\unirender\Shader.h" />
     <ClInclude Include="..\..\..\include\unirender\Texture.h" />
+    <ClInclude Include="..\..\..\include\unirender\Texture3D.h" />
     <ClInclude Include="..\..\..\include\unirender\typedef.h" />
     <ClInclude Include="..\..\..\include\unirender\Utility.h" />
     <ClInclude Include="..\..\..\include\unirender\VertexAttrib.h" />
@@ -109,6 +110,7 @@
     <ClCompile Include="..\..\..\source\RenderTarget.cpp" />
     <ClCompile Include="..\..\..\source\Shader.cpp" />
     <ClCompile Include="..\..\..\source\Texture.cpp" />
+    <ClCompile Include="..\..\..\source\Texture3D.cpp" />
     <ClCompile Include="..\..\..\source\Utility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

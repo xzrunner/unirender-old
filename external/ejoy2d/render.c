@@ -79,6 +79,7 @@ struct texture {
 	GLuint glid;
 	int width;
 	int height;
+	int depth;
 	int mipmap_levels;
 	enum EJ_TEXTURE_FORMAT format;
 	enum EJ_TEXTURE_TYPE type;
@@ -729,6 +730,7 @@ render_texture_create(struct render *R, int width, int height, enum EJ_TEXTURE_F
 	glGenTextures(1, &tex->glid);
 	tex->width = width;
 	tex->height = height;
+	tex->depth = 0;
 	tex->format = format;
 	tex->type = type;
 	assert(type == EJ_TEXTURE_2D || type == EJ_TEXTURE_CUBE);
@@ -751,6 +753,9 @@ bind_texture(struct render *R, struct texture * tex, int slice, GLenum *type, in
 	if (tex->type == EJ_TEXTURE_2D) {
 		*type = GL_TEXTURE_2D;
 		*target = GL_TEXTURE_2D;
+	} else if (tex->type == EJ_TEXTURE_3D) {
+		*type = GL_TEXTURE_3D;
+		*target = GL_TEXTURE_3D;
 	} else {
 		assert(tex->type == EJ_TEXTURE_CUBE);
 		*type = GL_TEXTURE_CUBE_MAP;
@@ -927,6 +932,50 @@ render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, in
 	CHECK_GL_ERROR
 }
 
+RID
+render_texture3d_create(struct render *R, int width, int height, int depth, enum EJ_TEXTURE_FORMAT format)
+{
+	struct texture* tex = (struct texture*)array_alloc(&R->texture);
+	if (tex == NULL)
+		return 0;
+	glGenTextures(1, &tex->glid);
+	tex->width = width;
+	tex->height = height;
+	tex->depth = depth;
+	tex->format = format;
+	tex->type = EJ_TEXTURE_3D;
+	tex->mipmap_levels = 0;
+	// todo
+	tex->memsize = 0;
+
+	CHECK_GL_ERROR
+	return array_id(&R->texture, tex);
+}
+
+void
+render_texture3d_update(struct render *R, RID id, int width, int height, int depth, const void *pixels)
+{
+	struct texture * tex = (struct texture *)array_ref(&R->texture, id);
+	if (tex == NULL)
+		return;
+
+	GLenum type;
+	int target;
+	bind_texture(R, tex, 0, &type, &target);
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, width, height, depth, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+	CHECK_GL_ERROR
+}
+
 // blend func
 void
 render_set_blendfunc(struct render *R, enum EJ_BLEND_FORMAT src, enum EJ_BLEND_FORMAT dst) {
@@ -1040,6 +1089,7 @@ render_state_commit(struct render *R) {
 	if (R->changeflag & CHANGE_TEXTURE) {
 		static GLenum mode[] = {
 			GL_TEXTURE_2D,
+			GL_TEXTURE_3D,
 			GL_TEXTURE_CUBE_MAP,
 		};
 		int i;

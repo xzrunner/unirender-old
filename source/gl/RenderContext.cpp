@@ -126,6 +126,21 @@ int  RenderContext::CreateTexture(const void* pixels, int width, int height, int
 	return id;
 }
 
+int RenderContext::CreateTexture3D(const void* pixels, int width, int height, int depth, int format)
+{
+	CheckError();
+
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	RID id = render_texture3d_create(m_render, width, height, depth, (EJ_TEXTURE_FORMAT)(format));
+
+	render_texture3d_update(m_render, id, width, height, depth, pixels);
+
+	return id;
+}
+
 int RenderContext::CreateTextureID(int width, int height, int format, int mipmap_levels)
 {
 #ifdef CHECK_MT
@@ -159,6 +174,15 @@ void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int
 #endif // CHECK_MT
 
 	render_texture_update(m_render, tex_id, width, height, pixels, slice, miplevel, flags);
+}
+
+void RenderContext::UpdateTexture3d(int tex_id, const void* pixels, int width, int height, int depth)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	render_texture3d_update(m_render, tex_id, width, height, depth, pixels);
 }
 
 void RenderContext::UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice, int miplevel)

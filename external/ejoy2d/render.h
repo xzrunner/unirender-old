@@ -48,6 +48,7 @@ enum EJ_RENDER_OBJ {
 
 enum EJ_TEXTURE_TYPE {
 	EJ_TEXTURE_2D = 0,
+	EJ_TEXTURE_3D,
 	EJ_TEXTURE_CUBE,
 };
 
@@ -158,6 +159,9 @@ RID render_texture_create(struct render *R, int width, int height, enum EJ_TEXTU
 void render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel, int flags);
 // subupdate only support slice 0, miplevel 0
 void render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, int y, int w, int h, int slice, int miplevel);
+
+RID render_texture3d_create(struct render *R, int width, int height, int depth, enum EJ_TEXTURE_FORMAT format);
+void render_texture3d_update(struct render *R, RID id, int width, int height, int depth, const void *pixels);
 
 RID render_target_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format);
 // render_release EJ_TARGET would not release the texture attachment
