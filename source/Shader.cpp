@@ -15,8 +15,6 @@ Shader::Shader(RenderContext* rc, const char* vs, const char* fs,
 	, m_shader_id(-1)
 	, m_vert_layout_id(-1)
 {
-	rc->CallFlushCB();
-
 	m_vert_layout_id = rc->CreateVertexLayout(va_list);
 	m_shader_id = rc->CreateShader(vs, fs, textures);
 }
