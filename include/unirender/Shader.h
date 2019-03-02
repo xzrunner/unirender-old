@@ -28,6 +28,8 @@ public:
 
 	void Use();
 
+    bool IsValid() const { return m_shader_id > 0; }
+
 	// todo
 	void SetUsedTextures(const std::vector<uint32_t>& textures) {
 		m_textures = textures;
