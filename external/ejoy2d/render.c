@@ -238,6 +238,11 @@ render_update_vertexlayout(struct render* R, int n, struct vertex_attrib* attrib
 	}
 }
 
+RID
+render_get_binded_vertexlayout(struct render *R) {
+    return R->attrib_layout;
+}
+
 static GLuint
 compile(struct render *R, const char * source, int type) {
 	GLint status;

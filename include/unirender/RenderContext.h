@@ -112,6 +112,8 @@ public:
 	virtual void SetFrontFace(bool clockwise) = 0;
 	virtual void SetCull(CULL_MODE cull) = 0;
 
+    virtual int  GetBindedVertexLayoutID() = 0;
+
 	virtual void SetClearFlag(int flag) = 0;
 	virtual void SetClearColor(uint32_t arbg) = 0;
 	virtual void Clear() = 0;

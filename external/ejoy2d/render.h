@@ -162,6 +162,7 @@ void render_release(struct render *R, enum EJ_RENDER_OBJ what, RID id);
 
 RID render_register_vertexlayout(struct render *R, int n, struct vertex_attrib * attrib);
 void render_update_vertexlayout(struct render *R, int n, struct vertex_attrib * attrib);
+RID render_get_binded_vertexlayout(struct render *R);
 
 // what should be EJ_VERTEXBUFFER or EJ_INDEXBUFFER
 RID render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void* data, int size);

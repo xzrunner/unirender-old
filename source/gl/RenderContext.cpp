@@ -623,6 +623,11 @@ void RenderContext::SetCull(CULL_MODE cull)
 	render_setcull(m_render, EJ_CULL_MODE(cull));
 }
 
+int RenderContext::GetBindedVertexLayoutID()
+{
+    return render_get_binded_vertexlayout(m_render);
+}
+
 void RenderContext::SetClearFlag(int flag)
 {
 #ifdef CHECK_MT

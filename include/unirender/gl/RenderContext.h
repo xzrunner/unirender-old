@@ -99,6 +99,8 @@ public:
 	virtual void SetFrontFace(bool clockwise) override final;
 	virtual void SetCull(CULL_MODE cull) override final;
 
+    virtual int  GetBindedVertexLayoutID() override final;
+
 	virtual void SetClearFlag(int flag) override final;
 	virtual void SetClearColor(uint32_t arbg) override final;
 	virtual void Clear() override final;
