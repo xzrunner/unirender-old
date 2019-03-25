@@ -244,42 +244,49 @@ render_get_binded_vertexlayout(struct render *R) {
 }
 
 static GLuint
-compile(struct render *R, const char * source, int type) {
+compile(struct render *R, const char * source, int type, int no_header) {
 	GLint status;
 
 	GLuint shader = glCreateShader(type);
 
-	const GLchar* sources[3] = {
-		// Define GLSL version
-#if defined(GL_ES_VERSION_2_0) || defined(__MACOSX)
-		"#version 100\n"
-#else
-		"#version 120\n"
-#endif
-		,
-		// GLES2 precision specifiers
-#if defined(GL_ES_VERSION_2_0) || defined(__MACOSX)
-		// Define default float precision for fragment shaders:
-		(type == GL_FRAGMENT_SHADER) ?
-		"#ifdef GL_FRAGMENT_PRECISION_HIGH\n"
-		"precision highp float;           \n"
-		"#else                            \n"
-		"precision mediump float;         \n"
-		"#endif                           \n"
-		: ""
-		// Note: OpenGL ES automatically defines this:
-		// #define GL_ES
-#else
-		// Ignore GLES 2 precision specifiers:
-		"#define lowp   \n"
-		"#define mediump\n"
-		"#define highp  \n"
-#endif
-		,
-		source
-	};
+    if (no_header == 0)
+    {
+	    const GLchar* sources[3] = {
+		    // Define GLSL version
+    #if defined(GL_ES_VERSION_2_0) || defined(__MACOSX)
+		    "#version 100\n"
+    #else
+		    "#version 120\n"
+    #endif
+		    ,
+		    // GLES2 precision specifiers
+    #if defined(GL_ES_VERSION_2_0) || defined(__MACOSX)
+		    // Define default float precision for fragment shaders:
+		    (type == GL_FRAGMENT_SHADER) ?
+		    "#ifdef GL_FRAGMENT_PRECISION_HIGH\n"
+		    "precision highp float;           \n"
+		    "#else                            \n"
+		    "precision mediump float;         \n"
+		    "#endif                           \n"
+		    : ""
+		    // Note: OpenGL ES automatically defines this:
+		    // #define GL_ES
+    #else
+		    // Ignore GLES 2 precision specifiers:
+		    "#define lowp   \n"
+		    "#define mediump\n"
+		    "#define highp  \n"
+    #endif
+		    ,
+		    source
+	    };
 
-	glShaderSource(shader, 3, sources, NULL);
+	    glShaderSource(shader, 3, sources, NULL);
+    }
+    else
+    {
+        glShaderSource(shader, 1, &source, NULL);
+    }
 
 	glCompileShader(shader);
 
@@ -324,8 +331,8 @@ link(struct render *R, GLuint prog) {
 }
 
 static int
-compile_link(struct render *R, struct shader *s, const char * VS, const char *FS) {
-	GLuint fs = compile(R, FS, GL_FRAGMENT_SHADER);
+compile_link(struct render *R, struct shader *s, const char * VS, const char *FS, int no_header) {
+	GLuint fs = compile(R, FS, GL_FRAGMENT_SHADER, no_header);
 	if (fs == 0) {
 		logger_printf(&R->log, "Can't compile fragment shader\n");
 		return 0;
@@ -333,7 +340,7 @@ compile_link(struct render *R, struct shader *s, const char * VS, const char *FS
 		glAttachShader(s->glid, fs);
 	}
 
-	GLuint vs = compile(R, VS, GL_VERTEX_SHADER);
+	GLuint vs = compile(R, VS, GL_VERTEX_SHADER, no_header);
 	if (vs == 0) {
 		logger_printf(&R->log, "Can't compile vertex shader");
 		return 0;
@@ -383,7 +390,7 @@ render_shader_create(struct render *R, struct shader_init_args *args) {
 		return 0;
 	}
 	s->glid = glCreateProgram();
-	if (!compile_link(R, s, args->vs, args->fs)) {
+	if (!compile_link(R, s, args->vs, args->fs, args->no_header)) {
 		glDeleteProgram(s->glid);
 		array_free(&R->shader, s);
 		return 0;

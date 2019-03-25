@@ -83,7 +83,7 @@ public:
 	/* Shader                                                               */
 	/************************************************************************/
 
-	virtual int  CreateShader(const char* vs, const char* fs, const std::vector<std::string>& textures) = 0;
+	virtual int  CreateShader(const char* vs, const char* fs, const std::vector<std::string>& textures, bool no_header = false) = 0;
 	virtual void ReleaseShader(int id) = 0;
 
 	virtual void BindShader(int id) = 0;

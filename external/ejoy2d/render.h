@@ -32,6 +32,7 @@ struct vertex_attrib {
 struct shader_init_args {
 	const char * vs;
 	const char * fs;
+    int no_header;
 	int texture;
 	const char **texture_uniform;
 };

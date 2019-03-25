@@ -19,7 +19,7 @@ class Shader : private cu::Uncopyable
 {
 public:
 	Shader(RenderContext* rc, const char* vs, const char* fs,
-		const std::vector<std::string>& textures, const CU_VEC<VertexAttrib>& va_list);
+		const std::vector<std::string>& textures, const CU_VEC<VertexAttrib>& va_list, bool no_header = false);
 	virtual ~Shader();
 
 	virtual ur::DRAW_MODE GetDrawMode() const { return ur::DRAW_TRIANGLES; }

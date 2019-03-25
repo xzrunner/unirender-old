@@ -10,13 +10,13 @@ namespace ur
 
 Shader::Shader(RenderContext* rc, const char* vs, const char* fs,
 	           const std::vector<std::string>& textures,
-	           const CU_VEC<VertexAttrib>& va_list)
+	           const CU_VEC<VertexAttrib>& va_list, bool no_header)
 	: m_rc(rc)
 	, m_shader_id(-1)
 	, m_vert_layout_id(-1)
 {
 	m_vert_layout_id = rc->CreateVertexLayout(va_list);
-	m_shader_id = rc->CreateShader(vs, fs, textures);
+	m_shader_id = rc->CreateShader(vs, fs, textures, no_header);
 }
 
 Shader::~Shader()

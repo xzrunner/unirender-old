@@ -420,7 +420,7 @@ void  RenderContext::UnmapPixelBuffer()
 /* Shader                                                               */
 /************************************************************************/
 
-int  RenderContext::CreateShader(const char* vs, const char* fs, const std::vector<std::string>& textures)
+int  RenderContext::CreateShader(const char* vs, const char* fs, const std::vector<std::string>& textures, bool no_header)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
@@ -430,6 +430,7 @@ int  RenderContext::CreateShader(const char* vs, const char* fs, const std::vect
 
 	args.vs = vs;
 	args.fs = fs;
+    args.no_header = no_header ? 1 : 0;
 
 	int n = textures.size();
 	args.texture = n;
