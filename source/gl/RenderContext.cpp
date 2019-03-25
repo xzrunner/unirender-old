@@ -93,6 +93,9 @@ RenderContext::~RenderContext()
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
+    glDeleteVertexArrays(1, &m_cube_vao);
+    glDeleteBuffers(1, &m_cube_vbo);
+
 	render_exit(m_render);
 	free(m_render);
 }
@@ -118,13 +121,13 @@ int  RenderContext::CreateTexture(const void* pixels, int width, int height, int
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap_levels);
+	RID id = render_texture_create(m_render, width, height, 0, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap_levels);
 
 	int flags = 0;
 	if (!linear) {
 		flags = EJ_TEXTURE_FILTER_NEAREST;
 	}
-	render_texture_update(m_render, id, width, height, pixels, 0, 0, flags);
+	render_texture_update(m_render, id, width, height, 0, pixels, 0, 0, flags);
 
 	return id;
 }
@@ -137,11 +140,26 @@ int RenderContext::CreateTexture3D(const void* pixels, int width, int height, in
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	RID id = render_texture3d_create(m_render, width, height, depth, (EJ_TEXTURE_FORMAT)(format));
+	RID id = render_texture_create(m_render, width, height, depth, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_3D, 0);
 
-	render_texture3d_update(m_render, id, width, height, depth, pixels);
+    render_texture_update(m_render, id, width, height, depth, pixels, 0, 0, EJ_TEXTURE_WARP_BORDER);
 
 	return id;
+}
+
+int RenderContext::CreateTextureCube()
+{
+    CheckError();
+
+#ifdef CHECK_MT
+    assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+    RID id = render_texture_create(m_render, 0, 0, 0, EJ_TEXTURE_RGB16F, EJ_TEXTURE_CUBE, 0);
+
+    render_texture_update(m_render, id, 0, 0, 0, nullptr, 0, 0, 0);
+
+    return id;
 }
 
 int RenderContext::CreateTextureID(int width, int height, int format, int mipmap_levels)
@@ -150,7 +168,7 @@ int RenderContext::CreateTextureID(int width, int height, int format, int mipmap
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	RID id = render_texture_create(m_render, width, height, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap_levels);
+	RID id = render_texture_create(m_render, width, height, 0, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap_levels);
 	return id;
 }
 
@@ -176,7 +194,7 @@ void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	render_texture_update(m_render, tex_id, width, height, pixels, slice, miplevel, flags);
+	render_texture_update(m_render, tex_id, width, height, 0, pixels, slice, miplevel, flags);
 }
 
 void RenderContext::UpdateTexture3d(int tex_id, const void* pixels, int width, int height, int depth)
@@ -185,7 +203,7 @@ void RenderContext::UpdateTexture3d(int tex_id, const void* pixels, int width, i
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	render_texture3d_update(m_render, tex_id, width, height, depth, pixels);
+    render_texture_update(m_render, tex_id, width, height, depth, pixels, 0, 0, EJ_TEXTURE_WARP_BORDER);
 }
 
 void RenderContext::UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice, int miplevel)
@@ -274,21 +292,6 @@ void RenderContext::BindRenderTarget(int id)
 	m_rt_layers[m_rt_depth++] = id;
 }
 
-void RenderContext::BindRenderTargetTex(int color_tex, int depth_tex)
-{
-#ifdef CHECK_MT
-	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
-#endif // CHECK_MT
-
-	int gl_color_tex = render_get_texture_gl_id(m_render, color_tex);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gl_color_tex, 0);
-
-	if (depth_tex >= 0) {
-		int gl_depth_tex = render_get_texture_gl_id(m_render, depth_tex);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gl_depth_tex, 0);
-	}
-}
-
 void RenderContext::UnbindRenderTarget()
 {
 #ifdef CHECK_MT
@@ -306,6 +309,48 @@ void RenderContext::UnbindRenderTarget()
 	}
 
 	--m_rt_depth;
+}
+
+void RenderContext::BindRenderTargetTex(int tex, int attachment, int textarget)
+{
+#ifdef CHECK_MT
+    assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+    int gl_tex = render_get_texture_gl_id(m_render, tex);
+
+    GLenum gl_attachment = GL_COLOR_ATTACHMENT0;
+    switch (attachment)
+    {
+    case ATTACHMENT_DEPTH:
+        gl_attachment = GL_DEPTH_ATTACHMENT;
+        break;
+    }
+
+    GLenum gl_textarget = GL_TEXTURE_2D;
+    switch (textarget)
+    {
+    case TEXTURE_CUBE0:
+        gl_textarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
+        break;
+    case TEXTURE_CUBE1:
+        gl_textarget = GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB;
+        break;
+    case TEXTURE_CUBE2:
+        gl_textarget = GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB;
+        break;
+    case TEXTURE_CUBE3:
+        gl_textarget = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB;
+        break;
+    case TEXTURE_CUBE4:
+        gl_textarget = GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB;
+        break;
+    case TEXTURE_CUBE5:
+        gl_textarget = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB;
+        break;
+    }
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, gl_attachment, gl_textarget, gl_tex, 0);
 }
 
 int  RenderContext::CheckRenderTargetStatus()
@@ -1123,6 +1168,77 @@ void RenderContext::DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned 
 #endif // CHECK_MT
 
 	render_draw_arrays_vao(m_render, (EJ_DRAW_MODE)mode, fromidx, ni, vao);
+}
+
+void RenderContext::RenderCube()
+{
+    // initialize (if necessary)
+    if (m_cube_vao == 0)
+    {
+        float vertices[] = {
+            // back face
+            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+             1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
+             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+            -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
+            // front face
+            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+             1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+            -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
+            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+            // left face
+            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+            -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
+            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+            -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+            // right face
+             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+             1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right
+             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+             1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
+            // bottom face
+            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+             1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
+             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+            -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+            // top face
+            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+             1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+             1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right
+             1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+            -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
+        };
+        glGenVertexArrays(1, &m_cube_vao);
+        glGenBuffers(1, &m_cube_vbo);
+        // fill buffer
+        glBindBuffer(GL_ARRAY_BUFFER, m_cube_vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        // link vertex attributes
+        glBindVertexArray(m_cube_vao);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+    // render Cube
+    glBindVertexArray(m_cube_vao);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
 }
 
 /************************************************************************/

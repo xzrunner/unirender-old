@@ -13,6 +13,9 @@
     <Filter Include="tools">
       <UniqueIdentifier>{ef98ab09-abd9-4d39-8014-4a2a2b0508f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="obj\texture">
+      <UniqueIdentifier>{314cec23-2e40-4150-a08a-c16e0f443f38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\external\ejoy2d\blendmode.h">
@@ -42,9 +45,6 @@
     <ClInclude Include="..\..\..\include\unirender\RenderTarget.h">
       <Filter>obj</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\unirender\Texture.h">
-      <Filter>obj</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\unirender\RenderContext.h" />
     <ClInclude Include="..\..\..\include\unirender\Shader.h">
       <Filter>obj</Filter>
@@ -58,8 +58,14 @@
     <ClInclude Include="..\..\..\include\unirender\PixelBuffer.h">
       <Filter>obj</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\unirender\Texture.h">
+      <Filter>obj\texture</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\include\unirender\Texture3D.h">
-      <Filter>obj</Filter>
+      <Filter>obj\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\unirender\TextureCube.h">
+      <Filter>obj\texture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -73,9 +79,6 @@
       <Filter>gl</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\c_wrap_ur.cpp" />
-    <ClCompile Include="..\..\..\source\Texture.cpp">
-      <Filter>obj</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\RenderTarget.cpp">
       <Filter>obj</Filter>
     </ClCompile>
@@ -92,8 +95,14 @@
     <ClCompile Include="..\..\..\source\PixelBuffer.cpp">
       <Filter>obj</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\Texture.cpp">
+      <Filter>obj\texture</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\Texture3D.cpp">
-      <Filter>obj</Filter>
+      <Filter>obj\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\TextureCube.cpp">
+      <Filter>obj\texture</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

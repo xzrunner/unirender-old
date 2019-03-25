@@ -153,6 +153,7 @@ enum EJ_CULL_MODE {
 
 #define EJ_TEXTURE_FILTER_NEAREST 1
 #define EJ_TEXTURE_WARP_REPEAT    2
+#define EJ_TEXTURE_WARP_BORDER    4
 
 int render_version(struct render *R);
 int render_size(struct render_init_args *args);
@@ -171,13 +172,10 @@ RID render_get_binded_vertexlayout(struct render *R);
 RID render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void* data, int size);
 void render_buffer_update(struct render *R, RID id, const void* data, int size);
 
-RID render_texture_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap_levels);
-void render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel, int flags);
+RID render_texture_create(struct render *R, int width, int height, int depth, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap_levels);
+void render_texture_update(struct render *R, RID id, int width, int height, int depth, const void *pixels, int slice, int miplevel, int flags);
 // subupdate only support slice 0, miplevel 0
 void render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, int y, int w, int h, int slice, int miplevel);
-
-RID render_texture3d_create(struct render *R, int width, int height, int depth, enum EJ_TEXTURE_FORMAT format);
-void render_texture3d_update(struct render *R, RID id, int width, int height, int depth, const void *pixels);
 
 RID render_target_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format);
 // render_release EJ_TARGET would not release the texture attachment

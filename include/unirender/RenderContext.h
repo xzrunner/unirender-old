@@ -38,6 +38,7 @@ public:
 
 	virtual int  CreateTexture(const void* pixels, int width, int height, int format, int mipmap_levels = 0, int linear = 1) = 0;
 	virtual int  CreateTexture3D(const void* pixels, int width, int height, int depth, int format) = 0;
+    virtual int  CreateTextureCube() = 0;
 	virtual int  CreateTextureID(int width, int height, int format, int mipmap_levels = 0) = 0;
 	virtual void ReleaseTexture(int id) = 0;
 
@@ -58,8 +59,9 @@ public:
 	virtual void ReleaseRenderTarget(int id) = 0;
 
 	virtual void BindRenderTarget(int id) = 0;
-	virtual void BindRenderTargetTex(int color_tex, int depth_tex = -1) = 0;
 	virtual void UnbindRenderTarget() = 0;
+
+    virtual void BindRenderTargetTex(int tex, int attachment = 0, int textarget = 0) = 0;
 
 	virtual int  CheckRenderTargetStatus() = 0;
 
@@ -162,6 +164,8 @@ public:
 	virtual void ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int ebo) = 0;
 	virtual void DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) = 0;
 	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) = 0;
+
+    virtual void RenderCube() = 0;
 
 	/************************************************************************/
 	/* Debug                                                                */

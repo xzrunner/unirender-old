@@ -742,25 +742,31 @@ calc_texture_size(enum EJ_TEXTURE_FORMAT format, int width, int height) {
 }
 
 RID
-render_texture_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap_levels) {
+render_texture_create(struct render *R, int width, int height, int depth, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap_levels) {
 	struct texture * tex = (struct texture *)array_alloc(&R->texture);
 	if (tex == NULL)
 		return 0;
 	glGenTextures(1, &tex->glid);
 	tex->width = width;
 	tex->height = height;
-	tex->depth = 0;
+	tex->depth = depth;
 	tex->format = format;
 	tex->type = type;
-	assert(type == EJ_TEXTURE_2D || type == EJ_TEXTURE_CUBE);
+	assert(type == EJ_TEXTURE_2D || type == EJ_TEXTURE_3D || type == EJ_TEXTURE_CUBE);
 	tex->mipmap_levels = mipmap_levels;
 	int size = calc_texture_size(format, width, height);
 	if (mipmap_levels > 1) {
 		size += size / 3;
 	}
-	if (type == EJ_TEXTURE_CUBE) {
-		size *= 6;
-	}
+    switch (type)
+    {
+    case EJ_TEXTURE_3D:
+        size *= depth;
+        break;
+    case EJ_TEXTURE_CUBE:
+        size *= 6;
+        break;
+    }
 	tex->memsize = size;
 
 	CHECK_GL_ERROR
@@ -882,7 +888,7 @@ texture_format(struct texture* tex, GLint* internal_format, GLenum* pixel_format
 }
 
 void
-render_texture_update(struct render *R, RID id, int width, int height, const void *pixels, int slice, int miplevel, int flags) {
+render_texture_update(struct render *R, RID id, int width, int height, int depth, const void *pixels, int slice, int miplevel, int flags) {
 	struct texture * tex = (struct texture *)array_ref(&R->texture, id);
 	if (tex == NULL)
 		return;
@@ -914,23 +920,44 @@ render_texture_update(struct render *R, RID id, int width, int height, const voi
 	if (flags & EJ_TEXTURE_WARP_REPEAT) {
 		glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	} else {
+        if (type == GL_TEXTURE_3D) {
+            glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_REPEAT);
+        }
+    } else if (flags & EJ_TEXTURE_WARP_BORDER) {
+		glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        if (type == GL_TEXTURE_3D) {
+            glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+        }
+    } else {
 		glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 		glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+        if (type == GL_TEXTURE_3D) {
+            glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        }
 	}
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-	GLint internal_format = 0;
-	GLenum pixel_format = 0;
-	GLenum itype = 0;
-	int compressed = texture_format(tex, &internal_format, &pixel_format, &itype);
-	if (compressed) {
- 		glCompressedTexImage2D(target, miplevel, pixel_format,
- 			(GLsizei)tex->width, (GLsizei)tex->height, 0,
- 			calc_texture_size(tex->format, width, height), pixels);
-	} else {
-		glTexImage2D(target, miplevel, internal_format, (GLsizei)width, (GLsizei)height, 0, pixel_format, itype, pixels);
-	}
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    if (type == GL_TEXTURE_3D) {
+        glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, width, height, depth, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    } else if (type == GL_TEXTURE_CUBE_MAP) {
+        for (unsigned int i = 0; i < 6; ++i) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, NULL);
+        }
+    } else {
+	    GLint internal_format = 0;
+	    GLenum pixel_format = 0;
+	    GLenum itype = 0;
+	    int compressed = texture_format(tex, &internal_format, &pixel_format, &itype);
+	    if (compressed) {
+ 		    glCompressedTexImage2D(target, miplevel, pixel_format,
+ 			    (GLsizei)tex->width, (GLsizei)tex->height, 0,
+ 			    calc_texture_size(tex->format, width, height), pixels);
+	    } else {
+		    glTexImage2D(target, miplevel, internal_format, (GLsizei)width, (GLsizei)height, 0, pixel_format, itype, pixels);
+	    }
+    }
 
 	CHECK_GL_ERROR
 }
@@ -957,50 +984,6 @@ render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, in
 	} else {
 		glTexSubImage2D(GL_TEXTURE_2D, miplevel, x, y, w, h, pixel_format, itype, pixels);
 	}
-
-	CHECK_GL_ERROR
-}
-
-RID
-render_texture3d_create(struct render *R, int width, int height, int depth, enum EJ_TEXTURE_FORMAT format)
-{
-	struct texture* tex = (struct texture*)array_alloc(&R->texture);
-	if (tex == NULL)
-		return 0;
-	glGenTextures(1, &tex->glid);
-	tex->width = width;
-	tex->height = height;
-	tex->depth = depth;
-	tex->format = format;
-	tex->type = EJ_TEXTURE_3D;
-	tex->mipmap_levels = 0;
-	// todo
-	tex->memsize = 0;
-
-	CHECK_GL_ERROR
-	return array_id(&R->texture, tex);
-}
-
-void
-render_texture3d_update(struct render *R, RID id, int width, int height, int depth, const void *pixels)
-{
-	struct texture * tex = (struct texture *)array_ref(&R->texture, id);
-	if (tex == NULL)
-		return;
-
-	GLenum type;
-	int target;
-	bind_texture(R, tex, 0, &type, &target);
-
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, width, height, depth, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
 	CHECK_GL_ERROR
 }
@@ -1088,10 +1071,10 @@ create_rt(struct render *R, RID texid) {
 
 RID
 render_target_create(struct render *R, int width, int height, enum EJ_TEXTURE_FORMAT format) {
-	RID tex = render_texture_create(R, width, height, format, EJ_TEXTURE_2D, 0);
+	RID tex = render_texture_create(R, width, height, 0, format, EJ_TEXTURE_2D, 0);
 	if (tex == 0)
 		return 0;
-	render_texture_update(R, tex, width, height, NULL, 0, 0, 1);
+	render_texture_update(R, tex, width, height, 0, NULL, 0, 0, 1);
 	RID rt = create_rt(R, tex);
 	glBindFramebuffer(GL_FRAMEBUFFER, R->default_framebuffer);
 	R->last.target = 0;

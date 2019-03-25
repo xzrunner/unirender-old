@@ -26,6 +26,7 @@ public:
 
 	virtual int  CreateTexture(const void* pixels, int width, int height, int format, int mipmap_levels = 0, int linear = 1) override final;
 	virtual int  CreateTexture3D(const void* pixels, int width, int height, int depth, int format) override final;
+    virtual int  CreateTextureCube() override final;
 	virtual int  CreateTextureID(int width, int height, int format, int mipmap_levels = 0) override final;
 	virtual void ReleaseTexture(int id) override final;
 
@@ -47,8 +48,9 @@ public:
 	virtual void ReleaseRenderTarget(int id) override final;
 
 	virtual void BindRenderTarget(int id) override final;
-	virtual void BindRenderTargetTex(int color_tex, int depth_tex = -1) override final;
 	virtual void UnbindRenderTarget() override final;
+
+    virtual void BindRenderTargetTex(int tex, int attachment, int textarget) override final;
 
 	virtual int  CheckRenderTargetStatus() override final;
 
@@ -74,7 +76,7 @@ public:
 	/* Shader                                                               */
 	/************************************************************************/
 
-	virtual int  CreateShader(const char* vs, const char* fs, const std::vector<std::string>& textures) override final;
+	virtual int  CreateShader(const char* vs, const char* fs, const std::vector<std::string>& textures, bool no_header = false) override final;
 	virtual void ReleaseShader(int id) override final;
 
 	virtual void BindShader(int id) override final;
@@ -149,6 +151,8 @@ public:
 	virtual void ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int ebo) override final;
 	virtual void DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) override final;
 	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) override final;
+
+    virtual void RenderCube() override final;
 
 	/************************************************************************/
 	/* Debug                                                                */
@@ -233,6 +237,13 @@ private:
 	int          m_cull = CULL_DISABLE;
 
 	uint32_t     m_clear_color = 0;
+
+    /************************************************************************/
+    /* Draw                                                                 */
+    /************************************************************************/
+
+    unsigned int m_cube_vao = 0;
+    unsigned int m_cube_vbo = 0;
 
 }; // RenderContext
 

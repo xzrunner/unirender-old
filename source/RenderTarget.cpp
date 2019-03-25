@@ -29,11 +29,10 @@ RenderTarget::~RenderTarget()
 void RenderTarget::Bind()
 {
 	m_rc->BindRenderTarget(m_id);
-	if (m_depth_tex) {
-		m_rc->BindRenderTargetTex(m_color_tex->TexID(), m_depth_tex->TexID());
-	} else {
-		m_rc->BindRenderTargetTex(m_color_tex->TexID());
-	}
+    m_rc->BindRenderTargetTex(m_color_tex->TexID(), ur::ATTACHMENT_COLOR0, ur::TEXTURE2D);
+    if (m_depth_tex) {
+        m_rc->BindRenderTargetTex(m_depth_tex->TexID(), ur::ATTACHMENT_DEPTH, ur::TEXTURE2D);
+    }
 }
 
 void RenderTarget::Unbind()
