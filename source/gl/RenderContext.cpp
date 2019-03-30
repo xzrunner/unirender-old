@@ -1235,10 +1235,12 @@ void RenderContext::RenderCube()
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
+
     // render Cube
-    glBindVertexArray(m_cube_vao);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
+    int old_cull = m_cull;
+    SetCull(CULL_DISABLE);
+    DrawArraysVAO(ur::DRAW_TRIANGLES, 0, 36, m_cube_vao);
+    SetCull(static_cast<CULL_MODE>(old_cull));
 }
 
 /************************************************************************/
