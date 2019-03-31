@@ -39,7 +39,6 @@
     <ClInclude Include="..\..\..\include\unirender\gl\typedef.h">
       <Filter>gl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\unirender\c_wrap_ur.h" />
     <ClInclude Include="..\..\..\include\unirender\typedef.h" />
     <ClInclude Include="..\..\..\include\unirender\VertexAttrib.h" />
     <ClInclude Include="..\..\..\include\unirender\RenderTarget.h">

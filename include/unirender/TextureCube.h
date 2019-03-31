@@ -13,9 +13,8 @@ public:
     TextureCube(RenderContext* rc);
     ~TextureCube();
 
-    void BuildFromEquirectangularTex(unsigned int tex);
-
-    unsigned int TexID() const { return m_texid; }
+    unsigned int GetTexID() const { return m_texid; }
+    void SetTexID(unsigned int texid) { m_texid = texid; }
 
 private:
     RenderContext* m_rc = nullptr;
