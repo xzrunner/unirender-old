@@ -147,7 +147,7 @@ int RenderContext::CreateTexture3D(const void* pixels, int width, int height, in
 	return id;
 }
 
-int RenderContext::CreateTextureCube()
+int RenderContext::CreateTextureCube(int width, int height)
 {
     CheckError();
 
@@ -157,7 +157,7 @@ int RenderContext::CreateTextureCube()
 
     RID id = render_texture_create(m_render, 0, 0, 0, EJ_TEXTURE_RGB16F, EJ_TEXTURE_CUBE, 0);
 
-    render_texture_update(m_render, id, 0, 0, 0, nullptr, 0, 0, 0);
+    render_texture_update(m_render, id, width, height, 0, nullptr, 0, 0, 0);
 
     return id;
 }

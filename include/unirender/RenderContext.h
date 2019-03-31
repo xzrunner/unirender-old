@@ -38,7 +38,7 @@ public:
 
 	virtual int  CreateTexture(const void* pixels, int width, int height, int format, int mipmap_levels = 0, int linear = 1) = 0;
 	virtual int  CreateTexture3D(const void* pixels, int width, int height, int depth, int format) = 0;
-    virtual int  CreateTextureCube() = 0;
+    virtual int  CreateTextureCube(int width, int height) = 0;
 	virtual int  CreateTextureID(int width, int height, int format, int mipmap_levels = 0) = 0;
 	virtual void ReleaseTexture(int id) = 0;
 

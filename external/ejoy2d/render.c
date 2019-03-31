@@ -943,7 +943,7 @@ render_texture_update(struct render *R, RID id, int width, int height, int depth
             GL_RGBA, GL_UNSIGNED_BYTE, pixels);
     } else if (type == GL_TEXTURE_CUBE_MAP) {
         for (unsigned int i = 0; i < 6; ++i) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, NULL);
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
         }
     } else {
 	    GLint internal_format = 0;

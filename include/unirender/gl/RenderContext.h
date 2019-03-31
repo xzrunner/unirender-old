@@ -26,7 +26,7 @@ public:
 
 	virtual int  CreateTexture(const void* pixels, int width, int height, int format, int mipmap_levels = 0, int linear = 1) override final;
 	virtual int  CreateTexture3D(const void* pixels, int width, int height, int depth, int format) override final;
-    virtual int  CreateTextureCube() override final;
+    virtual int  CreateTextureCube(int width, int height) override final;
 	virtual int  CreateTextureID(int width, int height, int format, int mipmap_levels = 0) override final;
 	virtual void ReleaseTexture(int id) override final;
 
