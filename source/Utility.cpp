@@ -27,6 +27,9 @@ int Utility::CalcTextureSize(int format, int width, int height, int depth)
     case TEXTURE_RGB32F:
         times = 12;
         break;
+    case TEXTURE_RG16F:
+        times = 4;
+        break;
 	case TEXTURE_A8:
 	case TEXTURE_DEPTH:
 		times = 1;
