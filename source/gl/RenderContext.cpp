@@ -147,7 +147,7 @@ int RenderContext::CreateTexture3D(const void* pixels, int width, int height, in
 	return id;
 }
 
-int RenderContext::CreateTextureCube(int width, int height)
+int RenderContext::CreateTextureCube(int width, int height, int mipmap_levels)
 {
     CheckError();
 
@@ -155,7 +155,7 @@ int RenderContext::CreateTextureCube(int width, int height)
     assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-    RID id = render_texture_create(m_render, 0, 0, 0, EJ_TEXTURE_RGB16F, EJ_TEXTURE_CUBE, 0);
+    RID id = render_texture_create(m_render, 0, 0, 0, EJ_TEXTURE_RGB16F, EJ_TEXTURE_CUBE, mipmap_levels);
 
     render_texture_update(m_render, id, width, height, 0, nullptr, 0, 0, 0);
 
@@ -311,7 +311,7 @@ void RenderContext::UnbindRenderTarget()
 	--m_rt_depth;
 }
 
-void RenderContext::BindRenderTargetTex(int tex, int attachment, int textarget)
+void RenderContext::BindRenderTargetTex(int tex, int attachment, int textarget, int level)
 {
 #ifdef CHECK_MT
     assert(std::this_thread::get_id() == MAIN_THREAD_ID);
@@ -350,7 +350,7 @@ void RenderContext::BindRenderTargetTex(int tex, int attachment, int textarget)
         break;
     }
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, gl_attachment, gl_textarget, gl_tex, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, gl_attachment, gl_textarget, gl_tex, level);
 }
 
 int  RenderContext::CheckRenderTargetStatus()

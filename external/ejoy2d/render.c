@@ -966,6 +966,10 @@ render_texture_update(struct render *R, RID id, int width, int height, int depth
 	    }
     }
 
+    if (tex->mipmap_levels > 1) {
+        glGenerateMipmap(type);
+    }
+
 	CHECK_GL_ERROR
 }
 

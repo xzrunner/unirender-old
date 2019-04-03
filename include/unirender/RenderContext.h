@@ -38,7 +38,7 @@ public:
 
 	virtual int  CreateTexture(const void* pixels, int width, int height, int format, int mipmap_levels = 0, int linear = 1) = 0;
 	virtual int  CreateTexture3D(const void* pixels, int width, int height, int depth, int format) = 0;
-    virtual int  CreateTextureCube(int width, int height) = 0;
+    virtual int  CreateTextureCube(int width, int height, int mipmap_levels = 0) = 0;
 	virtual int  CreateTextureID(int width, int height, int format, int mipmap_levels = 0) = 0;
 	virtual void ReleaseTexture(int id) = 0;
 
@@ -61,7 +61,7 @@ public:
 	virtual void BindRenderTarget(int id) = 0;
 	virtual void UnbindRenderTarget() = 0;
 
-    virtual void BindRenderTargetTex(int tex, int attachment = 0, int textarget = 0) = 0;
+    virtual void BindRenderTargetTex(int tex, int attachment = 0, int textarget = 0, int level = 0) = 0;
 
 	virtual int  CheckRenderTargetStatus() = 0;
 
