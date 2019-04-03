@@ -166,6 +166,7 @@ public:
 	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) = 0;
 
     virtual void RenderCube() = 0;
+    virtual void RenderQuad() = 0;
 
 	/************************************************************************/
 	/* Debug                                                                */

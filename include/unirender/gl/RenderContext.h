@@ -153,6 +153,7 @@ public:
 	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) override final;
 
     virtual void RenderCube() override final;
+    virtual void RenderQuad() override final;
 
 	/************************************************************************/
 	/* Debug                                                                */
@@ -244,6 +245,8 @@ private:
 
     unsigned int m_cube_vao = 0;
     unsigned int m_cube_vbo = 0;
+    unsigned int m_quad_vao = 0;
+    unsigned int m_quad_vbo = 0;
 
 }; // RenderContext
 

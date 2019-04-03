@@ -1243,6 +1243,35 @@ void RenderContext::RenderCube()
     SetCull(static_cast<CULL_MODE>(old_cull));
 }
 
+void RenderContext::RenderQuad()
+{
+    if (m_quad_vao == 0)
+    {
+        float vertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &m_quad_vao);
+        glGenBuffers(1, &m_quad_vbo);
+        glBindVertexArray(m_quad_vao);
+        glBindBuffer(GL_ARRAY_BUFFER, m_quad_vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    }
+    // render quad
+    int old_cull = m_cull;
+    SetCull(CULL_DISABLE);
+    DrawArraysVAO(ur::DRAW_TRIANGLE_STRIP, 0, 4, m_quad_vao);
+    SetCull(static_cast<CULL_MODE>(old_cull));
+}
+
 /************************************************************************/
 /* Debug                                                                */
 /************************************************************************/
