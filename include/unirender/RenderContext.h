@@ -117,7 +117,7 @@ public:
     virtual int  GetBindedVertexLayoutID() = 0;
 
 	virtual void SetClearFlag(int flag) = 0;
-	virtual void SetClearColor(uint32_t arbg) = 0;
+	virtual void SetClearColor(uint32_t argb) = 0;
 	virtual void Clear() = 0;
 
 	virtual void EnableScissor(int enable) = 0;

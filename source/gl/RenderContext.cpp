@@ -683,13 +683,13 @@ void RenderContext::SetClearFlag(int flag)
 	m_clear_mask = flag;
 }
 
-void RenderContext::SetClearColor(uint32_t arbg)
+void RenderContext::SetClearColor(uint32_t argb)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	m_clear_color = arbg;
+	m_clear_color = argb;
 }
 
 void RenderContext::Clear()

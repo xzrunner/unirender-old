@@ -104,7 +104,7 @@ public:
     virtual int  GetBindedVertexLayoutID() override final;
 
 	virtual void SetClearFlag(int flag) override final;
-	virtual void SetClearColor(uint32_t arbg) override final;
+	virtual void SetClearColor(uint32_t argb) override final;
 	virtual void Clear() override final;
 
 	virtual void EnableScissor(int enable) override final;
