@@ -1194,6 +1194,8 @@ render_state_commit(struct render *R) {
 				GL_FUNC_ADD,
 				GL_FUNC_SUBTRACT,
 				GL_FUNC_REVERSE_SUBTRACT,
+                GL_MIN,
+                GL_MAX,
 			};
 			enum EJ_BLEND_FUNC func = R->current.blend_func;
 			glBlendEquation(blend[func]);
@@ -1243,6 +1245,8 @@ render_state_commit(struct render *R) {
 					GL_GREATER,
 					GL_GEQUAL,
 					GL_ALWAYS,
+                    GL_NOTEQUAL,
+                    GL_NEVER,
 				};
 				glDepthFunc( depth[R->current.depth] );
 			}
@@ -1262,7 +1266,13 @@ render_state_commit(struct render *R) {
 			if (R->current.cull == EJ_CULL_DISABLE) {
 				glDisable(GL_CULL_FACE);
 			} else {
-				glCullFace(R->current.cull == EJ_CULL_FRONT ? GL_FRONT : GL_BACK);
+                static GLenum cull[] = {
+					0,
+                    GL_FRONT,
+                    GL_BACK,
+					GL_FRONT_AND_BACK
+				};
+				glCullFace(cull[R->current.cull]);
 			}
 			R->last.cull = R->current.cull;
 		}
