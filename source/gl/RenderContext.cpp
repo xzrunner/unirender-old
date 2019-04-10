@@ -1238,9 +1238,9 @@ void RenderContext::RenderCube()
 
     // render Cube
     int old_cull = m_cull;
-    SetCull(CULL_DISABLE);
+    //SetCull(CULL_DISABLE);
     DrawArraysVAO(ur::DRAW_TRIANGLES, 0, 36, m_cube_vao);
-    SetCull(static_cast<CULL_MODE>(old_cull));
+    //SetCull(static_cast<CULL_MODE>(old_cull));
 }
 
 void RenderContext::RenderQuad()
@@ -1267,9 +1267,9 @@ void RenderContext::RenderQuad()
     }
     // render quad
     int old_cull = m_cull;
-    SetCull(CULL_DISABLE);
+    //SetCull(CULL_DISABLE);
     DrawArraysVAO(ur::DRAW_TRIANGLE_STRIP, 0, 4, m_quad_vao);
-    SetCull(static_cast<CULL_MODE>(old_cull));
+    //SetCull(static_cast<CULL_MODE>(old_cull));
 }
 
 /************************************************************************/
