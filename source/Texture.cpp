@@ -35,7 +35,7 @@ Texture::~Texture()
 }
 
 void Texture::Upload(RenderContext* rc, int width, int height, TEXTURE_FORMAT format,
-	                 const unsigned char* filling, bool filter_linear)
+	                 const unsigned char* filling, TEXTURE_WRAP wrap, TEXTURE_FILTER filter)
 {
 	if (m_texid != 0) {
 		m_rc->ReleaseTexture(m_texid);
@@ -51,13 +51,13 @@ void Texture::Upload(RenderContext* rc, int width, int height, TEXTURE_FORMAT fo
 		uint8_t* pixels = new uint8_t[sz];
 		memset(pixels, 0, sz);
 
-		m_texid = m_rc->CreateTexture(pixels, m_width, m_height, m_format, 0, filter_linear ? 1 : 0);
+		m_texid = m_rc->CreateTexture(pixels, m_width, m_height, m_format, 0, wrap, filter);
 
 		delete[] pixels;
 	}
 	else
 	{
-		m_texid = m_rc->CreateTexture(filling, m_width, m_height, m_format, 0, filter_linear ? 1 : 0);
+		m_texid = m_rc->CreateTexture(filling, m_width, m_height, m_format, 0, wrap, filter);
 	}
 
 }

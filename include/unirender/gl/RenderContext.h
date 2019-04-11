@@ -24,13 +24,15 @@ public:
 	/* Texture                                                              */
 	/************************************************************************/
 
-	virtual int  CreateTexture(const void* pixels, int width, int height, int format, int mipmap_levels = 0, int linear = 1) override final;
+	virtual int  CreateTexture(const void* pixels, int width, int height, int format,
+        int mipmap_levels = 0, TEXTURE_WRAP wrap = TEXTURE_REPEAT, TEXTURE_FILTER filter = TEXTURE_LINEAR) override final;
 	virtual int  CreateTexture3D(const void* pixels, int width, int height, int depth, int format) override final;
     virtual int  CreateTextureCube(int width, int height, int mipmap_levels = 0) override final;
 	virtual int  CreateTextureID(int width, int height, int format, int mipmap_levels = 0) override final;
 	virtual void ReleaseTexture(int id) override final;
 
-	virtual void UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice = 0, int miplevel = 0, int flags = 0) override final;
+	virtual void UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice = 0,
+        int miplevel = 0, TEXTURE_WRAP wrap = TEXTURE_REPEAT, TEXTURE_FILTER filter = TEXTURE_LINEAR) override final;
 	virtual void UpdateTexture3d(int tex_id, const void* pixels, int width, int height, int depth) override final;
 	virtual void UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice = 0, int miplevel = 0) override final;
 

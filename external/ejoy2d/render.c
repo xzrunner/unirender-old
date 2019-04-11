@@ -895,7 +895,8 @@ texture_format(struct texture* tex, GLint* internal_format, GLenum* pixel_format
 }
 
 void
-render_texture_update(struct render *R, RID id, int width, int height, int depth, const void *pixels, int slice, int miplevel, int flags) {
+render_texture_update(struct render *R, RID id, int width, int height, int depth, const void *pixels,
+                      int slice, int miplevel, enum EJ_TEXTURE_WRAP wrap, enum EJ_TEXTURE_FILTER filter) {
 	struct texture * tex = (struct texture *)array_ref(&R->texture, id);
 	if (tex == NULL)
 		return;
@@ -905,44 +906,55 @@ render_texture_update(struct render *R, RID id, int width, int height, int depth
 	bind_texture(R, tex, slice, &type, &target);
 
 	if (tex->mipmap_levels > 1) {
-		if (flags & EJ_TEXTURE_FILTER_NEAREST) {
-			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-		} else {
-			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		}
+        switch (filter) {
+        case EJ_TEXTURE_NEAREST:
+            glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+            break;
+        case EJ_TEXTURE_LINEAR:
+            glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            break;
+        }
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, tex->mipmap_levels - 1);
 	} else {
-		if (flags & EJ_TEXTURE_FILTER_NEAREST) {
-			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		} else {
-			glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		}
-	}
-	if (flags & EJ_TEXTURE_FILTER_NEAREST) {
-		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	} else {
-		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-	if (flags & EJ_TEXTURE_WARP_REPEAT) {
-		glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        if (type == GL_TEXTURE_3D) {
-            glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_REPEAT);
-        }
-    } else if (flags & EJ_TEXTURE_WARP_BORDER) {
-		glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        if (type == GL_TEXTURE_3D) {
-            glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-        }
-    } else {
-		glTexParameteri( type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		glTexParameteri( type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-        if (type == GL_TEXTURE_3D) {
-            glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        switch (filter) {
+        case EJ_TEXTURE_NEAREST:
+            glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            break;
+        case EJ_TEXTURE_LINEAR:
+            glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            break;
         }
 	}
+    switch (filter) {
+    case EJ_TEXTURE_NEAREST:
+        glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        break;
+    case EJ_TEXTURE_LINEAR:
+        glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        break;
+    }
+
+    GLint gl_wrap;
+    switch (wrap) {
+    case EJ_TEXTURE_REPEAT:
+        gl_wrap = GL_REPEAT;
+        break;
+    case EJ_TEXTURE_MIRRORED_REPEAT:
+        gl_wrap = GL_MIRRORED_REPEAT;
+        break;
+    case EJ_TEXTURE_CLAMP_TO_EDGE:
+        gl_wrap = GL_CLAMP_TO_EDGE;
+        break;
+    case EJ_TEXTURE_CLAMP_TO_BORDER:
+        gl_wrap = GL_CLAMP_TO_BORDER;
+        break;
+    }
+    glTexParameteri(type, GL_TEXTURE_WRAP_S, gl_wrap);
+    glTexParameteri(type, GL_TEXTURE_WRAP_T, gl_wrap);
+    if (type == GL_TEXTURE_3D) {
+        glTexParameteri(type, GL_TEXTURE_WRAP_R, gl_wrap);
+    }
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     if (type == GL_TEXTURE_3D) {
@@ -1085,7 +1097,7 @@ render_target_create(struct render *R, int width, int height, enum EJ_TEXTURE_FO
 	RID tex = render_texture_create(R, width, height, 0, format, EJ_TEXTURE_2D, 0);
 	if (tex == 0)
 		return 0;
-	render_texture_update(R, tex, width, height, 0, NULL, 0, 0, 1);
+	render_texture_update(R, tex, width, height, 0, NULL, 0, 0, EJ_TEXTURE_REPEAT, EJ_TEXTURE_LINEAR);
 	RID rt = create_rt(R, tex);
 	glBindFramebuffer(GL_FRAMEBUFFER, R->default_framebuffer);
 	R->last.target = 0;

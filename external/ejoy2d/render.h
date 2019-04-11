@@ -157,9 +157,19 @@ enum EJ_CULL_MODE {
     EJ_CULL_FRONT_AND_BACK,
 };
 
-#define EJ_TEXTURE_FILTER_NEAREST 1
-#define EJ_TEXTURE_WARP_REPEAT    2
-#define EJ_TEXTURE_WARP_BORDER    4
+enum EJ_TEXTURE_WRAP
+{
+    EJ_TEXTURE_REPEAT,
+    EJ_TEXTURE_MIRRORED_REPEAT,
+    EJ_TEXTURE_CLAMP_TO_EDGE,
+    EJ_TEXTURE_CLAMP_TO_BORDER,
+};
+
+enum EJ_TEXTURE_FILTER
+{
+    EJ_TEXTURE_NEAREST,
+    EJ_TEXTURE_LINEAR,
+};
 
 int render_version(struct render *R);
 int render_size(struct render_init_args *args);
@@ -179,7 +189,7 @@ RID render_buffer_create(struct render *R, enum EJ_RENDER_OBJ what, const void* 
 void render_buffer_update(struct render *R, RID id, const void* data, int size);
 
 RID render_texture_create(struct render *R, int width, int height, int depth, enum EJ_TEXTURE_FORMAT format, enum EJ_TEXTURE_TYPE type, int mipmap_levels);
-void render_texture_update(struct render *R, RID id, int width, int height, int depth, const void *pixels, int slice, int miplevel, int flags);
+void render_texture_update(struct render *R, RID id, int width, int height, int depth, const void *pixels, int slice, int miplevel, enum EJ_TEXTURE_WRAP wrap, enum EJ_TEXTURE_FILTER filter);
 // subupdate only support slice 0, miplevel 0
 void render_texture_subupdate(struct render *R, RID id, const void *pixels, int x, int y, int w, int h, int slice, int miplevel);
 

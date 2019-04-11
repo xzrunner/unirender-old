@@ -21,7 +21,7 @@ public:
 	~Texture();
 
 	void Upload(RenderContext* rc, int width, int height, TEXTURE_FORMAT format = TEXTURE_RGBA8,
-		const unsigned char* filling = nullptr, bool filter_linear = true);
+		const unsigned char* filling = nullptr, TEXTURE_WRAP wrap = TEXTURE_REPEAT, TEXTURE_FILTER filter = TEXTURE_LINEAR);
 
 	int Width() const { return m_width; }
 	int Height() const { return m_height; }

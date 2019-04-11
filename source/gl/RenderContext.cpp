@@ -113,7 +113,8 @@ int RenderContext::RenderVersion() const
 /* Texture                                                              */
 /************************************************************************/
 
-int  RenderContext::CreateTexture(const void* pixels, int width, int height, int format, int mipmap_levels, int linear)
+int  RenderContext::CreateTexture(const void* pixels, int width, int height, int format,
+                                  int mipmap_levels, TEXTURE_WRAP wrap, TEXTURE_FILTER filter)
 {
 	CheckError();
 
@@ -123,11 +124,8 @@ int  RenderContext::CreateTexture(const void* pixels, int width, int height, int
 
 	RID id = render_texture_create(m_render, width, height, 0, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_2D, mipmap_levels);
 
-	int flags = 0;
-	if (!linear) {
-		flags = EJ_TEXTURE_FILTER_NEAREST;
-	}
-	render_texture_update(m_render, id, width, height, 0, pixels, 0, 0, flags);
+	render_texture_update(m_render, id, width, height, 0, pixels, 0, 0,
+        static_cast<EJ_TEXTURE_WRAP>(wrap), static_cast<EJ_TEXTURE_FILTER>(filter));
 
 	return id;
 }
@@ -142,7 +140,7 @@ int RenderContext::CreateTexture3D(const void* pixels, int width, int height, in
 
 	RID id = render_texture_create(m_render, width, height, depth, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_3D, 0);
 
-    render_texture_update(m_render, id, width, height, depth, pixels, 0, 0, EJ_TEXTURE_WARP_BORDER);
+    render_texture_update(m_render, id, width, height, depth, pixels, 0, 0, EJ_TEXTURE_REPEAT, EJ_TEXTURE_LINEAR);
 
 	return id;
 }
@@ -157,7 +155,7 @@ int RenderContext::CreateTextureCube(int width, int height, int mipmap_levels)
 
     RID id = render_texture_create(m_render, 0, 0, 0, EJ_TEXTURE_RGB16F, EJ_TEXTURE_CUBE, mipmap_levels);
 
-    render_texture_update(m_render, id, width, height, 0, nullptr, 0, 0, 0);
+    render_texture_update(m_render, id, width, height, 0, nullptr, 0, 0, EJ_TEXTURE_REPEAT, EJ_TEXTURE_LINEAR);
 
     return id;
 }
@@ -188,13 +186,15 @@ void RenderContext::ReleaseTexture(int id)
 	render_release(m_render, EJ_TEXTURE, id);
 }
 
-void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice, int miplevel, int flags)
+void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int height, int slice,
+                                  int miplevel, TEXTURE_WRAP wrap, TEXTURE_FILTER filter)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	render_texture_update(m_render, tex_id, width, height, 0, pixels, slice, miplevel, flags);
+	render_texture_update(m_render, tex_id, width, height, 0, pixels, slice, miplevel,
+        static_cast<EJ_TEXTURE_WRAP>(wrap), static_cast<EJ_TEXTURE_FILTER>(filter));
 }
 
 void RenderContext::UpdateTexture3d(int tex_id, const void* pixels, int width, int height, int depth)
@@ -203,7 +203,7 @@ void RenderContext::UpdateTexture3d(int tex_id, const void* pixels, int width, i
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-    render_texture_update(m_render, tex_id, width, height, depth, pixels, 0, 0, EJ_TEXTURE_WARP_BORDER);
+    render_texture_update(m_render, tex_id, width, height, depth, pixels, 0, 0, EJ_TEXTURE_REPEAT, EJ_TEXTURE_LINEAR);
 }
 
 void RenderContext::UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice, int miplevel)
