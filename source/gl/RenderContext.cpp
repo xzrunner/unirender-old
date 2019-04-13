@@ -179,7 +179,7 @@ void RenderContext::ReleaseTexture(int id)
 	// clear texture curr
 	for (int i = 0; i < MAX_TEXTURE_CHANNEL; ++i) {
 		if (m_textures[i] == id) {
-			BindTexture(i, 0);
+			BindTexture(0, i);
 		}
 	}
 
