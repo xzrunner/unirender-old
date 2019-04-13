@@ -51,6 +51,7 @@ public:
 
 	virtual void BindRenderTarget(int id) override final;
 	virtual void UnbindRenderTarget() override final;
+    virtual size_t GetRenderTargetDepth() const override final;
 
     virtual void BindRenderTargetTex(int tex, int attachment, int textarget, int level) override final;
 
@@ -82,6 +83,7 @@ public:
 	virtual void ReleaseShader(int id) override final;
 
 	virtual void BindShader(int id) override final;
+    virtual int GetBindedShader() const override final;
 
 	virtual int  GetShaderUniform(const char* name) override final;
 	virtual void SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v, int n = 1) override final;
@@ -147,6 +149,7 @@ public:
 	virtual int  CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list) override final;
 	virtual void ReleaseVertexLayout(int id) override final;
 	virtual void BindVertexLayout(int id) override final;
+    virtual int  GetVertexLayout() const override final;
 	virtual void UpdateVertexLayout(const CU_VEC<VertexAttrib>& va_list) override final;
 
 	virtual void CreateVAO(const VertexInfo& vi, unsigned int& vao, unsigned int& vbo, unsigned int& ebo) override final;
@@ -240,6 +243,9 @@ private:
 	int          m_cull = CULL_DISABLE;
 
 	uint32_t     m_clear_color = 0;
+
+    int          m_binded_shader = 0;
+    int          m_binded_vertexlayout = 0;
 
     /************************************************************************/
     /* Draw                                                                 */

@@ -62,6 +62,7 @@ public:
 
 	virtual void BindRenderTarget(int id) = 0;
 	virtual void UnbindRenderTarget() = 0;
+    virtual size_t GetRenderTargetDepth() const = 0;
 
     virtual void BindRenderTargetTex(int tex, int attachment = 0, int textarget = 0, int level = 0) = 0;
 
@@ -91,6 +92,7 @@ public:
 	virtual void ReleaseShader(int id) = 0;
 
 	virtual void BindShader(int id) = 0;
+    virtual int GetBindedShader() const = 0;
 
 	virtual int  GetShaderUniform(const char* name) = 0;
 	virtual void SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v, int n = 1) = 0;
@@ -160,6 +162,7 @@ public:
 	virtual int  CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list) = 0;
 	virtual void ReleaseVertexLayout(int id) = 0;
 	virtual void BindVertexLayout(int id) = 0;
+    virtual int  GetVertexLayout() const = 0;
 	virtual void UpdateVertexLayout(const CU_VEC<VertexAttrib>& va_list) = 0;
 
 	virtual void CreateVAO(const VertexInfo& vi, unsigned int& vao, unsigned int& vbo, unsigned int& ebo) = 0;

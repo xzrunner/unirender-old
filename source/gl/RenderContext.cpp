@@ -311,6 +311,11 @@ void RenderContext::UnbindRenderTarget()
 	--m_rt_depth;
 }
 
+size_t RenderContext::GetRenderTargetDepth() const
+{
+    return m_rt_depth;
+}
+
 void RenderContext::BindRenderTargetTex(int tex, int attachment, int textarget, int level)
 {
 #ifdef CHECK_MT
@@ -514,6 +519,13 @@ void RenderContext::BindShader(int id)
 #endif // CHECK_MT
 
 	render_shader_bind(m_render, id);
+
+    m_binded_shader = id;
+}
+
+int RenderContext::GetBindedShader() const
+{
+    return m_binded_shader;
 }
 
 int RenderContext::GetShaderUniform(const char* name)
@@ -1021,7 +1033,8 @@ int  RenderContext::CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list)
 		dst.offset = src.offset;
 	}
 
-	return render_register_vertexlayout(m_render, (int)(va_list.size()), va);
+    m_binded_vertexlayout = render_register_vertexlayout(m_render, (int)(va_list.size()), va);
+    return m_binded_vertexlayout;
 }
 
 void RenderContext::ReleaseVertexLayout(int id)
@@ -1040,6 +1053,12 @@ void RenderContext::BindVertexLayout(int id)
 #endif // CHECK_MT
 
 	render_set(m_render, EJ_VERTEXLAYOUT, id, 0);
+    m_binded_vertexlayout = id;
+}
+
+int RenderContext::GetVertexLayout() const
+{
+    return m_binded_vertexlayout;
 }
 
 void RenderContext::UpdateVertexLayout(const CU_VEC<VertexAttrib>& va_list)
