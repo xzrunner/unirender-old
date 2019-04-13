@@ -844,14 +844,12 @@ texture_format(struct texture* tex, GLint* internal_format, GLenum* pixel_format
 	case EJ_TEXTURE_A8 :
 	case EJ_TEXTURE_DEPTH :
 	#if OPENGLES == 3 || OPENGLES == 0
-//		*internal_format = *pixel_format = GL_RED;
-		*internal_format = /*GL_DEPTH_COMPONENT24*/GL_DEPTH_COMPONENT;
+		*internal_format = GL_DEPTH_COMPONENT;
 		*pixel_format = GL_DEPTH_COMPONENT;
 	#else
 		*internal_format = *pixel_format = GL_ALPHA;
 	#endif
-		*itype = GL_UNSIGNED_BYTE;
-	//	*itype = GL_FLOAT;
+		*itype = GL_FLOAT;
 		break;
 #ifdef GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG
 	case EJ_TEXTURE_PVR2 :
