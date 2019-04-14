@@ -66,6 +66,9 @@
     <ClInclude Include="..\..\..\include\unirender\TextureCube.h">
       <Filter>obj\texture</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\unirender\Sandbox.h">
+      <Filter>tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\external\ejoy2d\carray.c">
@@ -102,6 +105,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\TextureCube.cpp">
       <Filter>obj\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\Sandbox.cpp">
+      <Filter>tools</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

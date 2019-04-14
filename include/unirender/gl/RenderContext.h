@@ -97,18 +97,28 @@ public:
 	virtual void SetBlendEquation(int func) override final;
 	virtual void SetDefaultBlend() override final;
 
-	virtual void SetAlphaTest(ALPHA_FUNC func, float ret = 0) override final;
+	virtual void SetAlphaTest(ALPHA_FUNC func, float ref = 0) override final;
+    virtual void GetAlphaTest(ALPHA_FUNC& func, float& ref) const override final {
+        func = m_alpha_func;
+        ref = m_alpha_ref;
+    }
 
 	virtual void EnableDepthMask(bool depth) override final;
+    virtual bool GetZWrite() const override final { return m_depth; }
 	virtual void SetDepthTest(DEPTH_FORMAT fmt) override final;
+    virtual DEPTH_FORMAT GetZTest() const override final { return m_depth_fmt; }
 
 	virtual void SetFrontFace(bool clockwise) override final;
+    virtual bool GetFrontFace() const override final { return m_front_face_clockwise; }
 	virtual void SetCull(CULL_MODE cull) override final;
+    virtual CULL_MODE GetCullMode() const override final { return static_cast<CULL_MODE>(m_cull); }
 
     virtual int  GetBindedVertexLayoutID() override final;
 
 	virtual void SetClearFlag(int flag) override final;
+    virtual int GetClearFlag() const override final { return m_clear_mask; }
 	virtual void SetClearColor(uint32_t argb) override final;
+    virtual uint32_t GetClearColor() const override final { return m_clear_color; }
 	virtual void Clear() override final;
 
 	virtual void EnableScissor(int enable) override final;
@@ -123,9 +133,12 @@ public:
 	virtual void CheckError() const override final;
 
 	virtual void SetPointSize(float size) override final;
+    virtual float GetPointSize() const override final { return m_point_size; }
 	virtual void SetLineWidth(float size) override final;
+    virtual float GetLineWidth() const override final { return m_line_width; }
 
 	virtual void SetPolygonMode(POLYGON_MODE poly_mode) override final;
+    virtual POLYGON_MODE GetPolygonMode() const { return m_poly_mode; }
 
 	virtual void EnableLineStripple(bool stripple) override final;
 	virtual void SetLineStripple(int pattern) override final;
@@ -232,6 +245,8 @@ private:
 
 	bool         m_depth;
 	DEPTH_FORMAT m_depth_fmt;
+
+    bool         m_front_face_clockwise = false;
 
 	int          m_clear_mask;
 

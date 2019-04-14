@@ -108,20 +108,27 @@ public:
 	virtual void SetDefaultBlend() = 0;
 
 	// alpha test
-	virtual void SetAlphaTest(ALPHA_FUNC func, float ret = 0) = 0;
+	virtual void SetAlphaTest(ALPHA_FUNC func, float ref = 0) = 0;
+    virtual void GetAlphaTest(ALPHA_FUNC& func, float& ref) const = 0;
 
 	// depth
 	virtual void EnableDepthMask(bool depth) = 0;
+    virtual bool GetZWrite() const = 0;
 	virtual void SetDepthTest(DEPTH_FORMAT fmt) = 0;
+    virtual DEPTH_FORMAT GetZTest() const = 0;
 
 	// face
 	virtual void SetFrontFace(bool clockwise) = 0;
+    virtual bool GetFrontFace() const = 0;
 	virtual void SetCull(CULL_MODE cull) = 0;
+    virtual CULL_MODE GetCullMode() const = 0;
 
     virtual int  GetBindedVertexLayoutID() = 0;
 
 	virtual void SetClearFlag(int flag) = 0;
+    virtual int GetClearFlag() const = 0;
 	virtual void SetClearColor(uint32_t argb) = 0;
+    virtual uint32_t GetClearColor() const = 0;
 	virtual void Clear() = 0;
 
 	virtual void EnableScissor(int enable) = 0;
@@ -135,10 +142,13 @@ public:
 	virtual bool OutOfMemory() const = 0;
 	virtual void CheckError() const = 0;
 
-	virtual void SetPointSize(float size) = 0;
-	virtual void SetLineWidth(float size) = 0;
+	virtual void  SetPointSize(float size) = 0;
+    virtual float GetPointSize() const = 0;
+	virtual void  SetLineWidth(float size) = 0;
+    virtual float GetLineWidth() const = 0;
 
 	virtual void SetPolygonMode(POLYGON_MODE poly_mode) = 0;
+    virtual POLYGON_MODE GetPolygonMode() const = 0;
 
 	virtual void EnableLineStripple(bool stripple) = 0;
 	virtual void SetLineStripple(int pattern) = 0;

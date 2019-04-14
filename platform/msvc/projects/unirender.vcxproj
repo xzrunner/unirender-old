@@ -88,6 +88,7 @@
     <ClInclude Include="..\..\..\include\unirender\PixelBuffer.h" />
     <ClInclude Include="..\..\..\include\unirender\RenderContext.h" />
     <ClInclude Include="..\..\..\include\unirender\RenderTarget.h" />
+    <ClInclude Include="..\..\..\include\unirender\Sandbox.h" />
     <ClInclude Include="..\..\..\include\unirender\Shader.h" />
     <ClInclude Include="..\..\..\include\unirender\Texture.h" />
     <ClInclude Include="..\..\..\include\unirender\Texture3D.h" />
@@ -108,6 +109,7 @@
     <ClCompile Include="..\..\..\source\PixelBuffer.cpp" />
     <ClCompile Include="..\..\..\source\RenderContext.cpp" />
     <ClCompile Include="..\..\..\source\RenderTarget.cpp" />
+    <ClCompile Include="..\..\..\source\Sandbox.cpp" />
     <ClCompile Include="..\..\..\source\Shader.cpp" />
     <ClCompile Include="..\..\..\source\Texture.cpp" />
     <ClCompile Include="..\..\..\source\Texture3D.cpp" />

@@ -664,6 +664,7 @@ void RenderContext::SetDepthTest(DEPTH_FORMAT fmt)
 
 void RenderContext::SetFrontFace(bool clockwise)
 {
+    m_front_face_clockwise = clockwise;
 	render_set_front_face(m_render, clockwise);
 }
 
