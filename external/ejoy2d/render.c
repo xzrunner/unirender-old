@@ -946,6 +946,11 @@ render_texture_update(struct render *R, RID id, int width, int height, int depth
         break;
     case EJ_TEXTURE_CLAMP_TO_BORDER:
         gl_wrap = GL_CLAMP_TO_BORDER;
+        {
+            // todo: pass in
+            float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+        }
         break;
     }
     glTexParameteri(type, GL_TEXTURE_WRAP_S, gl_wrap);
