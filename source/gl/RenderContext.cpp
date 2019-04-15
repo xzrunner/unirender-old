@@ -327,8 +327,14 @@ void RenderContext::BindRenderTargetTex(int tex, int attachment, int textarget, 
     GLenum gl_attachment = GL_COLOR_ATTACHMENT0;
     switch (attachment)
     {
+    case ATTACHMENT_COLOR0:
+        gl_attachment = GL_COLOR_ATTACHMENT0;
+        break;
     case ATTACHMENT_DEPTH:
         gl_attachment = GL_DEPTH_ATTACHMENT;
+        break;
+    case ATTACHMENT_STENCIL:
+        gl_attachment = GL_STENCIL_ATTACHMENT;
         break;
     }
 
