@@ -103,14 +103,14 @@ public:
         ref = m_alpha_ref;
     }
 
-	virtual void EnableDepthMask(bool depth) override final;
-    virtual bool GetZWrite() const override final { return m_depth; }
-	virtual void SetDepthTest(DEPTH_FORMAT fmt) override final;
-    virtual DEPTH_FORMAT GetZTest() const override final { return m_depth_fmt; }
+	virtual void SetZWrite(bool enable) override final;
+    virtual bool GetZWrite() const override final { return m_zwrite; }
+	virtual void SetZTest(DEPTH_FORMAT depth) override final;
+    virtual DEPTH_FORMAT GetZTest() const override final { return m_ztest; }
 
 	virtual void SetFrontFace(bool clockwise) override final;
     virtual bool GetFrontFace() const override final { return m_front_face_clockwise; }
-	virtual void SetCull(CULL_MODE cull) override final;
+	virtual void SetCullMode(CULL_MODE cull) override final;
     virtual CULL_MODE GetCullMode() const override final { return static_cast<CULL_MODE>(m_cull); }
 
     virtual int  GetBindedVertexLayoutID() override final;
@@ -243,8 +243,8 @@ private:
 	ALPHA_FUNC   m_alpha_func;
 	float        m_alpha_ref;
 
-	bool         m_depth;
-	DEPTH_FORMAT m_depth_fmt;
+	bool         m_zwrite;
+	DEPTH_FORMAT m_ztest;
 
     bool         m_front_face_clockwise = false;
 

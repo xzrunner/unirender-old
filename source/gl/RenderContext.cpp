@@ -70,8 +70,8 @@ RenderContext::RenderContext(int max_texture, std::function<void(ur::RenderConte
 	m_blend_func = BLEND_FUNC_ADD;
 	m_alpha_func = ALPHA_ALWAYS;
 	m_alpha_ref = 0;
-	m_depth = false;
-	m_depth_fmt = DEPTH_DISABLE;
+	m_zwrite = false;
+	m_ztest = DEPTH_DISABLE;
 	m_clear_mask = 0;
 	m_vp_x = m_vp_y = m_vp_w = m_vp_h = -1;
 	render_set_blendfunc(m_render, (EJ_BLEND_FORMAT)m_blend_src, (EJ_BLEND_FORMAT)m_blend_dst);
@@ -636,36 +636,36 @@ void RenderContext::SetAlphaTest(ALPHA_FUNC func, float ref)
 	render_set_alpha_test(m_render, (EJ_ALPHA_FUNC)func, ref);
 }
 
-void RenderContext::EnableDepthMask(bool depth)
+void RenderContext::SetZWrite(bool enable)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	if (m_depth == depth) {
+	if (m_zwrite == enable) {
 		return;
 	}
 
 	CallFlushCB();
 
-	m_depth = depth;
-	render_enabledepthmask(m_render, m_depth);
+	m_zwrite = enable;
+	render_enabledepthmask(m_render, m_zwrite);
 }
 
-void RenderContext::SetDepthTest(DEPTH_FORMAT fmt)
+void RenderContext::SetZTest(DEPTH_FORMAT depth)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	if (m_depth_fmt == fmt) {
+	if (m_ztest == depth) {
 		return;
 	}
 
 	CallFlushCB();
 
-	m_depth_fmt = fmt;
-	render_setdepth(m_render, EJ_DEPTH_FORMAT(m_depth_fmt));
+	m_ztest = depth;
+	render_setdepth(m_render, EJ_DEPTH_FORMAT(m_ztest));
 }
 
 void RenderContext::SetFrontFace(bool clockwise)
@@ -674,7 +674,7 @@ void RenderContext::SetFrontFace(bool clockwise)
 	render_set_front_face(m_render, clockwise);
 }
 
-void RenderContext::SetCull(CULL_MODE cull)
+void RenderContext::SetCullMode(CULL_MODE cull)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
@@ -1264,9 +1264,9 @@ void RenderContext::RenderCube()
 
     // render Cube
     int old_cull = m_cull;
-    //SetCull(CULL_DISABLE);
+    //SetCullMode(CULL_DISABLE);
     DrawArraysVAO(ur::DRAW_TRIANGLES, 0, 36, m_cube_vao);
-    //SetCull(static_cast<CULL_MODE>(old_cull));
+    //SetCullMode(static_cast<CULL_MODE>(old_cull));
 }
 
 void RenderContext::RenderQuad()
@@ -1293,9 +1293,9 @@ void RenderContext::RenderQuad()
     }
     // render quad
     int old_cull = m_cull;
-    //SetCull(CULL_DISABLE);
+    //SetCullMode(CULL_DISABLE);
     DrawArraysVAO(ur::DRAW_TRIANGLE_STRIP, 0, 4, m_quad_vao);
-    //SetCull(static_cast<CULL_MODE>(old_cull));
+    //SetCullMode(static_cast<CULL_MODE>(old_cull));
 }
 
 /************************************************************************/

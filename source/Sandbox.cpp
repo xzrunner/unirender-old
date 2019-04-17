@@ -44,12 +44,12 @@ Sandbox::~Sandbox()
 
     m_rc.SetAlphaTest(m_alpha_func, m_alpha_ref);
 
-    m_rc.EnableDepthMask(m_zwrite);
-    m_rc.SetDepthTest(m_ztest);
+    m_rc.SetZWrite(m_zwrite);
+    m_rc.SetZTest(m_ztest);
 
     m_rc.SetFrontFace(m_front_face_clockwise);
 
-    m_rc.SetCull(m_cull);
+    m_rc.SetCullMode(m_cull);
 
     m_rc.SetClearFlag(m_clear_flag);
     m_rc.SetClearColor(m_clear_color);

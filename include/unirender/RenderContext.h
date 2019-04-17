@@ -112,15 +112,15 @@ public:
     virtual void GetAlphaTest(ALPHA_FUNC& func, float& ref) const = 0;
 
 	// depth
-	virtual void EnableDepthMask(bool depth) = 0;
+	virtual void SetZWrite(bool enable) = 0;
     virtual bool GetZWrite() const = 0;
-	virtual void SetDepthTest(DEPTH_FORMAT fmt) = 0;
+	virtual void SetZTest(DEPTH_FORMAT depth) = 0;
     virtual DEPTH_FORMAT GetZTest() const = 0;
 
 	// face
 	virtual void SetFrontFace(bool clockwise) = 0;
     virtual bool GetFrontFace() const = 0;
-	virtual void SetCull(CULL_MODE cull) = 0;
+	virtual void SetCullMode(CULL_MODE cull) = 0;
     virtual CULL_MODE GetCullMode() const = 0;
 
     virtual int  GetBindedVertexLayoutID() = 0;
