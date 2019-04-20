@@ -53,7 +53,15 @@ public:
 	virtual void UnbindRenderTarget() override final;
     virtual size_t GetRenderTargetDepth() const override final;
 
-    virtual void BindRenderTargetTex(int tex, int attachment, int textarget, int level) override final;
+    // attach texture
+    virtual void BindRenderTargetTex(int tex, ATTACHMENT_TYPE attachment = ATTACHMENT_COLOR0,
+        TEXTURE_TARGET textarget = TEXTURE2D, int level = 0) override final;
+
+    // attach framebuffer
+    virtual uint32_t CreateRenderbufferObject(uint32_t fbo, INTERNAL_FORMAT fmt,
+        size_t width, size_t height) override final;
+    virtual void ReleaseRenderbufferObject(uint32_t id) override final;
+    virtual void BindRenderbufferObject(uint32_t rbo, ATTACHMENT_TYPE attachment) override final;
 
 	virtual int  CheckRenderTargetStatus() override final;
 

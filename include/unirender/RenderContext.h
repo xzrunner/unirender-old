@@ -64,7 +64,15 @@ public:
 	virtual void UnbindRenderTarget() = 0;
     virtual size_t GetRenderTargetDepth() const = 0;
 
-    virtual void BindRenderTargetTex(int tex, int attachment = 0, int textarget = 0, int level = 0) = 0;
+    // attach texture
+    virtual void BindRenderTargetTex(int tex, ATTACHMENT_TYPE attachment = ATTACHMENT_COLOR0,
+        TEXTURE_TARGET textarget = TEXTURE2D, int level = 0) = 0;
+
+    // attach framebuffer
+    virtual uint32_t CreateRenderbufferObject(uint32_t fbo, INTERNAL_FORMAT fmt,
+        size_t width, size_t height) = 0;
+    virtual void ReleaseRenderbufferObject(uint32_t id) = 0;
+    virtual void BindRenderbufferObject(uint32_t rbo, ATTACHMENT_TYPE attachment) = 0;
 
 	virtual int  CheckRenderTargetStatus() = 0;
 

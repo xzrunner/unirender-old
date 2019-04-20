@@ -20,6 +20,109 @@
 #include <thread>
 #endif // CHECK_MT
 
+namespace
+{
+
+const GLint internal_formats[] = {
+    GL_ALPHA,
+    GL_ALPHA4,
+    GL_ALPHA8,
+    GL_ALPHA12,
+    GL_ALPHA16,
+    GL_COMPRESSED_ALPHA,
+    GL_COMPRESSED_LUMINANCE,
+    GL_COMPRESSED_LUMINANCE_ALPHA,
+    GL_COMPRESSED_INTENSITY,
+    GL_COMPRESSED_RGB,
+    GL_COMPRESSED_RGBA,
+    GL_DEPTH_COMPONENT,
+    GL_DEPTH_COMPONENT16,
+    GL_DEPTH_COMPONENT24,
+    GL_DEPTH_COMPONENT32,
+    GL_LUMINANCE,
+    GL_LUMINANCE4,
+    GL_LUMINANCE8,
+    GL_LUMINANCE12,
+    GL_LUMINANCE16,
+    GL_LUMINANCE_ALPHA,
+    GL_LUMINANCE4_ALPHA4,
+    GL_LUMINANCE6_ALPHA2,
+    GL_LUMINANCE8_ALPHA8,
+    GL_LUMINANCE12_ALPHA4,
+    GL_LUMINANCE12_ALPHA12,
+    GL_LUMINANCE16_ALPHA16,
+    GL_INTENSITY,
+    GL_INTENSITY4,
+    GL_INTENSITY8,
+    GL_INTENSITY12,
+    GL_INTENSITY16,
+    GL_R3_G3_B2,
+    GL_RGB,
+    GL_RGB4,
+    GL_RGB5,
+    GL_RGB8,
+    GL_RGB10,
+    GL_RGB12,
+    GL_RGB16,
+    GL_RGBA,
+    GL_RGBA2,
+    GL_RGBA4,
+    GL_RGB5_A1,
+    GL_RGBA8,
+    GL_RGB10_A2,
+    GL_RGBA12,
+    GL_RGBA16,
+    GL_SLUMINANCE,
+    GL_SLUMINANCE8,
+    GL_SLUMINANCE_ALPHA,
+    GL_SLUMINANCE8_ALPHA8,
+    GL_SRGB,
+    GL_SRGB8,
+    GL_SRGB_ALPHA,
+    GL_SRGB8_ALPHA8
+};
+
+const GLenum attachments[] = {
+    GL_COLOR_ATTACHMENT0,
+    GL_DEPTH_ATTACHMENT,
+    GL_STENCIL_ATTACHMENT,
+};
+
+const GLenum texture_targets[] = {
+    GL_TEXTURE_2D,
+    GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
+    GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
+    GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB
+};
+
+const GLenum access[] = {
+    GL_READ_ONLY,
+    GL_WRITE_ONLY,
+    GL_READ_WRITE,
+};
+
+const GLenum poly_modes[] = {
+    GL_POINT,
+    GL_LINE,
+    GL_FILL,
+};
+
+const GLenum targets[] = {
+    GL_ARRAY_BUFFER,
+    GL_ELEMENT_ARRAY_BUFFER,
+};
+
+const GLenum usages[] = {
+    GL_STATIC_DRAW,
+    GL_DYNAMIC_DRAW,
+    GL_STREAM_DRAW,
+};
+
+}
+
 namespace ur
 {
 namespace gl
@@ -316,52 +419,47 @@ size_t RenderContext::GetRenderTargetDepth() const
     return m_rt_depth;
 }
 
-void RenderContext::BindRenderTargetTex(int tex, int attachment, int textarget, int level)
+void RenderContext::BindRenderTargetTex(int tex, ATTACHMENT_TYPE attachment,
+                                        TEXTURE_TARGET textarget, int level)
 {
 #ifdef CHECK_MT
     assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
     int gl_tex = render_get_texture_gl_id(m_render, tex);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, attachments[attachment], texture_targets[textarget], gl_tex, level);
+}
 
-    GLenum gl_attachment = GL_COLOR_ATTACHMENT0;
-    switch (attachment)
-    {
-    case ATTACHMENT_COLOR0:
-        gl_attachment = GL_COLOR_ATTACHMENT0;
-        break;
-    case ATTACHMENT_DEPTH:
-        gl_attachment = GL_DEPTH_ATTACHMENT;
-        break;
-    case ATTACHMENT_STENCIL:
-        gl_attachment = GL_STENCIL_ATTACHMENT;
-        break;
-    }
+uint32_t RenderContext::CreateRenderbufferObject(uint32_t fbo, INTERNAL_FORMAT fmt,
+                                                 size_t width, size_t height)
+{
+#ifdef CHECK_MT
+    assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
 
-    GLenum gl_textarget = GL_TEXTURE_2D;
-    switch (textarget)
-    {
-    case TEXTURE_CUBE0:
-        gl_textarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
-        break;
-    case TEXTURE_CUBE1:
-        gl_textarget = GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB;
-        break;
-    case TEXTURE_CUBE2:
-        gl_textarget = GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB;
-        break;
-    case TEXTURE_CUBE3:
-        gl_textarget = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB;
-        break;
-    case TEXTURE_CUBE4:
-        gl_textarget = GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB;
-        break;
-    case TEXTURE_CUBE5:
-        gl_textarget = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB;
-        break;
-    }
+    unsigned int rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, internal_formats[fmt], width, height);
+    return rbo;
+}
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, gl_attachment, gl_textarget, gl_tex, level);
+void RenderContext::ReleaseRenderbufferObject(uint32_t id)
+{
+#ifdef CHECK_MT
+    assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+    glDeleteRenderbuffers(1, &id);
+}
+
+void RenderContext::BindRenderbufferObject(uint32_t rbo, ATTACHMENT_TYPE attachment)
+{
+#ifdef CHECK_MT
+    assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachments[attachment], GL_RENDERBUFFER, rbo);
 }
 
 int  RenderContext::CheckRenderTargetStatus()
@@ -451,20 +549,7 @@ void RenderContext::UnbindPixelBuffer()
 
 void* RenderContext::MapPixelBuffer(ACCESS_MODE mode)
 {
-	uint32_t gl_mode;
-	switch (mode)
-	{
-	case READ_ONLY:
-		gl_mode = GL_READ_ONLY;
-		break;
-	case WRITE_ONLY:
-		gl_mode = GL_WRITE_ONLY;
-		break;
-	case READ_WRITE:
-		gl_mode = GL_READ_WRITE;
-		break;
-	}
-	return glMapBuffer(GL_PIXEL_UNPACK_BUFFER, gl_mode);
+	return glMapBuffer(GL_PIXEL_UNPACK_BUFFER, access[mode]);
 }
 
 void  RenderContext::UnmapPixelBuffer()
@@ -879,18 +964,7 @@ void RenderContext::SetPolygonMode(POLYGON_MODE poly_mode)
 
 	m_poly_mode = poly_mode;
 
-	switch (poly_mode)
-	{
-	case POLYGON_POINT:
-		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-		break;
-	case POLYGON_LINE:
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		break;
-	case POLYGON_FILL:
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		break;
-	}
+    glPolygonMode(GL_FRONT_AND_BACK, poly_modes[poly_mode]);
 }
 
 void RenderContext::EnableLineStripple(bool stripple)
@@ -1006,17 +1080,10 @@ void RenderContext::UpdateBuffer(int id, const void* data, int size)
 void RenderContext::UpdateBufferRaw(BUFFER_TYPE type, int id, const void* data, int size, int offset)
 {
 	glBindVertexArray(0);
-	switch (type)
-	{
-	case BUFFER_VERTEX:
-		glBindBuffer(GL_ARRAY_BUFFER, id);
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
-		break;
-	case BUFFER_INDEX:
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, size, data);
-		break;
-	}
+
+    GLenum target = targets[type];
+    glBindBuffer(target, id);
+    glBufferSubData(target, offset, size, data);
 }
 
 int  RenderContext::CreateVertexLayout(const CU_VEC<VertexAttrib>& va_list)
@@ -1110,29 +1177,12 @@ void RenderContext::CreateVAO(const VertexInfo& vi,
 
 	glBindVertexArray(vao);
 
-	auto gl_usage = [](BUFFER_USAGE usage)->GLenum {
-		auto ret = GL_STATIC_DRAW;
-		switch (usage)
-		{
-		case USAGE_STATIC:
-			ret = GL_STATIC_DRAW;
-			break;
-		case USAGE_DYNAMIC:
-			ret = GL_DYNAMIC_DRAW;
-			break;
-		case USAGE_STREAM:
-			ret = GL_STREAM_DRAW;
-			break;
-		};
-		return ret;
-	};
-
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, vi.vn * vi.stride, vi.vertices, gl_usage(vi.vert_usage));
+	glBufferData(GL_ARRAY_BUFFER, vi.vn * vi.stride, vi.vertices, usages[vi.vert_usage]);
 
 	if (element) {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * vi.in, vi.indices, gl_usage(vi.index_usage));
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * vi.in, vi.indices, usages[vi.index_usage]);
 	}
 
 	size_t idx = 0;
