@@ -6,6 +6,8 @@
 
 #include <cu/cu_stl.h>
 
+#include <vector>
+
 namespace ur
 {
 
@@ -49,6 +51,7 @@ public:
 	virtual void UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice = 0, int miplevel = 0) = 0;
 
 	virtual void BindTexture(int id, int channel) = 0;
+    virtual const std::vector<int>& GetBindedTextures() const = 0;
 
 	virtual void ClearTextureCache() = 0;
 

@@ -629,7 +629,7 @@ static int
 change_vb(struct render *R, struct shader * s) {
 	int ret = 0;
 	struct attrib* a = (struct attrib*)array_ref(&R->attrib, R->attrib_layout);
-	assert(s->n == a->n);
+    assert(s->n == a->n);
 	for (int i = 0; i < s->n; ++i) {
 		if (s->a[i].stride != a->a[i].stride) {
 			ret = 1;
@@ -1147,6 +1147,11 @@ render_state_commit(struct render *R) {
 			if (id != lastid) {
 				R->last.texture[i] = id;
 				struct texture * tex = (struct texture *)array_ref(&R->texture, id);
+                struct texture * last_tex = (struct texture *)array_ref(&R->texture, lastid);
+                if (last_tex) {
+                    glActiveTexture(GL_TEXTURE0 + i);
+                    glBindTexture(mode[last_tex->type], 0);
+                }
 				if (tex) {
 					glActiveTexture(GL_TEXTURE0 + i);
 					glBindTexture(mode[tex->type], tex->glid);
@@ -1427,6 +1432,7 @@ render_draw_elements_no_buf(struct render *R, enum EJ_DRAW_MODE mode, int size, 
 	assert((int)mode < sizeof(draw_mode)/sizeof(int));
 	render_state_commit(R);
 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glDrawElements(draw_mode[mode], size, GL_UNSIGNED_INT, indices);

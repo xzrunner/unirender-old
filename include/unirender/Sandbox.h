@@ -3,6 +3,7 @@
 #include "unirender/typedef.h"
 
 #include <cstdint>
+#include <vector>
 
 namespace ur
 {
@@ -45,6 +46,8 @@ private:
     float m_line_width = 1;
 
     POLYGON_MODE m_poly_mode = POLYGON_FILL;
+
+    std::vector<int> m_textures;
 
 }; // Sandbox
 

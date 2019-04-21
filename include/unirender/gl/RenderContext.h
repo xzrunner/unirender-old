@@ -37,6 +37,7 @@ public:
 	virtual void UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice = 0, int miplevel = 0) override final;
 
 	virtual void BindTexture(int id, int channel) override final;
+    virtual const std::vector<int>& GetBindedTextures() const override final { return m_textures; }
 
 	virtual void ClearTextureCache() override final;
 
@@ -223,7 +224,7 @@ private:
 	/* Texture                                                              */
 	/************************************************************************/
 
-	int m_textures[MAX_TEXTURE_CHANNEL];
+	std::vector<int> m_textures;
 
 	/************************************************************************/
 	/* RenderTarget                                                         */

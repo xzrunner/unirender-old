@@ -33,6 +33,8 @@ Sandbox::Sandbox(RenderContext& rc)
     m_line_width = m_rc.GetLineWidth();
 
     m_poly_mode = m_rc.GetPolygonMode();
+
+    m_textures = m_rc.GetBindedTextures();
 }
 
 Sandbox::~Sandbox()
@@ -66,6 +68,10 @@ Sandbox::~Sandbox()
     m_rc.SetLineWidth(m_line_width);
 
     m_rc.SetPolygonMode(m_poly_mode);
+
+    for (int i = 0, n = m_textures.size(); i < n; ++i) {
+        m_rc.BindTexture(m_textures[i], i);
+    }
 }
 
 }

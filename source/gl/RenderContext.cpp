@@ -14,11 +14,23 @@
 #include <assert.h>
 #include <string.h>
 
+//#define OPENGL_DEBUG
+
+#ifdef OPENGL_DEBUG
+#include <iostream>
+#endif // OPENGL_DEBUG
+
 #define CHECK_MT
 
 #ifdef CHECK_MT
 #include <thread>
 #endif // CHECK_MT
+
+#ifdef OPENGL_DEBUG
+using std::cout;
+using std::endl;
+#include <windows.h>
+#endif // OPENGL_DEBUG
 
 namespace
 {
@@ -121,6 +133,59 @@ const GLenum usages[] = {
     GL_STREAM_DRAW,
 };
 
+#ifdef OPENGL_DEBUG
+void APIENTRY openglCallbackFunction(GLenum source,
+                                           GLenum type,
+                                           GLuint id,
+                                           GLenum severity,
+                                           GLsizei length,
+                                           const GLchar* message,
+                                           const void* userParam)
+{
+
+	cout << "---------------------opengl-callback-start------------" << endl;
+	cout << "message: "<< message << endl;
+	cout << "type: ";
+	switch (type) {
+	case GL_DEBUG_TYPE_ERROR:
+		cout << "ERROR";
+		break;
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+		cout << "DEPRECATED_BEHAVIOR";
+		break;
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+		cout << "UNDEFINED_BEHAVIOR";
+		break;
+	case GL_DEBUG_TYPE_PORTABILITY:
+		cout << "PORTABILITY";
+		break;
+	case GL_DEBUG_TYPE_PERFORMANCE:
+		cout << "PERFORMANCE";
+		break;
+	case GL_DEBUG_TYPE_OTHER:
+		cout << "OTHER";
+		break;
+	}
+	cout << endl;
+
+	cout << "id: " << id << endl;
+	cout << "severity: ";
+	switch (severity){
+	case GL_DEBUG_SEVERITY_LOW:
+		cout << "LOW";
+		break;
+	case GL_DEBUG_SEVERITY_MEDIUM:
+		cout << "MEDIUM";
+		break;
+	case GL_DEBUG_SEVERITY_HIGH:
+		cout << "HIGH";
+		break;
+	}
+	cout << endl;
+	cout << "---------------------opengl-callback-end--------------" << endl;
+}
+#endif // OPENGL_DEBUG
+
 }
 
 namespace ur
@@ -158,7 +223,7 @@ RenderContext::RenderContext(int max_texture, std::function<void(ur::RenderConte
 	m_render = render_init(&RA, m_render, smz);
 
 	// Texture
-	memset(m_textures, 0, sizeof(m_textures));
+    m_textures.resize(MAX_TEXTURE_CHANNEL, 0);
 
 	// RenderTarget
 //	m_curr_rt = render_query_target();
@@ -188,6 +253,21 @@ RenderContext::RenderContext(int max_texture, std::function<void(ur::RenderConte
 	m_etc2 = CheckETC2Support();
 #endif
 	LOGI("Support etc2 %d\n", IsSupportETC2());
+
+#ifdef OPENGL_DEBUG
+    glEnable(GL_DEBUG_OUTPUT);
+
+	cout << "Register OpenGL debug callback " << endl;
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback(openglCallbackFunction, nullptr);
+	GLuint unusedIds = 0;
+	glDebugMessageControl(GL_DONT_CARE,
+ 		GL_DONT_CARE,
+ 		GL_DONT_CARE,
+ 		0,
+ 		&unusedIds,
+ 		true);
+#endif // OPENGL_DEBUG
 }
 
 RenderContext::~RenderContext()
@@ -229,6 +309,7 @@ int  RenderContext::CreateTexture(const void* pixels, int width, int height, int
 
 	render_texture_update(m_render, id, width, height, 0, pixels, 0, 0,
         static_cast<EJ_TEXTURE_WRAP>(wrap), static_cast<EJ_TEXTURE_FILTER>(filter));
+    m_textures[7] = id;
 
 	return id;
 }
@@ -244,6 +325,7 @@ int RenderContext::CreateTexture3D(const void* pixels, int width, int height, in
 	RID id = render_texture_create(m_render, width, height, depth, (EJ_TEXTURE_FORMAT)(format), EJ_TEXTURE_3D, 0);
 
     render_texture_update(m_render, id, width, height, depth, pixels, 0, 0, EJ_TEXTURE_REPEAT, EJ_TEXTURE_LINEAR);
+    m_textures[7] = id;
 
 	return id;
 }
@@ -259,6 +341,7 @@ int RenderContext::CreateTextureCube(int width, int height, int mipmap_levels)
     RID id = render_texture_create(m_render, 0, 0, 0, EJ_TEXTURE_RGB16F, EJ_TEXTURE_CUBE, mipmap_levels);
 
     render_texture_update(m_render, id, width, height, 0, nullptr, 0, 0, EJ_TEXTURE_REPEAT, EJ_TEXTURE_LINEAR);
+    m_textures[7] = id;
 
     return id;
 }
@@ -298,6 +381,7 @@ void RenderContext::UpdateTexture(int tex_id, const void* pixels, int width, int
 
 	render_texture_update(m_render, tex_id, width, height, 0, pixels, slice, miplevel,
         static_cast<EJ_TEXTURE_WRAP>(wrap), static_cast<EJ_TEXTURE_FILTER>(filter));
+    m_textures[7] = tex_id;
 }
 
 void RenderContext::UpdateTexture3d(int tex_id, const void* pixels, int width, int height, int depth)
@@ -307,6 +391,7 @@ void RenderContext::UpdateTexture3d(int tex_id, const void* pixels, int width, i
 #endif // CHECK_MT
 
     render_texture_update(m_render, tex_id, width, height, depth, pixels, 0, 0, EJ_TEXTURE_REPEAT, EJ_TEXTURE_LINEAR);
+    m_textures[7] = tex_id;
 }
 
 void RenderContext::UpdateSubTexture(const void* pixels, int x, int y, int w, int h, unsigned int id, int slice, int miplevel)
@@ -316,6 +401,7 @@ void RenderContext::UpdateSubTexture(const void* pixels, int x, int y, int w, in
 #endif // CHECK_MT
 
 	render_texture_subupdate(m_render, id, pixels, x, y, w, h, slice, miplevel);
+    m_textures[7] = id;
 }
 
 void RenderContext::BindTexture(int id, int channel)
@@ -1183,7 +1269,9 @@ void RenderContext::CreateVAO(const VertexInfo& vi,
 	if (element) {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * vi.in, vi.indices, usages[vi.index_usage]);
-	}
+    } else {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
 
 	size_t idx = 0;
 	for (auto& va : vi.va_list)
@@ -1217,6 +1305,9 @@ void RenderContext::CreateVAO(const VertexInfo& vi,
 	glBindVertexArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+    if (element) {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
 }
 
 void RenderContext::ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int ebo)
@@ -1340,6 +1431,8 @@ void RenderContext::RenderQuad()
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
     }
     // render quad
     int old_cull = m_cull;
