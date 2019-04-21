@@ -12,6 +12,9 @@ Sandbox::Sandbox(RenderContext& rc)
     m_shader_id = m_rc.GetBindedShader();
     m_vert_layout_id = m_rc.GetVertexLayout();
 
+    m_blend_eq = m_rc.GetBlendEquation();
+    m_rc.GetBlendFunc(m_blend_src, m_blend_dst);
+
     m_rc.GetAlphaTest(m_alpha_func, m_alpha_ref);
 
     m_zwrite = m_rc.GetZWrite();
@@ -41,6 +44,9 @@ Sandbox::~Sandbox()
 
     m_rc.BindShader(m_shader_id);
     m_rc.BindVertexLayout(m_vert_layout_id);
+
+    m_rc.SetBlendEquation(m_blend_eq);
+    m_rc.SetBlend(m_blend_src, m_blend_dst);
 
     m_rc.SetAlphaTest(m_alpha_func, m_alpha_ref);
 

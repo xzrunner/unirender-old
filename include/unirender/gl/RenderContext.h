@@ -102,7 +102,12 @@ public:
 
 	virtual void EnableBlend(bool blend) override final;
 	virtual void SetBlend(int m1, int m2) override final;
+    virtual void GetBlendFunc(int& m1, int& m2) const override final {
+        m1 = m_blend_src;
+        m2 = m_blend_dst;
+    }
 	virtual void SetBlendEquation(int func) override final;
+    virtual int  GetBlendEquation() const override final { return m_blend_func; }
 	virtual void SetDefaultBlend() override final;
 
 	virtual void SetAlphaTest(ALPHA_FUNC func, float ref = 0) override final;

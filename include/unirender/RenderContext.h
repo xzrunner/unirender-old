@@ -112,7 +112,9 @@ public:
 	// alpha blend
 	virtual void EnableBlend(bool blend) = 0;
 	virtual void SetBlend(int m1, int m2) = 0;
+    virtual void GetBlendFunc(int& m1, int& m2) const = 0;
 	virtual void SetBlendEquation(int func) = 0;
+    virtual int  GetBlendEquation() const = 0;
 	virtual void SetDefaultBlend() = 0;
 
 	// alpha test

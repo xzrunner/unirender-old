@@ -23,6 +23,9 @@ private:
 
     size_t m_rt_depth = 0;
 
+    int m_blend_eq = 0;
+    int m_blend_src = 0, m_blend_dst = 0;
+
     ALPHA_FUNC m_alpha_func = ALPHA_ALWAYS;
     float m_alpha_ref = 0;
 
