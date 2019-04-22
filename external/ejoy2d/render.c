@@ -842,6 +842,9 @@ texture_format(struct texture* tex, GLint* internal_format, GLenum* pixel_format
         *itype = GL_FLOAT;
         break;
 	case EJ_TEXTURE_A8 :
+        *internal_format = *pixel_format = GL_ALPHA;
+        *itype = GL_UNSIGNED_BYTE;
+        break;
 	case EJ_TEXTURE_DEPTH :
 	#if OPENGLES == 3 || OPENGLES == 0
 		*internal_format = GL_DEPTH_COMPONENT;
