@@ -14,7 +14,7 @@ public:
     ~TextureCube();
 
     unsigned int GetTexID() const { return m_texid; }
-    void SetTexID(unsigned int texid) { m_texid = texid; }
+    void SetTexID(unsigned int texid);
 
 private:
     RenderContext* m_rc = nullptr;
