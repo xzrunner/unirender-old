@@ -420,6 +420,25 @@ void RenderContext::BindTexture(int id, int channel)
 	render_set(m_render, EJ_TEXTURE, id, channel);
 }
 
+int RenderContext::GetBindedTexture(TEXTURE_TYPE type, int channel) const
+{
+    GLint id = 0;
+    glActiveTexture(GL_TEXTURE0 + channel);
+    switch (type)
+    {
+    case TEXTURE_2D:
+        glGetIntegerv(GL_TEXTURE_BINDING_2D, &id);
+        break;
+    case TEXTURE_3D:
+        glGetIntegerv(GL_TEXTURE_BINDING_3D, &id);
+        break;
+    case TEXTURE_CUBE:
+        glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &id);
+        break;
+    }
+    return id;
+}
+
 void RenderContext::ClearTextureCache()
 {
 #ifdef CHECK_MT

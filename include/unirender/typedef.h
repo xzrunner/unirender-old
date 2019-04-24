@@ -27,6 +27,7 @@ enum RENDER_OBJ {
 
 enum TEXTURE_TYPE {
 	TEXTURE_2D = 0,
+    TEXTURE_3D,
 	TEXTURE_CUBE,
 };
 

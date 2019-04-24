@@ -52,6 +52,7 @@ public:
 
 	virtual void BindTexture(int id, int channel) = 0;
     virtual const std::vector<int>& GetBindedTextures() const = 0;
+    virtual int GetBindedTexture(TEXTURE_TYPE type, int channel) const = 0;
 
 	virtual void ClearTextureCache() = 0;
 

@@ -38,6 +38,7 @@ public:
 
 	virtual void BindTexture(int id, int channel) override final;
     virtual const std::vector<int>& GetBindedTextures() const override final { return m_textures; }
+    virtual int GetBindedTexture(TEXTURE_TYPE type, int channel) const override final;
 
 	virtual void ClearTextureCache() override final;
 
