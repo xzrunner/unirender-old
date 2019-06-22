@@ -7,6 +7,7 @@
 #include <ejoy2d/opengl.h>
 #include <logger.h>
 #include <fault.h>
+#include <SM_Vector.h>
 
 #include <cmath>
 
@@ -275,9 +276,6 @@ RenderContext::~RenderContext()
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
-
-    glDeleteVertexArrays(1, &m_cube_vao);
-    glDeleteBuffers(1, &m_cube_vbo);
 
 	render_exit(m_render);
 	free(m_render);
@@ -1356,68 +1354,186 @@ void RenderContext::DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned 
 	render_draw_arrays_vao(m_render, (EJ_DRAW_MODE)mode, fromidx, ni, vao);
 }
 
-void RenderContext::RenderCube()
+void RenderContext::RenderCube(VertLayout layout)
 {
     // initialize (if necessary)
-    if (m_cube_vao == 0)
+    if (!m_cached_cube[layout].IsValid())
     {
-        float vertices[] = {
-            // back face
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-             1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
-             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-            -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
-            // front face
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-             1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-            -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-            // left face
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-            -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-            -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-            // right face
-             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-             1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right
-             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-             1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
-            // bottom face
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-             1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-            -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-            // top face
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-             1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-             1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right
-             1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-            -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
-        };
-        glGenVertexArrays(1, &m_cube_vao);
-        glGenBuffers(1, &m_cube_vbo);
+        std::vector<float> vertices;
+        switch (layout)
+        {
+        case VL_POS:
+            vertices = {
+                // back face
+                -1.0f, -1.0f, -1.0f, // bottom-left
+                 1.0f,  1.0f, -1.0f, // top-right
+                 1.0f, -1.0f, -1.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f, // top-right
+                -1.0f, -1.0f, -1.0f, // bottom-left
+                -1.0f,  1.0f, -1.0f, // top-left
+                // front face
+                -1.0f, -1.0f,  1.0f, // bottom-left
+                 1.0f, -1.0f,  1.0f, // bottom-right
+                 1.0f,  1.0f,  1.0f, // top-right
+                 1.0f,  1.0f,  1.0f, // top-right
+                -1.0f,  1.0f,  1.0f, // top-left
+                -1.0f, -1.0f,  1.0f, // bottom-left
+                // left face
+                -1.0f,  1.0f,  1.0f, // top-right
+                -1.0f,  1.0f, -1.0f, // top-left
+                -1.0f, -1.0f, -1.0f, // bottom-left
+                -1.0f, -1.0f, -1.0f, // bottom-left
+                -1.0f, -1.0f,  1.0f, // bottom-right
+                -1.0f,  1.0f,  1.0f, // top-right
+                // right face
+                 1.0f,  1.0f,  1.0f, // top-left
+                 1.0f, -1.0f, -1.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f, // top-right
+                 1.0f, -1.0f, -1.0f, // bottom-right
+                 1.0f,  1.0f,  1.0f, // top-left
+                 1.0f, -1.0f,  1.0f, // bottom-left
+                // bottom face
+                -1.0f, -1.0f, -1.0f, // top-right
+                 1.0f, -1.0f, -1.0f, // top-left
+                 1.0f, -1.0f,  1.0f, // bottom-left
+                 1.0f, -1.0f,  1.0f, // bottom-left
+                -1.0f, -1.0f,  1.0f, // bottom-right
+                -1.0f, -1.0f, -1.0f, // top-right
+                // top face
+                -1.0f,  1.0f, -1.0f, // top-left
+                 1.0f,  1.0f , 1.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f, // top-right
+                 1.0f,  1.0f,  1.0f, // bottom-right
+                -1.0f,  1.0f, -1.0f, // top-left
+                -1.0f,  1.0f,  1.0f  // bottom-left
+            };
+            break;
+        case VL_POS_TEX:
+            vertices = {
+                // back face
+                -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+                 1.0f,  1.0f, -1.0f, 1.0f, 1.0f, // top-right
+                 1.0f, -1.0f, -1.0f, 1.0f, 0.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f, 1.0f, 1.0f, // top-right
+                -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+                -1.0f,  1.0f, -1.0f, 0.0f, 1.0f, // top-left
+                // front face
+                -1.0f, -1.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+                 1.0f, -1.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+                 1.0f,  1.0f,  1.0f, 1.0f, 1.0f, // top-right
+                 1.0f,  1.0f,  1.0f, 1.0f, 1.0f, // top-right
+                -1.0f,  1.0f,  1.0f, 0.0f, 1.0f, // top-left
+                -1.0f, -1.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+                // left face
+                -1.0f,  1.0f,  1.0f, 1.0f, 0.0f, // top-right
+                -1.0f,  1.0f, -1.0f, 1.0f, 1.0f, // top-left
+                -1.0f, -1.0f, -1.0f, 0.0f, 1.0f, // bottom-left
+                -1.0f, -1.0f, -1.0f, 0.0f, 1.0f, // bottom-left
+                -1.0f, -1.0f,  1.0f, 0.0f, 0.0f, // bottom-right
+                -1.0f,  1.0f,  1.0f, 1.0f, 0.0f, // top-right
+                // right face
+                 1.0f,  1.0f,  1.0f, 1.0f, 0.0f, // top-left
+                 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f, 1.0f, 1.0f, // top-right
+                 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, // bottom-right
+                 1.0f,  1.0f,  1.0f, 1.0f, 0.0f, // top-left
+                 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+                // bottom face
+                -1.0f, -1.0f, -1.0f, 0.0f, 1.0f, // top-right
+                 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, // top-left
+                 1.0f, -1.0f,  1.0f, 1.0f, 0.0f, // bottom-left
+                 1.0f, -1.0f,  1.0f, 1.0f, 0.0f, // bottom-left
+                -1.0f, -1.0f,  1.0f, 0.0f, 0.0f, // bottom-right
+                -1.0f, -1.0f, -1.0f, 0.0f, 1.0f, // top-right
+                // top face
+                -1.0f,  1.0f, -1.0f, 0.0f, 1.0f, // top-left
+                 1.0f,  1.0f , 1.0f, 1.0f, 0.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f, 1.0f, 1.0f, // top-right
+                 1.0f,  1.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+                -1.0f,  1.0f, -1.0f, 0.0f, 1.0f, // top-left
+                -1.0f,  1.0f,  1.0f, 0.0f, 0.0f  // bottom-left
+            };
+            break;
+        case VL_POS_NORM_TEX:
+            vertices = {
+                // back face
+                -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+                 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+                 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+                -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+                -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
+                // front face
+                -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+                 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+                 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+                 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+                -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
+                -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+                // left face
+                -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+                -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
+                -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+                -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+                -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+                -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+                // right face
+                 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+                 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right
+                 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+                 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+                 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
+                // bottom face
+                -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+                 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
+                 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+                 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+                -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+                -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+                // top face
+                -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+                 1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right
+                 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+                -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+                -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
+            };
+            break;
+        default:
+            assert(0);
+        }
+
+        glGenVertexArrays(1, &m_cached_cube[layout].vao);
+        glGenBuffers(1, &m_cached_cube[layout].vbo);
         // fill buffer
-        glBindBuffer(GL_ARRAY_BUFFER, m_cube_vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, m_cached_cube[layout].vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
         // link vertex attributes
-        glBindVertexArray(m_cube_vao);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glBindVertexArray(m_cached_cube[layout].vao);
+        switch (layout)
+        {
+        case VL_POS:
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+            break;
+        case VL_POS_TEX:
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            break;
+        case VL_POS_NORM_TEX:
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+            break;
+        default:
+            assert(0);
+        }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
@@ -1425,38 +1541,170 @@ void RenderContext::RenderCube()
     // render Cube
     int old_cull = m_cull;
     //SetCullMode(CULL_DISABLE);
-    DrawArraysVAO(ur::DRAW_TRIANGLES, 0, 36, m_cube_vao);
+    DrawArraysVAO(ur::DRAW_TRIANGLES, 0, 36, m_cached_cube[layout].vao);
     //SetCullMode(static_cast<CULL_MODE>(old_cull));
 }
 
-void RenderContext::RenderQuad()
+void RenderContext::RenderQuad(VertLayout layout)
 {
-    if (m_quad_vao == 0)
+    if (!m_cached_quad[layout].IsValid())
     {
-        float vertices[] = {
-            // positions        // texture Coords
-            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-        };
+        std::vector<float> vertices;
+        switch (layout)
+        {
+        case VL_POS:
+            vertices = {
+                // positions
+                -1.0f,  1.0f, 0.0f,
+                -1.0f, -1.0f, 0.0f,
+                 1.0f,  1.0f, 0.0f,
+                 1.0f, -1.0f, 0.0f,
+            };
+            break;
+        case VL_POS_TEX:
+            vertices = {
+                // positions        // texture Coords
+                -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+                -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+                 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+                 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            };
+            break;
+        case VL_POS_NORM_TEX:
+            vertices = {
+                // positions        // normal         // texture Coords
+                -1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                 1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+                 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+            };
+            break;
+        case VL_POS_NORM_TEX_TB:
+        {
+            // positions
+            sm::vec3 pos1(-1.0f,  1.0f, 0.0f);
+            sm::vec3 pos2(-1.0f, -1.0f, 0.0f);
+            sm::vec3 pos3( 1.0f, -1.0f, 0.0f);
+            sm::vec3 pos4( 1.0f,  1.0f, 0.0f);
+            // texture coordinates
+            sm::vec2 uv1(0.0f, 1.0f);
+            sm::vec2 uv2(0.0f, 0.0f);
+            sm::vec2 uv3(1.0f, 0.0f);
+            sm::vec2 uv4(1.0f, 1.0f);
+            // normal vector
+            sm::vec3 nm(0.0f, 0.0f, 1.0f);
+
+            // calculate tangent/bitangent vectors of both triangles
+            sm::vec3 tangent1, bitangent1;
+            sm::vec3 tangent2, bitangent2;
+            // triangle 1
+            // ----------
+            sm::vec3 edge1 = pos2 - pos1;
+            sm::vec3 edge2 = pos3 - pos1;
+            sm::vec2 deltaUV1 = uv2 - uv1;
+            sm::vec2 deltaUV2 = uv3 - uv1;
+
+            GLfloat f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+            tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+            tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+            tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+            tangent1.Normalize();
+
+            bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+            bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+            bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+            bitangent1.Normalize();
+
+            // triangle 2
+            // ----------
+            edge1 = pos3 - pos1;
+            edge2 = pos4 - pos1;
+            deltaUV1 = uv3 - uv1;
+            deltaUV2 = uv4 - uv1;
+
+            f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+            tangent2.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+            tangent2.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+            tangent2.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+            tangent2.Normalize();
+
+            bitangent2.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+            bitangent2.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+            bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+            bitangent2.Normalize();
+
+            vertices = {
+                // positions            // normal         // texcoords  // tangent                          // bitangent
+                pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+                pos2.x, pos2.y, pos2.z, nm.x, nm.y, nm.z, uv2.x, uv2.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+                pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+
+                pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+                pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+                pos4.x, pos4.y, pos4.z, nm.x, nm.y, nm.z, uv4.x, uv4.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z
+            };
+        }
+            break;
+        default:
+            assert(0);
+        }
+
         // setup plane VAO
-        glGenVertexArrays(1, &m_quad_vao);
-        glGenBuffers(1, &m_quad_vbo);
-        glBindVertexArray(m_quad_vao);
-        glBindBuffer(GL_ARRAY_BUFFER, m_quad_vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glGenVertexArrays(1, &m_cached_quad[layout].vao);
+        glGenBuffers(1, &m_cached_quad[layout].vbo);
+        // fill buffer
+        glBindBuffer(GL_ARRAY_BUFFER, m_cached_quad[layout].vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+        // link vertex attributes
+        glBindVertexArray(m_cached_quad[layout].vao);
+        switch (layout)
+        {
+        case VL_POS:
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+            break;
+        case VL_POS_TEX:
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            break;
+        case VL_POS_NORM_TEX:
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+            break;
+        case VL_POS_NORM_TEX_TB:
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(6 * sizeof(float)));
+            glEnableVertexAttribArray(3);
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(8 * sizeof(float)));
+            glEnableVertexAttribArray(4);
+            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
+            break;
+        default:
+            assert(0);
+        }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
     // render quad
     int old_cull = m_cull;
     //SetCullMode(CULL_DISABLE);
-    DrawArraysVAO(ur::DRAW_TRIANGLE_STRIP, 0, 4, m_quad_vao);
+    if (layout == VL_POS_NORM_TEX_TB) {
+        DrawArraysVAO(ur::DRAW_TRIANGLES, 0, 6, m_cached_quad[layout].vao);
+    } else {
+        DrawArraysVAO(ur::DRAW_TRIANGLE_STRIP, 0, 4, m_cached_quad[layout].vao);
+    }
     //SetCullMode(static_cast<CULL_MODE>(old_cull));
 }
 
@@ -1642,6 +1890,16 @@ bool RenderContext::CheckETC2SupportSlow()
 	glDeleteTextures(1, &tex_id);
 
 	return ret;
+}
+
+RenderContext::VertBuf::~VertBuf()
+{
+    if (vao != 0) {
+        glDeleteVertexArrays(1, &vao);
+    }
+    if (vbo != 0) {
+        glDeleteBuffers(1, &vbo);
+    }
 }
 
 }

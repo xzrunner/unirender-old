@@ -185,8 +185,8 @@ public:
 	virtual void DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) override final;
 	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) override final;
 
-    virtual void RenderCube() override final;
-    virtual void RenderQuad() override final;
+    virtual void RenderCube(VertLayout layout) override final;
+    virtual void RenderQuad(VertLayout layout) override final;
 
 	/************************************************************************/
 	/* Debug                                                                */
@@ -214,6 +214,17 @@ private:
 private:
 	static const int MAX_TEXTURE_CHANNEL = 8;
 	static const int MAX_RENDER_TARGET_LAYER = 8;
+
+private:
+    struct VertBuf
+    {
+        ~VertBuf();
+
+        bool IsValid() const { return vao != 0 && vbo != 0; }
+
+        unsigned int vao = 0;
+        unsigned int vbo = 0;
+    };
 
 private:
 	render* m_render;
@@ -281,10 +292,8 @@ private:
     /* Draw                                                                 */
     /************************************************************************/
 
-    unsigned int m_cube_vao = 0;
-    unsigned int m_cube_vbo = 0;
-    unsigned int m_quad_vao = 0;
-    unsigned int m_quad_vbo = 0;
+    VertBuf m_cached_cube[VL_MAX_COUNT];
+    VertBuf m_cached_quad[VL_MAX_COUNT];
 
 }; // RenderContext
 

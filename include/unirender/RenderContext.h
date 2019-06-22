@@ -28,6 +28,15 @@ public:
 		std::vector<VertexAttrib> va_list;
 	};
 
+    enum VertLayout
+    {
+        VL_POS = 0,
+        VL_POS_TEX,
+        VL_POS_NORM_TEX,
+        VL_POS_NORM_TEX_TB,
+        VL_MAX_COUNT
+    };
+
 public:
 	RenderContext() {}
 	virtual ~RenderContext() {}
@@ -194,8 +203,8 @@ public:
 	virtual void DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) = 0;
 	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) = 0;
 
-    virtual void RenderCube() = 0;
-    virtual void RenderQuad() = 0;
+    virtual void RenderCube(VertLayout layout) = 0;
+    virtual void RenderQuad(VertLayout layout) = 0;
 
 	/************************************************************************/
 	/* Debug                                                                */
