@@ -80,6 +80,7 @@ public:
     // attach texture
     virtual void BindRenderTargetTex(int tex, ATTACHMENT_TYPE attachment = ATTACHMENT_COLOR0,
         TEXTURE_TARGET textarget = TEXTURE2D, int level = 0) = 0;
+    virtual void SetColorBufferList(const std::vector<ATTACHMENT_TYPE>& list) = 0;
 
     // attach framebuffer
     virtual uint32_t CreateRenderbufferObject(uint32_t fbo, INTERNAL_FORMAT fmt,

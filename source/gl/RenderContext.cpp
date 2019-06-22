@@ -97,6 +97,9 @@ const GLint internal_formats[] = {
 
 const GLenum attachments[] = {
     GL_COLOR_ATTACHMENT0,
+    GL_COLOR_ATTACHMENT1,
+    GL_COLOR_ATTACHMENT2,
+    GL_COLOR_ATTACHMENT3,
     GL_DEPTH_ATTACHMENT,
     GL_STENCIL_ATTACHMENT,
 };
@@ -531,6 +534,33 @@ void RenderContext::BindRenderTargetTex(int tex, ATTACHMENT_TYPE attachment,
 
     int gl_tex = render_get_texture_gl_id(m_render, tex);
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachments[attachment], texture_targets[textarget], gl_tex, level);
+}
+
+void RenderContext::SetColorBufferList(const std::vector<ATTACHMENT_TYPE>& list)
+{
+    std::vector<unsigned int> attachments;
+    attachments.reserve(list.size());
+    for (int i = 0, n = list.size(); i < n; ++i)
+    {
+        unsigned int d = 0;
+        switch (list[i])
+        {
+        case ATTACHMENT_COLOR0:
+            d = GL_COLOR_ATTACHMENT0;
+            break;
+        case ATTACHMENT_COLOR1:
+            d = GL_COLOR_ATTACHMENT1;
+            break;
+        case ATTACHMENT_COLOR2:
+            d = GL_COLOR_ATTACHMENT2;
+            break;
+        case ATTACHMENT_COLOR3:
+            d = GL_COLOR_ATTACHMENT3;
+            break;
+        }
+        attachments.push_back(d);
+    }
+    glDrawBuffers(attachments.size(), attachments.data());
 }
 
 uint32_t RenderContext::CreateRenderbufferObject(uint32_t fbo, INTERNAL_FORMAT fmt,
