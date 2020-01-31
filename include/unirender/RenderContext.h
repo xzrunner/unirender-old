@@ -183,7 +183,7 @@ public:
 	/* Draw                                                                 */
 	/************************************************************************/
 
-	virtual void DrawElements(DRAW_MODE mode, int fromidx, int ni) = 0;
+	virtual void DrawElements(DRAW_MODE mode, int fromidx, int ni, bool type_short = true) = 0;
 	virtual void DrawElements(DRAW_MODE mode, int count, unsigned int* indices) = 0;
 	virtual void DrawArrays(DRAW_MODE mode, int fromidx, int ni) = 0;
 
@@ -201,7 +201,7 @@ public:
 
 	virtual void CreateVAO(const VertexInfo& vi, unsigned int& vao, unsigned int& vbo, unsigned int& ebo) = 0;
 	virtual void ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int ebo) = 0;
-	virtual void DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) = 0;
+	virtual void DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao, bool type_short = true) = 0;
 	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) = 0;
 
     virtual void RenderCube(VertLayout layout) = 0;

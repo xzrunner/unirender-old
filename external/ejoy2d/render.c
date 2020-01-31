@@ -1379,7 +1379,7 @@ render_clear(struct render *R, enum EJ_CLEAR_MASK mask, unsigned long c) {
 
 // draw
 void
-render_draw_elements(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni) {
+render_draw_elements(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni, int type_short) {
 	static int draw_mode[] = {
 		GL_POINTS,
 		GL_LINES,
@@ -1395,13 +1395,17 @@ render_draw_elements(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int 
 	struct buffer * buf = (struct buffer *)array_ref(&R->buffer, ib);
 	if (buf) {
 		int offset = fromidx * sizeof(short);
-		glDrawElements(draw_mode[mode], ni, GL_UNSIGNED_SHORT, (char *)0 + offset);
+        if (type_short) {
+            glDrawElements(draw_mode[mode], ni, GL_UNSIGNED_SHORT, (char *)0 + offset);
+        } else {
+            glDrawElements(draw_mode[mode], ni, GL_UNSIGNED_INT, (char *)0 + offset);
+        }
 		CHECK_GL_ERROR
 	}
 }
 
 void
-render_draw_elements_vao(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni, unsigned int vao) {
+render_draw_elements_vao(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, int ni, unsigned int vao, int type_short) {
 	render_state_commit(R);
 
 	static int draw_mode[] = {
@@ -1418,7 +1422,11 @@ render_draw_elements_vao(struct render *R, enum EJ_DRAW_MODE mode, int fromidx, 
 	glBindVertexArray(vao);
 
 	int offset = sizeof(short) * fromidx;
-	glDrawElements(draw_mode[mode], ni, GL_UNSIGNED_SHORT, (char *)0 + offset);
+    if (type_short) {
+        glDrawElements(draw_mode[mode], ni, GL_UNSIGNED_SHORT, (char *)0 + offset);
+    } else {
+        glDrawElements(draw_mode[mode], ni, GL_UNSIGNED_INT, (char *)0 + offset);
+    }
 
 	glBindVertexArray(0);
 

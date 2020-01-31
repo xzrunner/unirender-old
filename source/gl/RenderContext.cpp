@@ -1147,13 +1147,13 @@ void RenderContext::SetUnpackRowLength(int len)
 /* Draw                                                                 */
 /************************************************************************/
 
-void RenderContext::DrawElements(DRAW_MODE mode, int fromidx, int ni)
+void RenderContext::DrawElements(DRAW_MODE mode, int fromidx, int ni, bool type_short)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	render_draw_elements(m_render, (EJ_DRAW_MODE)mode, fromidx, ni);
+	render_draw_elements(m_render, (EJ_DRAW_MODE)mode, fromidx, ni, type_short ? 1 : 0);
 }
 
 void RenderContext::DrawElements(DRAW_MODE mode, int count, unsigned int* indices)
@@ -1366,13 +1366,13 @@ void RenderContext::ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int 
 	}
 }
 
-void RenderContext::DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao)
+void RenderContext::DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao, bool type_short)
 {
 #ifdef CHECK_MT
 	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
 #endif // CHECK_MT
 
-	render_draw_elements_vao(m_render, (EJ_DRAW_MODE)mode, fromidx, ni, vao);
+	render_draw_elements_vao(m_render, (EJ_DRAW_MODE)mode, fromidx, ni, vao, type_short ? 1 : 0);
 }
 
 void RenderContext::DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao)

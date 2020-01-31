@@ -165,7 +165,7 @@ public:
 	/* Draw                                                                 */
 	/************************************************************************/
 
-	virtual void DrawElements(DRAW_MODE mode, int fromidx, int ni) override final;
+	virtual void DrawElements(DRAW_MODE mode, int fromidx, int ni, bool type_short = true) override final;
 	virtual void DrawElements(DRAW_MODE mode, int count, unsigned int* indices) override final;
 	virtual void DrawArrays(DRAW_MODE mode, int fromidx, int ni) override final;
 
@@ -183,7 +183,7 @@ public:
 
 	virtual void CreateVAO(const VertexInfo& vi, unsigned int& vao, unsigned int& vbo, unsigned int& ebo) override final;
 	virtual void ReleaseVAO(unsigned int vao, unsigned int vbo, unsigned int ebo) override final;
-	virtual void DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) override final;
+	virtual void DrawElementsVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao, bool type_short = true) override final;
 	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) override final;
 
     virtual void RenderCube(VertLayout layout) override final;
