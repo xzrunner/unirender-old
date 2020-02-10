@@ -1315,7 +1315,11 @@ void RenderContext::CreateVAO(const VertexInfo& vi,
 
 	if (element) {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * vi.in, vi.indices, usages[vi.index_usage]);
+        if (vi.idx_short) {
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short) * vi.in, vi.indices, usages[vi.index_usage]);
+        } else {
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * vi.in, vi.indices, usages[vi.index_usage]);
+        }
     } else {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
