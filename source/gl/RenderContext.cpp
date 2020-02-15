@@ -706,6 +706,10 @@ int  RenderContext::CreateShader(const char* vs, const char* fs, const std::vect
 	args.fs = fs;
     args.cs = nullptr;
     args.no_header = no_header ? 1 : 0;
+    if (std::string(vs).find("#version") != std::string::npos &&
+        std::string(vs).find("#version") != std::string::npos) {
+        args.no_header = 1;
+    }
 
 	int n = textures.size();
 	args.texture = n;
