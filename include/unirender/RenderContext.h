@@ -112,6 +112,7 @@ public:
 	/************************************************************************/
 
 	virtual int  CreateShader(const char* vs, const char* fs, const std::vector<std::string>& textures, bool no_header = false) = 0;
+    virtual int  CreateShader(const char* cs) = 0;
 	virtual void ReleaseShader(int id) = 0;
 
 	virtual void BindShader(int id) = 0;
@@ -119,6 +120,8 @@ public:
 
 	virtual int  GetShaderUniform(const char* name) = 0;
 	virtual void SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v, int n = 1) = 0;
+
+    virtual int GetComputeWorkGroupSize(int id) const = 0;
 
 	/************************************************************************/
 	/* State                                                                */
@@ -207,6 +210,15 @@ public:
 
     virtual void RenderCube(VertLayout layout) = 0;
     virtual void RenderQuad(VertLayout layout) = 0;
+
+    /************************************************************************/
+    /* Compute                                                              */
+    /************************************************************************/
+
+    virtual uint32_t CreateComputeBuffer(const std::vector<float>& buf) const = 0;
+    virtual void     ReleaseComputeBuffer(uint32_t id) const = 0;
+    virtual void DispatchCompute(int thread_group_count) const =  0;
+    virtual void GetComputeBufferData(uint32_t id, std::vector<float>& result) const = 0;
 
 	/************************************************************************/
 	/* Debug                                                                */

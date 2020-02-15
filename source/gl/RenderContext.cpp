@@ -704,6 +704,7 @@ int  RenderContext::CreateShader(const char* vs, const char* fs, const std::vect
 
 	args.vs = vs;
 	args.fs = fs;
+    args.cs = nullptr;
     args.no_header = no_header ? 1 : 0;
 
 	int n = textures.size();
@@ -723,6 +724,24 @@ int  RenderContext::CreateShader(const char* vs, const char* fs, const std::vect
 	{
 		args.texture_uniform = NULL;
 	}
+
+	return render_shader_create(m_render, &args);
+}
+
+int RenderContext::CreateShader(const char* cs)
+{
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+	struct shader_init_args args;
+
+	args.vs = nullptr;
+	args.fs = nullptr;
+    args.cs = cs;
+    args.no_header = 1;
+    args.texture = 0;
+    args.texture_uniform = NULL;
 
 	return render_shader_create(m_render, &args);
 }
@@ -768,6 +787,15 @@ void RenderContext::SetShaderUniform(int loc, UNIFORM_FORMAT format, const float
 #endif // CHECK_MT
 
 	render_shader_setuniform(m_render, loc, (EJ_UNIFORM_FORMAT)format, v, n);
+}
+
+int RenderContext::GetComputeWorkGroupSize(int id) const
+{
+#ifdef CHECK_MT
+    assert(std::this_thread::get_id() == MAIN_THREAD_ID);
+#endif // CHECK_MT
+
+    return render_shader_get_compute_work_group_size(m_render, id);
 }
 
 /************************************************************************/
@@ -1740,6 +1768,35 @@ void RenderContext::RenderQuad(VertLayout layout)
         DrawArraysVAO(ur::DRAW_TRIANGLE_STRIP, 0, 4, m_cached_quad[layout].vao);
     }
     //SetCullMode(static_cast<CULL_MODE>(old_cull));
+}
+
+/************************************************************************/
+/* Compute                                                              */
+/************************************************************************/
+
+uint32_t RenderContext::CreateComputeBuffer(const std::vector<float>& buf) const
+{
+    GLuint data_buf;
+    glGenBuffers(1, &data_buf);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, data_buf);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float) * buf.size(), &buf.front(), GL_STREAM_COPY);
+    return data_buf;
+}
+
+void RenderContext::ReleaseComputeBuffer(uint32_t id) const
+{
+    glDeleteBuffers(1, &id);
+}
+
+void RenderContext::DispatchCompute(int thread_group_count) const
+{
+    glDispatchCompute(thread_group_count, 1, 1);
+    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+}
+
+void RenderContext::GetComputeBufferData(uint32_t id, std::vector<float>& result) const
+{
+    glGetNamedBufferSubData(id, 0, sizeof(float) * result.size(), result.data());
 }
 
 /************************************************************************/

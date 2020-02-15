@@ -383,6 +383,19 @@ compile_link(struct render *R, struct shader *s, const char * VS, const char *FS
 	return link(R, s->glid);
 }
 
+static int
+compile_link_cs(struct render *R, struct shader *s, const char * CS) {
+	GLuint cs = compile(R, CS, GL_COMPUTE_SHADER, 1);
+	if (cs == 0) {
+		logger_printf(&R->log, "Can't compile compute shader\n");
+		return 0;
+	} else {
+		glAttachShader(s->glid, cs);
+	}
+
+	return link(R, s->glid);
+}
+
 RID
 render_shader_create(struct render *R, struct shader_init_args *args) {
 	struct shader * s = (struct shader *)array_alloc(&R->shader);
@@ -390,25 +403,34 @@ render_shader_create(struct render *R, struct shader_init_args *args) {
 		return 0;
 	}
 	s->glid = glCreateProgram();
-	if (!compile_link(R, s, args->vs, args->fs, args->no_header)) {
-		glDeleteProgram(s->glid);
-		array_free(&R->shader, s);
-		return 0;
-	}
 
-	s->texture_n = args->texture;
-	int i;
-	for (i=0;i<s->texture_n;i++) {
-		s->texture_uniform[i] = glGetUniformLocation(s->glid, args->texture_uniform[i]);
-	}
+    if (args->cs) {
+        if (!compile_link_cs(R, s, args->cs)) {
+            glDeleteProgram(s->glid);
+            array_free(&R->shader, s);
+            return 0;
+        }
+    } else {
+        if (!compile_link(R, s, args->vs, args->fs, args->no_header)) {
+            glDeleteProgram(s->glid);
+            array_free(&R->shader, s);
+            return 0;
+        }
+
+        s->texture_n = args->texture;
+        int i;
+        for (i = 0;i < s->texture_n;i++) {
+            s->texture_uniform[i] = glGetUniformLocation(s->glid, args->texture_uniform[i]);
+        }
 
 #ifdef VAO_ENABLE
-	glGenVertexArrays(1, &s->glvao);
-	for (i=0;i<MAX_VB_SLOT;i++) {
-		s->vbslot[i] = 0;
-	}
-	s->ib = 0;
+        glGenVertexArrays(1, &s->glvao);
+        for (i = 0;i < MAX_VB_SLOT;i++) {
+            s->vbslot[i] = 0;
+        }
+        s->ib = 0;
 #endif
+    }
 
 	CHECK_GL_ERROR
 
@@ -1540,6 +1562,18 @@ render_shader_setuniform(struct render *R, int loc, enum EJ_UNIFORM_FORMAT forma
 		return;
 	}
 	CHECK_GL_ERROR
+}
+
+int
+render_shader_get_compute_work_group_size(struct render *R, RID id) {
+	struct shader * s = (struct shader *)array_ref(&R->shader, id);
+	if (s) {
+        GLint threads[3];
+        glGetProgramiv(s->glid, GL_COMPUTE_WORK_GROUP_SIZE, threads);
+        return threads[0];
+	} else {
+        return 0;
+	}
 }
 
 int

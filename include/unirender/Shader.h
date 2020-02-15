@@ -20,6 +20,7 @@ class Shader : private cu::Uncopyable
 public:
 	Shader(RenderContext* rc, const char* vs, const char* fs,
 		const std::vector<std::string>& textures, const CU_VEC<VertexAttrib>& va_list, bool no_header = false);
+    Shader(RenderContext* rc, const char* cs);
 	virtual ~Shader();
 
 	virtual ur::DRAW_MODE GetDrawMode() const { return ur::DRAW_TRIANGLES; }
@@ -44,6 +45,8 @@ public:
 	void SetMat4(const std::string& name, const float value[16]) const;
 	void SetMultiMat4(const std::string& name, const float* value, int n) const;
 
+    int GetComputeWorkGroupSize() const;
+
 private:
 	RenderContext* m_rc;
 
@@ -57,5 +60,7 @@ private:
 
 std::unique_ptr<Shader> CreateShaderFromFile(RenderContext* rc, const char* vs_filepath,
 	const char* fs_filepath, const std::vector<std::string>& textures, const CU_VEC<VertexAttrib>& va_list);
+
+
 
 }

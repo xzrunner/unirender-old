@@ -32,6 +32,7 @@ struct vertex_attrib {
 struct shader_init_args {
 	const char * vs;
 	const char * fs;
+    const char * cs;
     int no_header;
 	int texture;
 	const char **texture_uniform;
@@ -202,6 +203,7 @@ RID render_shader_create(struct render *R, struct shader_init_args *args);
 void render_shader_bind(struct render *R, RID id);
 int render_shader_locuniform(struct render *R, const char * name);
 void render_shader_setuniform(struct render *R, int loc, enum EJ_UNIFORM_FORMAT format, const float *v, int n);
+int render_shader_get_compute_work_group_size(struct render *R, RID id);
 
 void render_setviewport(int x, int y, int width, int height );
 void render_setscissor(struct render *R, int x, int y, int width, int height );

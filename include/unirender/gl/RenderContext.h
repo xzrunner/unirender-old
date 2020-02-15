@@ -91,6 +91,7 @@ public:
 	/************************************************************************/
 
 	virtual int  CreateShader(const char* vs, const char* fs, const std::vector<std::string>& textures, bool no_header = false) override final;
+    virtual int  CreateShader(const char* cs) override final;
 	virtual void ReleaseShader(int id) override final;
 
 	virtual void BindShader(int id) override final;
@@ -98,6 +99,8 @@ public:
 
 	virtual int  GetShaderUniform(const char* name) override final;
 	virtual void SetShaderUniform(int loc, UNIFORM_FORMAT format, const float* v, int n = 1) override final;
+
+    virtual int GetComputeWorkGroupSize(int id) const override final;
 
 	/************************************************************************/
 	/* State                                                                */
@@ -188,6 +191,15 @@ public:
 
     virtual void RenderCube(VertLayout layout) override final;
     virtual void RenderQuad(VertLayout layout) override final;
+
+    /************************************************************************/
+    /* Compute                                                              */
+    /************************************************************************/
+
+    virtual uint32_t CreateComputeBuffer(const std::vector<float>& buf) const override final;
+    virtual void     ReleaseComputeBuffer(uint32_t id) const override final;
+    virtual void DispatchCompute(int thread_group_count) const override final;
+    virtual void GetComputeBufferData(uint32_t id, std::vector<float>& result) const override final;
 
 	/************************************************************************/
 	/* Debug                                                                */

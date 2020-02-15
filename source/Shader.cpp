@@ -23,6 +23,14 @@ Shader::Shader(RenderContext* rc, const char* vs, const char* fs,
     rc->BindVertexLayout(old_id);
 }
 
+Shader::Shader(RenderContext* rc, const char* cs)
+    : m_rc(rc)
+    , m_shader_id(-1)
+    , m_vert_layout_id(-1)
+{
+    m_shader_id = rc->CreateShader(cs);
+}
+
 Shader::~Shader()
 {
 	if (m_shader_id != -1) {
@@ -102,6 +110,15 @@ void Shader::SetMultiMat4(const std::string& name, const float* value, int n) co
 	if (m_shader_id != -1) {
 		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_MULTI_FLOAT44, value, n);
 	}
+}
+
+int Shader::GetComputeWorkGroupSize() const
+{
+    if (m_shader_id != -1) {
+        return m_rc->GetComputeWorkGroupSize(m_shader_id);
+    } else {
+        return 0;
+    }
 }
 
 std::unique_ptr<Shader> CreateShaderFromFile(RenderContext* rc, const char* vs_filepath, const char* fs_filepath,
