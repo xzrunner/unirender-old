@@ -196,7 +196,8 @@ public:
     /* Compute                                                              */
     /************************************************************************/
 
-    virtual uint32_t CreateComputeBuffer(const std::vector<float>& buf) const override final;
+    virtual uint32_t CreateComputeBuffer(const std::vector<float>& buf, size_t index) const override final;
+    virtual uint32_t CreateComputeBuffer(const std::vector<int>& buf, size_t index) const override final;
     virtual void     ReleaseComputeBuffer(uint32_t id) const override final;
     virtual void DispatchCompute(int thread_group_count) const override final;
     virtual void GetComputeBufferData(uint32_t id, std::vector<float>& result) const override final;

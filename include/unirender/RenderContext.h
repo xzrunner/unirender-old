@@ -215,7 +215,8 @@ public:
     /* Compute                                                              */
     /************************************************************************/
 
-    virtual uint32_t CreateComputeBuffer(const std::vector<float>& buf) const = 0;
+    virtual uint32_t CreateComputeBuffer(const std::vector<float>& buf, size_t index) const = 0;
+    virtual uint32_t CreateComputeBuffer(const std::vector<int>& buf, size_t index) const = 0;
     virtual void     ReleaseComputeBuffer(uint32_t id) const = 0;
     virtual void DispatchCompute(int thread_group_count) const =  0;
     virtual void GetComputeBufferData(uint32_t id, std::vector<float>& result) const = 0;

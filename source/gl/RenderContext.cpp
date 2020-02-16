@@ -1778,12 +1778,21 @@ void RenderContext::RenderQuad(VertLayout layout)
 /* Compute                                                              */
 /************************************************************************/
 
-uint32_t RenderContext::CreateComputeBuffer(const std::vector<float>& buf) const
+uint32_t RenderContext::CreateComputeBuffer(const std::vector<float>& buf, size_t index) const
 {
     GLuint data_buf;
     glGenBuffers(1, &data_buf);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, data_buf);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, data_buf);
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float) * buf.size(), &buf.front(), GL_STREAM_COPY);
+    return data_buf;
+}
+
+uint32_t RenderContext::CreateComputeBuffer(const std::vector<int>& buf, size_t index) const
+{
+    GLuint data_buf;
+    glGenBuffers(1, &data_buf);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, data_buf);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(int) * buf.size(), &buf.front(), GL_STREAM_COPY);
     return data_buf;
 }
 
