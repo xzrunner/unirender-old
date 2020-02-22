@@ -1847,11 +1847,22 @@ void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, i
 #endif // CHECK_MT
 
 //	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	if (channels == 4) {
-		glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
-	} else if (channels == 3) {
-		glReadPixels(x, y, w, h, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
-	}
+    GLenum type;
+    switch (channels)
+    {
+    case 4:
+        type = GL_RGBA;
+        break;
+    case 3:
+        type = GL_RGB;
+        break;
+    case 1:
+        type = GL_LUMINANCE;
+        break;
+    default:
+        return;
+    }
+    glReadPixels(x, y, w, h, type, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
 }
 
 bool RenderContext::CheckAvailableMemory(int need_texture_area) const
