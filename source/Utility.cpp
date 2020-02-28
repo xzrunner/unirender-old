@@ -34,6 +34,7 @@ int Utility::CalcTextureSize(int format, int width, int height, int depth)
         times = 4;
         break;
 	case TEXTURE_A8:
+    case TEXTURE_RED:
 	case TEXTURE_DEPTH:
 		times = 1;
 		break;

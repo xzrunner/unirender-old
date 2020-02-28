@@ -747,7 +747,8 @@ calc_texture_size(enum EJ_TEXTURE_FORMAT format, int width, int height) {
         return width * height * 12;
     case EJ_TEXTURE_RG16F:
         return width * height * 4;
-	case EJ_TEXTURE_A8 :
+	case EJ_TEXTURE_A8:
+    case EJ_TEXTURE_RED:
 	case EJ_TEXTURE_DEPTH :
 		return width * height;
 	case EJ_TEXTURE_PVR2 :
@@ -872,6 +873,10 @@ texture_format(struct texture* tex, GLint* internal_format, GLenum* pixel_format
         break;
 	case EJ_TEXTURE_A8 :
         *internal_format = *pixel_format = GL_ALPHA;
+        *itype = GL_UNSIGNED_BYTE;
+        break;
+    case EJ_TEXTURE_RED:
+        *internal_format = *pixel_format = GL_RED;
         *itype = GL_UNSIGNED_BYTE;
         break;
 	case EJ_TEXTURE_DEPTH :

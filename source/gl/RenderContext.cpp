@@ -1857,7 +1857,7 @@ void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, i
         type = GL_RGB;
         break;
     case 1:
-        type = GL_LUMINANCE;
+        type = GL_RED;
         break;
     default:
         return;
