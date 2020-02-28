@@ -44,6 +44,8 @@ public:
 
 	virtual int  GetCurrTexture() const override final;
 
+    virtual void CopyTexture(int x, int y, size_t w, size_t h, int format, int tex) const override final;
+
 	/************************************************************************/
 	/* RenderTarget                                                         */
 	/************************************************************************/

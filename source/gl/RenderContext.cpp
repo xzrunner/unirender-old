@@ -458,6 +458,29 @@ int  RenderContext::GetCurrTexture() const
 	return m_textures[0];
 }
 
+void RenderContext::CopyTexture(int x, int y, size_t w, size_t h, int format, int tex) const
+{
+    GLenum fmt;
+    switch (format)
+    {
+    case EJ_TEXTURE_RGBA8:
+        fmt = GL_RGBA;
+        break;
+    case EJ_TEXTURE_RGB:
+        fmt = GL_RGB;
+        break;
+    case EJ_TEXTURE_RED:
+        fmt = GL_RED;
+        break;
+    default:
+        assert(0);
+    }
+
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, fmt, x, y, w, h, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 /************************************************************************/
 /* RenderTarget                                                         */
 /************************************************************************/

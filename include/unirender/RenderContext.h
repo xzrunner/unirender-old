@@ -68,6 +68,8 @@ public:
 
 	virtual int  GetCurrTexture() const = 0;
 
+    virtual void CopyTexture(int x, int y, size_t w, size_t h, int format, int tex) const = 0;
+
 	/************************************************************************/
 	/* RenderTarget                                                         */
 	/************************************************************************/
