@@ -1550,16 +1550,22 @@ render_shader_setuniform(struct render *R, int loc, enum EJ_UNIFORM_FORMAT forma
 	case EJ_UNIFORM_FLOAT4:
 		glUniform4f(loc, v[0], v[1], v[2], v[3]);
 		break;
-	case EJ_UNIFORM_FLOAT33:
+	case EJ_UNIFORM_MATRIX3:
 		glUniformMatrix3fv(loc, 1, GL_FALSE, v);
 		break;
-	case EJ_UNIFORM_FLOAT44:
+	case EJ_UNIFORM_MATRIX4:
 		glUniformMatrix4fv(loc, 1, GL_FALSE, v);
 		break;
 	case EJ_UNIFORM_INT1:
 		glUniform1i(loc, (int)(*v));
 		break;
-	case EJ_UNIFORM_MULTI_FLOAT44:
+    case EJ_UNIFORM_FLOAT3_ARRAY:
+        glUniform3fv(loc, n, v);
+        break;
+    case EJ_UNIFORM_FLOAT4_ARRAY:
+        glUniform4fv(loc, n, v);
+        break;
+	case EJ_UNIFORM_MATRIX4_ARRAY:
 		glUniformMatrix4fv(loc, n, GL_FALSE, v);
 		break;
 	default:

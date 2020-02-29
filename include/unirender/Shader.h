@@ -43,7 +43,9 @@ public:
 	void SetVec4(const std::string& name, const float value[4]) const;
 	void SetMat3(const std::string& name, const float value[9]) const;
 	void SetMat4(const std::string& name, const float value[16]) const;
-	void SetMultiMat4(const std::string& name, const float* value, int n) const;
+    void SetVec3Array(const std::string& name, const float* value, int n) const;
+    void SetVec4Array(const std::string& name, const float* value, int n) const;
+	void SetMat4Array(const std::string& name, const float* value, int n) const;
 
     int GetComputeWorkGroupSize() const;
 

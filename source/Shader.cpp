@@ -94,21 +94,35 @@ void Shader::SetVec4(const std::string& name, const float value[4]) const
 void Shader::SetMat3(const std::string& name, const float value[9]) const
 {
 	if (m_shader_id != -1) {
-		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_FLOAT33, value);
+		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_MATRIX3, value);
 	}
 }
 
 void Shader::SetMat4(const std::string& name, const float value[16]) const
 {
 	if (m_shader_id != -1) {
-		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_FLOAT44, value);
+		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_MATRIX4, value);
 	}
 }
 
-void Shader::SetMultiMat4(const std::string& name, const float* value, int n) const
+void Shader::SetVec3Array(const std::string& name, const float* value, int n) const
+{
+    if (m_shader_id != -1) {
+        m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_FLOAT3_ARRAY, value, n);
+    }
+}
+
+void Shader::SetVec4Array(const std::string& name, const float* value, int n) const
+{
+    if (m_shader_id != -1) {
+        m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_FLOAT4_ARRAY, value, n);
+    }
+}
+
+void Shader::SetMat4Array(const std::string& name, const float* value, int n) const
 {
 	if (m_shader_id != -1) {
-		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_MULTI_FLOAT44, value, n);
+		m_rc->SetShaderUniform(m_rc->GetShaderUniform(name.c_str()), UNIFORM_MATRIX4_ARRAY, value, n);
 	}
 }
 
