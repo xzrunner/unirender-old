@@ -35,7 +35,7 @@ Texture::~Texture()
 }
 
 void Texture::Upload(RenderContext* rc, int width, int height, TEXTURE_FORMAT format,
-	                 const unsigned char* filling, TEXTURE_WRAP wrap, TEXTURE_FILTER filter)
+	                 const void* filling, TEXTURE_WRAP wrap, TEXTURE_FILTER filter)
 {
 	if (m_texid != 0) {
 		m_rc->ReleaseTexture(m_texid);

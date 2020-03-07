@@ -38,6 +38,9 @@ int Utility::CalcTextureSize(int format, int width, int height, int depth)
 	case TEXTURE_DEPTH:
 		times = 1;
 		break;
+    case TEXTURE_R16:
+        times = 2;
+        break;
 	case TEXTURE_PVR2:
 		times = 1.0f / 4;
 		break;

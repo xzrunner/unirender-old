@@ -470,6 +470,7 @@ void RenderContext::CopyTexture(int x, int y, size_t w, size_t h, int format, in
         fmt = GL_RGB;
         break;
     case EJ_TEXTURE_RED:
+    case EJ_TEXTURE_R16:
         fmt = GL_RED;
         break;
     default:
