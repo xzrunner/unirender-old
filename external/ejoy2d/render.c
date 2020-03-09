@@ -878,11 +878,12 @@ texture_format(struct texture* tex, GLint* internal_format, GLenum* pixel_format
         *itype = GL_UNSIGNED_BYTE;
         break;
     case EJ_TEXTURE_RED:
-        *internal_format = *pixel_format = GL_RED;
+        *internal_format = GL_R8;
+        *pixel_format = GL_RED;
         *itype = GL_UNSIGNED_BYTE;
         break;
     case EJ_TEXTURE_R16:
-        *internal_format = GL_R16;
+        *internal_format = GL_R16_SNORM;
         *pixel_format = GL_RED;
         *itype = GL_SHORT;
         break;
