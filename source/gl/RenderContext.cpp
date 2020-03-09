@@ -1802,22 +1802,14 @@ void RenderContext::RenderQuad(VertLayout layout)
 /* Compute                                                              */
 /************************************************************************/
 
-uint32_t RenderContext::CreateComputeBuffer(const std::vector<float>& buf, size_t index) const
-{
-    GLuint data_buf;
-    glGenBuffers(1, &data_buf);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, data_buf);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float) * buf.size(), &buf.front(), GL_STREAM_COPY);
-    return data_buf;
-}
-
 uint32_t RenderContext::CreateComputeBuffer(const std::vector<int>& buf, size_t index) const
 {
-    GLuint data_buf;
-    glGenBuffers(1, &data_buf);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, data_buf);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(int) * buf.size(), &buf.front(), GL_STREAM_COPY);
-    return data_buf;
+    return CreateComputeBufferImpl(buf, index);
+}
+
+uint32_t RenderContext::CreateComputeBuffer(const std::vector<float>& buf, size_t index) const
+{
+    return CreateComputeBufferImpl(buf, index);
 }
 
 void RenderContext::ReleaseComputeBuffer(uint32_t id) const
@@ -1831,9 +1823,9 @@ void RenderContext::DispatchCompute(int thread_group_count) const
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 
-void RenderContext::GetComputeBufferData(uint32_t id, std::vector<float>& result) const
+void RenderContext::GetComputeBufferData(uint32_t id, std::vector<int>& result) const
 {
-    glGetNamedBufferSubData(id, 0, sizeof(float) * result.size(), result.data());
+    glGetNamedBufferSubData(id, 0, sizeof(result), result.data());
 }
 
 /************************************************************************/
@@ -1864,29 +1856,14 @@ void RenderContext::ReadBuffer()
 #endif // OPENGLES
 }
 
-void RenderContext::ReadPixels(const void* pixels, int channels, int x, int y, int w, int h)
+void RenderContext::ReadPixels(const unsigned char* pixels, int channels, int x, int y, int w, int h)
 {
-#ifdef CHECK_MT
-	assert(std::this_thread::get_id() == MAIN_THREAD_ID);
-#endif // CHECK_MT
+    ReadPixelsImpl(pixels, channels, x, y, w, h, GL_UNSIGNED_BYTE);
+}
 
-//	glReadBuffer(GL_COLOR_ATTACHMENT0);
-    GLenum type;
-    switch (channels)
-    {
-    case 4:
-        type = GL_RGBA;
-        break;
-    case 3:
-        type = GL_RGB;
-        break;
-    case 1:
-        type = GL_RED;
-        break;
-    default:
-        return;
-    }
-    glReadPixels(x, y, w, h, type, GL_UNSIGNED_BYTE, (GLvoid*)pixels);
+void RenderContext::ReadPixels(const short* pixels, int channels, int x, int y, int w, int h)
+{
+    ReadPixelsImpl(pixels, channels, x, y, w, h, GL_SHORT);
 }
 
 bool RenderContext::CheckAvailableMemory(int need_texture_area) const

@@ -110,4 +110,9 @@
       <Filter>tools</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\include\unirender\gl\RenderContext.inl">
+      <Filter>gl</Filter>
+    </None>
+  </ItemGroup>
 </Project>

@@ -217,11 +217,11 @@ public:
     /* Compute                                                              */
     /************************************************************************/
 
-    virtual uint32_t CreateComputeBuffer(const std::vector<float>& buf, size_t index) const = 0;
     virtual uint32_t CreateComputeBuffer(const std::vector<int>& buf, size_t index) const = 0;
+    virtual uint32_t CreateComputeBuffer(const std::vector<float>& buf, size_t index) const = 0;
     virtual void     ReleaseComputeBuffer(uint32_t id) const = 0;
     virtual void DispatchCompute(int thread_group_count) const =  0;
-    virtual void GetComputeBufferData(uint32_t id, std::vector<float>& result) const = 0;
+    virtual void GetComputeBufferData(uint32_t id, std::vector<int>& result) const = 0;
 
 	/************************************************************************/
 	/* Debug                                                                */
@@ -234,7 +234,8 @@ public:
 	/************************************************************************/
 
 	virtual void ReadBuffer() = 0;
-	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h) = 0;
+	virtual void ReadPixels(const unsigned char* pixels, int channels, int x, int y, int w, int h) = 0;
+    virtual void ReadPixels(const short* pixels, int channels, int x, int y, int w, int h) = 0;
 
 	virtual bool CheckAvailableMemory(int need_texture_area) const = 0;
 

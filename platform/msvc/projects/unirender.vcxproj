@@ -116,6 +116,9 @@
     <ClCompile Include="..\..\..\source\TextureCube.cpp" />
     <ClCompile Include="..\..\..\source\Utility.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\include\unirender\gl\RenderContext.inl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -198,11 +198,11 @@ public:
     /* Compute                                                              */
     /************************************************************************/
 
-    virtual uint32_t CreateComputeBuffer(const std::vector<float>& buf, size_t index) const override final;
     virtual uint32_t CreateComputeBuffer(const std::vector<int>& buf, size_t index) const override final;
+    virtual uint32_t CreateComputeBuffer(const std::vector<float>& buf, size_t index) const override final;
     virtual void     ReleaseComputeBuffer(uint32_t id) const override final;
     virtual void DispatchCompute(int thread_group_count) const override final;
-    virtual void GetComputeBufferData(uint32_t id, std::vector<float>& result) const override final;
+    virtual void GetComputeBufferData(uint32_t id, std::vector<int>& result) const override final;
 
 	/************************************************************************/
 	/* Debug                                                                */
@@ -215,7 +215,8 @@ public:
 	/************************************************************************/
 
 	virtual void ReadBuffer() override final;
-	virtual void ReadPixels(const void* pixels, int channels, int x, int y, int w, int h) override final;
+	virtual void ReadPixels(const unsigned char* pixels, int channels, int x, int y, int w, int h) override final;
+    virtual void ReadPixels(const short* pixels, int channels, int x, int y, int w, int h) override final;
 
 	virtual bool CheckAvailableMemory(int need_texture_area) const override final;
 
@@ -226,6 +227,12 @@ private:
 	static bool CheckETC2Support();
 	static bool CheckETC2SupportFast();
 	static bool CheckETC2SupportSlow();
+
+    template <typename T>
+    void ReadPixelsImpl(const T* pixels, int channels, int x, int y, int w, int h, int type);
+
+    template <typename T>
+    uint32_t CreateComputeBufferImpl(const std::vector<T>& buf, size_t index) const;
 
 private:
 	static const int MAX_TEXTURE_CHANNEL = 8;
@@ -317,3 +324,5 @@ private:
 }
 
 #endif // _UNIRENDER_GL_RENDER_CONTEXT_H_
+
+#include "unirender/gl/RenderContext.inl"
