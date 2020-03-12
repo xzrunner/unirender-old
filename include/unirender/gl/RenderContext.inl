@@ -30,7 +30,7 @@ void RenderContext::ReadPixelsImpl(const T* pixels, int channels, int x, int y, 
     default:
         return;
     }
-    glReadPixels(x, y, w, h, type, type, (GLvoid*)pixels);
+    glReadPixels(x, y, w, h, format, type, (GLvoid*)pixels);
 }
 
 template <typename T>
