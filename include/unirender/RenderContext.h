@@ -211,7 +211,7 @@ public:
 	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) = 0;
 
     virtual void RenderCube(VertLayout layout) = 0;
-    virtual void RenderQuad(VertLayout layout) = 0;
+    virtual void RenderQuad(VertLayout layout, bool unit = false) = 0;
 
     /************************************************************************/
     /* Compute                                                              */

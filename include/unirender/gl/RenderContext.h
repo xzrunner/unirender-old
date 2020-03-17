@@ -192,7 +192,7 @@ public:
 	virtual void DrawArraysVAO(DRAW_MODE mode, int fromidx, int ni, unsigned int vao) override final;
 
     virtual void RenderCube(VertLayout layout) override final;
-    virtual void RenderQuad(VertLayout layout) override final;
+    virtual void RenderQuad(VertLayout layout, bool unit = false) override final;
 
     /************************************************************************/
     /* Compute                                                              */

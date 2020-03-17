@@ -1635,8 +1635,9 @@ void RenderContext::RenderCube(VertLayout layout)
     //SetCullMode(static_cast<CULL_MODE>(old_cull));
 }
 
-void RenderContext::RenderQuad(VertLayout layout)
+void RenderContext::RenderQuad(VertLayout layout, bool unit)
 {
+    const auto p_min = unit ? 0.0f : -1.0f;
     if (!m_cached_quad[layout].IsValid())
     {
         std::vector<float> vertices;
@@ -1645,36 +1646,36 @@ void RenderContext::RenderQuad(VertLayout layout)
         case VL_POS:
             vertices = {
                 // positions
-                -1.0f,  1.0f, 0.0f,
-                -1.0f, -1.0f, 0.0f,
+                p_min,  1.0f, 0.0f,
+                p_min, p_min, 0.0f,
                  1.0f,  1.0f, 0.0f,
-                 1.0f, -1.0f, 0.0f,
+                 1.0f, p_min, 0.0f,
             };
             break;
         case VL_POS_TEX:
             vertices = {
                 // positions        // texture Coords
-                -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-                -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+                p_min,  1.0f, 0.0f, 0.0f, 1.0f,
+                p_min, p_min, 0.0f, 0.0f, 0.0f,
                  1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-                 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+                 1.0f, p_min, 0.0f, 1.0f, 0.0f,
             };
             break;
         case VL_POS_NORM_TEX:
             vertices = {
                 // positions        // normal         // texture Coords
-                -1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                p_min,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                p_min, p_min, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
                  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-                 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                 1.0f, p_min, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
             };
             break;
         case VL_POS_NORM_TEX_TB:
         {
             // positions
-            sm::vec3 pos1(-1.0f,  1.0f, 0.0f);
-            sm::vec3 pos2(-1.0f, -1.0f, 0.0f);
-            sm::vec3 pos3( 1.0f, -1.0f, 0.0f);
+            sm::vec3 pos1(p_min,  1.0f, 0.0f);
+            sm::vec3 pos2(p_min, p_min, 0.0f);
+            sm::vec3 pos3( 1.0f, p_min, 0.0f);
             sm::vec3 pos4( 1.0f,  1.0f, 0.0f);
             // texture coordinates
             sm::vec2 uv1(0.0f, 1.0f);
